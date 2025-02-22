@@ -8,4 +8,5 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 # Passos feitos
-- Tela de login feita
+- Tela de login feita (Concluida, 1.0)
+- Iniciado a tela de cadastro (0.2)

@@ -14,7 +14,7 @@ export const H_align = styled.div`
     }
 `
 
-export const Container = styled.div`
+export const Container = styled.form`
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24,7 +24,6 @@ export const Container = styled.div`
     overflow: hidden;
     padding: 20px 0 20px;
     width: 450px;
-    font-family: Arial, Helvetica, sans-serif;
 
     h1{
         font-size: 24px;
