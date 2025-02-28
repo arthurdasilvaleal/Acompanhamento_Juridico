@@ -2,14 +2,14 @@ import styled from "styled-components";
 
 export const H_align = styled.div`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 800px;
+    height: 580px;
     gap: 40px;
 
     img{
-      width: 130px;
+      width: 260px;
       border-radius: 20px;
     }
 `
@@ -28,10 +28,6 @@ export const Container = styled.form`
     h1{
         font-size: 24px;
         text-align: center;
-    }
-
-    h6{
-        
     }
 
     .btn {
@@ -95,7 +91,8 @@ export const InputSld = styled.div`
     width: 400px;
   }
 
-  .input-container input[type="text"] {
+  .input-container input[type="text"],
+  .input-container input[type="password"] {
     font-size: 20px;
     width: 100%;
     border: none;
@@ -115,7 +112,9 @@ export const InputSld = styled.div`
   }
 
   .input-container input[type="text"]:focus ~ .label,
-  .input-container input[type="text"]:valid ~ .label {
+  .input-container input[type="text"]:valid ~ .label,
+  .input-container input[type="password"]:focus ~ .label,
+  .input-container input[type="password"]:valid ~ .label {
     top: -20px;
     font-size: 16px;
     color: #333;
@@ -133,7 +132,9 @@ export const InputSld = styled.div`
   }
 
   .input-container input[type="text"]:focus ~ .underline,
-  .input-container input[type="text"]:valid ~ .underline {
+  .input-container input[type="text"]:valid ~ .underline,
+  .input-container input[type="password"]:focus ~ .underline,
+  .input-container input[type="password"]:valid ~ .underline {
     transform: scaleX(1);
   }
 `
