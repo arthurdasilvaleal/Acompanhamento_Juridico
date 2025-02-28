@@ -1,11 +1,10 @@
 import { Container, InputSld, H_align } from './style'
 import { Link } from 'react-router-dom'
-import LogoAJ from "../../Images/Logo AJ.jpg"
+import 'animate.css';
 
 export default function Login(){
     return(
         <H_align>
-            <img src={LogoAJ} alt="Logo Acompanhamento Juridico" />
             <Container>
                 <h1>Bem-vindo ao Acompanhamento Jurídico</h1>
                 <InputSld>

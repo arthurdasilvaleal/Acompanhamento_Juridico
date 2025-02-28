@@ -1,21 +1,25 @@
 import styled from "styled-components"
+import bg_img from "../../Images/bg.png"
 
 export const H_align = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     height: 910px;
+    background-image: url(${bg_img});
 `
 
-export const Container = styled.div`
+export const Container = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid;
+    border: transparent;
     border-radius: 8px;
     padding: 20px 0 20px;
     width: 450px;
-
+    box-shadow: 0 0 20px #000;
+    background-color: rgba(255, 255, 255, 1);
+    
     .btn {
         width: 6.5em;
         height: 2.3em;
@@ -63,8 +67,16 @@ export const Header = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 15px;
+    width: 100%;
+
+    h1{
+      font-size: 1.7em;
+      padding-left: 30px;
+    }
+
+    .styled-wrapper{
+      padding-left: 15px;
+    }
 
     .styled-wrapper .button {
     display: block;

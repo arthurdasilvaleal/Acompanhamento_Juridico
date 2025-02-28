@@ -1,17 +1,14 @@
 import styled from "styled-components";
+import bg_img from "../../Images/bg.png"
 
 export const H_align = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 580px;
+    height: 910px;
     gap: 40px;
-
-    img{
-      width: 260px;
-      border-radius: 20px;
-    }
+    background-image: url(${bg_img});
 `
 
 export const Container = styled.form`
@@ -19,11 +16,13 @@ export const Container = styled.form`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px solid;
+    border: transparent;
     border-radius: 16px;
     overflow: hidden;
     padding: 20px 0 20px;
     width: 450px;
+    box-shadow: 0 0 20px #000;
+    background-color: rgba(255, 255, 255, 1);
 
     h1{
         font-size: 24px;
