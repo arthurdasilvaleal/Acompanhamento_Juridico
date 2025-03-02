@@ -9,5 +9,9 @@ Currently, two official plugins are available:
 
 # Passos feitos
 - Tela de login feita (Concluida, 1.0)
+<<<<<<< HEAD
 - Tela de Cadastro feita (Concluida, 1.0)
 - Feito a das telas: [Cadastro, Login] 
+=======
+- Tela de cadastro feita (Concluida, 1.0)
+>>>>>>> a4abb313550dcf411a30184701a29e9c0a3a50bf
