@@ -9,4 +9,5 @@ Currently, two official plugins are available:
 
 # Passos feitos
 - Tela de login feita (Concluida, 1.0)
-- Iniciado a tela de cadastro (0.2)
+- Tela de Cadastro feita (Concluida, 1.0)
+- Feito a das telas: [Cadastro, Login] 

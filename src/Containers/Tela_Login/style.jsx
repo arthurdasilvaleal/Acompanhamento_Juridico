@@ -9,6 +9,10 @@ export const H_align = styled.div`
     height: 910px;
     gap: 40px;
     background-image: url(${bg_img});
+    @media (max-width: 768px) {
+      padding: 0 10px 0 10px;
+      height: 852px;
+    }
 `
 
 export const Container = styled.form`
@@ -27,6 +31,7 @@ export const Container = styled.form`
     h1{
         font-size: 24px;
         text-align: center;
+        padding: 0 10px 0 10px;
     }
 
     .btn {
@@ -88,6 +93,9 @@ export const InputSld = styled.div`
     position: relative;
     margin: 20px auto;
     width: 400px;
+    @media (max-width: 460px) {
+      width: inherit;
+    }
   }
 
   .input-container input[type="text"],

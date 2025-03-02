@@ -7,6 +7,9 @@ export const H_align = styled.div`
     align-items: center;
     height: 910px;
     background-image: url(${bg_img});
+    @media (max-width: 768px) {
+      height: 790px;
+    }
 `
 
 export const Container = styled.form`
@@ -19,6 +22,9 @@ export const Container = styled.form`
     width: 450px;
     box-shadow: 0 0 20px #000;
     background-color: rgba(255, 255, 255, 1);
+    @media (max-width: 768px) {
+      width: 90%;
+    }
     
     .btn {
         width: 6.5em;
@@ -68,10 +74,16 @@ export const Header = styled.div`
     flex-direction: row;
     align-items: center;
     width: 100%;
+    @media (max-width: 768px) {
+        padding-bottom: 20px;
+      }
 
     h1{
       font-size: 1.7em;
       padding-left: 30px;
+      @media (max-width: 768px) {
+        padding-left: 5px;
+      }
     }
 
     .styled-wrapper{
@@ -161,6 +173,9 @@ export const Inputs_box = styled.div`
         position: relative;
         margin: 20px auto;
         width: 400px;
+        @media (max-width: 768px) {
+          width: 300px;
+        }
     }
 
     .input-container input[type="text"],
