@@ -10,7 +10,7 @@ export const H_align = styled.div`
     gap: 40px;
     background-image: url(${bg_img});
     @media (max-width: 768px) {
-      padding: 0 10px 0 10px;
+      padding: 0 20px 0 20px;
       height: 852px;
     }
 `

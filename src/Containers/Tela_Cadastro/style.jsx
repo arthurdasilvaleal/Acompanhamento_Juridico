@@ -70,13 +70,15 @@ export const Container = styled.form`
 `
 
 export const Header = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    @media (max-width: 768px) {
-        padding-bottom: 20px;
-      }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 20px;
+  @media (max-width: 768px) {
+    padding: 0 30px 20px 0;
+    justify-content: center;
+  }
 
     h1{
       font-size: 1.7em;
@@ -91,81 +93,81 @@ export const Header = styled.div`
     }
 
     .styled-wrapper .button {
-    display: block;
-    position: relative;
-    width: 66px;
-    height: 66px;
-    margin: 0;
-    overflow: hidden;
-    outline: none;
-    background-color: transparent;
-    cursor: pointer;
-    border: 0;
-  }
+      display: block;
+      position: relative;
+      width: 66px;
+      height: 66px;
+      margin: 0;
+      overflow: hidden;
+      outline: none;
+      background-color: transparent;
+      cursor: pointer;
+      border: 0;
+    }
 
-  .styled-wrapper .button:before {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    inset: 7px;
-    border: 3.5px solid black; /* Update dynamically for light/dark mode */
-    transition:
+    .styled-wrapper .button:before {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 7px;
+      border: 3.5px solid black; /* Update dynamically for light/dark mode */
+      transition:
       opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
       transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
-  }
+    }
 
-  .styled-wrapper .button:after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    inset: 7px;
-    border: 4px solid #000;
-    transform: scale(1.3);
-    transition:
+    .styled-wrapper .button:after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      inset: 7px;
+      border: 4px solid #000;
+      transform: scale(1.3);
+      transition:
       opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
       transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0;
-  }
+      opacity: 0;
+    }
 
-  .styled-wrapper .button:hover:before,
-  .styled-wrapper .button:focus:before {
-    opacity: 0;
-    transform: scale(0.7);
-    transition:
+    .styled-wrapper .button:hover:before,
+    .styled-wrapper .button:focus:before {
+      opacity: 0;
+      transform: scale(0.7);
+      transition:
       opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
       transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
+    }
 
-  .styled-wrapper .button:hover:after,
-  .styled-wrapper .button:focus:after {
-    opacity: 1;
-    transform: scale(1);
-    transition:
+    .styled-wrapper .button:hover:after,
+    .styled-wrapper .button:focus:after {
+      opacity: 1;
+      transform: scale(1);
+      transition:
       opacity 0.4s cubic-bezier(0.77, 0, 0.175, 1) 80ms,
       transform 0.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) 80ms;
-  }
+    }
 
-  .styled-wrapper .button-box {
-    display: flex;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
+    .styled-wrapper .button-box {
+      display: flex;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
 
-  .styled-wrapper .button-elem {
-    display: block;
-    width: 24px;
-    height: 24px;
-    margin: 22px 18px 0 22px;
-    transform: rotate(360deg);
-    fill: #f0eeef;
-  }
+    .styled-wrapper .button-elem {
+      display: block;
+      width: 24px;
+      height: 24px;
+      margin: 22px 18px 0 22px;
+      transform: rotate(360deg);
+      fill: #f0eeef;
+    }
 
-  .styled-wrapper .button:hover .button-box,
-  .styled-wrapper .button:focus .button-box {
-    transition: 0.4s;
-    transform: translateX(-64px);
-  }
+    .styled-wrapper .button:hover .button-box,
+    .styled-wrapper .button:focus .button-box {
+      transition: 0.4s;
+      transform: translateX(-64px);
+    }
 `
 
 export const Inputs_box = styled.div`
@@ -205,9 +207,19 @@ export const Inputs_box = styled.div`
     .input-container input[type="password"]:valid ~ .label,
     .input-container input[type="email"]:focus ~ .label,
     .input-container input[type="email"]:valid ~ .label {
-        top: -20px;
-        font-size: 16px;
-        color: #333;
+      top: -20px;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    /* Aplica a cor vermelha quando as senhas forem diferentes */
+    .input-container input[data-valido="false"],
+    .input-container .label[data-valido="false"] {
+      color: red !important; 
+    }
+
+    .input-container .underline[data-valido="false"]{
+      background-color: red;
     }
 
     .input-container .underline {
@@ -230,7 +242,7 @@ export const Inputs_box = styled.div`
         transform: scaleX(1);
     }
 
-    .input-container.has-text .label {
+    .input-container.has-text .label{
         top: -20px;
         font-size: 16px;
         color: #333;

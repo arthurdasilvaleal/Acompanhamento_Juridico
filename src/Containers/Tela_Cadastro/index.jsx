@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link, redirect } from 'react-router-dom'
 import { H_align, Container, Inputs_box, Header } from './style.jsx'
 
 export default function Cadastro(){
     const [email, set_Email] = useState("")
     const [password, set_Password] = useState("")
-    const [string, set_String] = useState("")
-    const Changed = (e) => {
-        set_String(e.target.value)
-    }
+    const [retype, set_Retype] = useState("")
+    const PassEqual = password === retype || retype === "";
 
     return(
         <H_align>
@@ -44,7 +42,7 @@ export default function Cadastro(){
                 <Inputs_box>
                     <div className={`input-container ${email.length > 0 ? "has-text" : ""}`}>
                         <input type="email" className="input" required value={email} 
-                        onChange={(e) => set_Email(e.target.value)} />
+                            onChange={(e) => set_Email(e.target.value)} />
                         <label htmlFor="input" className="label">E-mail</label>
                         <div className="underline" />
                     </div>
@@ -72,18 +70,20 @@ export default function Cadastro(){
                 </Inputs_box>
                 <Inputs_box>
                     <div className={`input-container ${password.length > 0 ? "has-text" : ""}`}>
-                        <input type="password" className="input" required 
-                        pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,15}$'
-                        value={password} onChange={(e) => set_Password(e.target.value)}/>
+                        <input type="password" className="input" id="first-pass" required 
+                            pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,15}$'
+                            onChange={(e) => set_Password(e.target.value)}/>
                         <label htmlFor="input" className="label">Criar senha</label>
                         <div className="underline" />
                     </div>
                 </Inputs_box>
                 <Inputs_box>
                     <div className="input-container">
-                        <input type="password" className="input" required />
-                        <label htmlFor="input" className="label">Redigite a senha</label>
-                        <div className="underline" />
+                        <input type="password" className="input" id="second-pass" required 
+                            onChange={(e) => {set_Retype(e.target.value)}}
+                            data-valido={PassEqual}/>
+                        <label htmlFor="input" className="label" data-valido={PassEqual}>Redigite a senha</label>
+                        <div className="underline" data-valido={PassEqual}/>
                     </div>
                 </Inputs_box>
                 <button className='btn'>Cadastrar</button>
