@@ -5,11 +5,9 @@ export const H_align = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 910px;
-    gap: 40px;
+    height: 100vh;
     @media (max-width: 768px) {
       padding: 0 20px 0 20px;
-      height: 730px;
     }
 `
 
@@ -91,8 +89,8 @@ export const InputSld = styled.div`
     position: relative;
     margin: 20px auto;
     width: 400px;
-    @media (max-width: 460px) {
-      width: inherit;
+    @media (max-width: 560px) {
+      width: 70vw;
     }
   }
 

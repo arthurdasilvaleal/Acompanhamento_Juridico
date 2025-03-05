@@ -4,10 +4,7 @@ export const H_align = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 910px;
-    @media (max-width: 768px) {
-      height: 730px;
-    }
+    height: 100vh;
 `
 
 export const Container = styled.form`
