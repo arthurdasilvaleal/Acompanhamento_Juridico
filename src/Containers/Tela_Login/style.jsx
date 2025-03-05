@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import bg_img from "../../Images/bg.png"
 
 export const H_align = styled.div`
     display: flex;
@@ -8,10 +7,9 @@ export const H_align = styled.div`
     align-items: center;
     height: 910px;
     gap: 40px;
-    background-image: url(${bg_img});
     @media (max-width: 768px) {
       padding: 0 20px 0 20px;
-      height: 852px;
+      height: 730px;
     }
 `
 

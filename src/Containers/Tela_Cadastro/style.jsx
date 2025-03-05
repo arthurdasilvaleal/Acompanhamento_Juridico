@@ -1,14 +1,12 @@
 import styled from "styled-components"
-import bg_img from "../../Images/bg.png"
 
 export const H_align = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     height: 910px;
-    background-image: url(${bg_img});
     @media (max-width: 768px) {
-      height: 790px;
+      height: 730px;
     }
 `
 
@@ -23,7 +21,7 @@ export const Container = styled.form`
     box-shadow: 0 0 20px #000;
     background-color: rgba(255, 255, 255, 1);
     @media (max-width: 768px) {
-      width: 90%;
+      width: 88%;
     }
     
     .btn {
