@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState } from "react"
 import { Link } from 'react-router-dom'
 import { H_align, Container, Inputs_box, Header } from './style.jsx'
-import { InputMask } from "@react-input/mask";
+import { InputMask } from "@react-input/mask"
+import { useMediaQuery } from "react-responsive"
 
 export default function Cadastro(){
     const [cep, set_Cep] = useState("")
@@ -11,24 +12,8 @@ export default function Cadastro(){
     const [email, set_Email] = useState("")
     const [password, set_Password] = useState("")
     const [retype, set_Retype] = useState("")
-    const PassCreate = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,15}$/.test(password);
-    /*
-        1️⃣ ^ → Início da string.
-        2️⃣ (?=.*[a-z]) → Pelo menos uma letra minúscula.
-        3️⃣ (?=.*[A-Z]) → Pelo menos uma letra maiúscula.
-        4️⃣ (?=.*[0-9]) → Pelo menos um número.
-        5️⃣ [a-zA-Z0-9]{6,15} → Apenas letras e números, com 6 a 15 caracteres.
-        6️⃣ $ → Fim da string.
-
-        A função .test(password) retorna um booleano:
-
-        true → Se a senha estiver dentro dos critérios.
-        false → Se não atender aos requisitos.
-    */
     const PassEqual = password === retype || retype === "";
-
     const buscarCep = async (cep) => {
-
         try{
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
             const data = await response.json()
@@ -121,22 +106,20 @@ export default function Cadastro(){
                     <div className={`input-container ${password.length > 0 ? "has-text" : ""}`}>
                         <input type="password" className="input" id="first-pass" required 
                             pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,15}$'
-                            onChange={(e) => set_Password(e.target.value)}/>
+                            onChange={(e) => set_Password(e.target.value)}
+                            onInvalid={(e) => e.target.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUma minúscula;\nUm número.")}
+                            onInput={(e) => e.target.setCustomValidity("")}/>
                         <label htmlFor="input" className="label">Criar senha</label>
                         <div className="underline" />
                     </div>
                 </Inputs_box>
-                <div>
-                    <p>A senha deve conter ao menos uma:</p>
-                    <p>letra minúscula</p>
-                    <p>letra maiúscula</p>
-                    <p>número</p>
-                </div>
                 <Inputs_box>
                     <div className="input-container">
                         <input type="password" className="input" id="second-pass" required 
                             onChange={(e) => {set_Retype(e.target.value)}}
-                            data-valido={PassEqual}/>
+                            data-valido={PassEqual} pattern={password}
+                            onInvalid={(e) => e.target.setCustomValidity("As senhas precisam ser iguais.")}
+                            onInput={(e) => e.target.setCustomValidity("")}/>
                         <label htmlFor="input" className="label" data-valido={PassEqual}>Redigite a senha</label>
                         <div className="underline" data-valido={PassEqual}/>
                     </div>

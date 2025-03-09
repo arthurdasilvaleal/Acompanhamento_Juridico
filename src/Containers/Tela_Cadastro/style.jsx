@@ -5,6 +5,9 @@ export const H_align = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+    @media (max-width: 768px) {
+      padding: 20px 0 20px;
+    }
 `
 
 export const Container = styled.form`
@@ -80,7 +83,7 @@ export const Header = styled.div`
       padding-left: 30px;
       @media (max-width: 768px) {
         padding-left: 5px;
-        font-size: 6vw;
+        font-size: 5.5vw;
       }
     }
 
