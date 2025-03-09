@@ -80,6 +80,7 @@ export const Header = styled.div`
       padding-left: 30px;
       @media (max-width: 768px) {
         padding-left: 5px;
+        font-size: 6vw;
       }
     }
 
@@ -171,7 +172,7 @@ export const Inputs_box = styled.div`
         margin: 20px auto;
         width: 400px;
         @media (max-width: 768px) {
-          width: 300px;
+          width: 70vw;
         }
     }
 

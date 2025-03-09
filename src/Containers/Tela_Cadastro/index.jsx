@@ -1,12 +1,48 @@
 import { useState } from "react";
-import { Link, redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { H_align, Container, Inputs_box, Header } from './style.jsx'
+import { InputMask } from "@react-input/mask";
 
 export default function Cadastro(){
+    const [cep, set_Cep] = useState("")
+    const [endereco, set_Endereco] = useState("")
+    const [cidade, set_Cidade] = useState("")
+    const [estado, set_Estado] = useState("")
     const [email, set_Email] = useState("")
     const [password, set_Password] = useState("")
     const [retype, set_Retype] = useState("")
+    const PassCreate = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,15}$/.test(password);
+    /*
+        1️⃣ ^ → Início da string.
+        2️⃣ (?=.*[a-z]) → Pelo menos uma letra minúscula.
+        3️⃣ (?=.*[A-Z]) → Pelo menos uma letra maiúscula.
+        4️⃣ (?=.*[0-9]) → Pelo menos um número.
+        5️⃣ [a-zA-Z0-9]{6,15} → Apenas letras e números, com 6 a 15 caracteres.
+        6️⃣ $ → Fim da string.
+
+        A função .test(password) retorna um booleano:
+
+        true → Se a senha estiver dentro dos critérios.
+        false → Se não atender aos requisitos.
+    */
     const PassEqual = password === retype || retype === "";
+
+    const buscarCep = async (cep) => {
+
+        try{
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            const data = await response.json()
+        
+            if(!data.erro){
+                set_Endereco(data.logradouro)
+                set_Cidade(data.localidade)
+                set_Estado(data.uf)
+            }
+            else {
+                alert("CEP não encontrado!");
+            }
+        } catch (error){console.error("Erro ao buscar CEP:", error)}
+    }
 
     return(
         <H_align>
@@ -49,22 +85,35 @@ export default function Cadastro(){
                 </Inputs_box>
                 <Inputs_box>
                     <div className="input-container">
-                        <input type="text" className="input" required />
+                        <InputMask type="text" className="input" mask="_____-___" 
+                        replacement={{ _: /\d/ }} onChange={(e) => {
+                            const catchCep = e.target.value;
+                            set_Cep(catchCep);
+                            if(catchCep.replace(/\D/g, "").length === 8){buscarCep(catchCep)}
+                        }} 
+                        value={cep} required />
                         <label htmlFor="input" className="label">CEP</label>
                         <div className="underline" />
                     </div>
                 </Inputs_box>
                 <Inputs_box>
                     <div className="input-container">
-                        <input type="text" className="input" required />
+                        <input type="text" className="input" value={endereco} onChange={(e) => set_Endereco(e.target.value)} required />
                         <label htmlFor="input" className="label">Endereço</label>
                         <div className="underline" />
                     </div>
                 </Inputs_box>
                 <Inputs_box>
                     <div className="input-container">
-                        <input type="text" className="input" required />
+                        <input type="text" className="input" value={cidade} onChange={(e) => set_Cidade(e.target.value)} required />
                         <label htmlFor="input" className="label">Cidade</label>
+                        <div className="underline" />
+                    </div>
+                </Inputs_box>
+                <Inputs_box>
+                    <div className="input-container">
+                        <input type="text" className="input" value={estado} onChange={(e) => set_Estado(e.target.value)} required />
+                        <label htmlFor="input" className="label">Estado</label>
                         <div className="underline" />
                     </div>
                 </Inputs_box>
@@ -77,6 +126,12 @@ export default function Cadastro(){
                         <div className="underline" />
                     </div>
                 </Inputs_box>
+                <div>
+                    <p>A senha deve conter ao menos uma:</p>
+                    <p>letra minúscula</p>
+                    <p>letra maiúscula</p>
+                    <p>número</p>
+                </div>
                 <Inputs_box>
                     <div className="input-container">
                         <input type="password" className="input" id="second-pass" required 
