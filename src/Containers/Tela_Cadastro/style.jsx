@@ -215,10 +215,15 @@ export const Inputs_box = styled.div`
     .input-container input[data-valido="false"],
     .input-container .label[data-valido="false"] {
       color: red !important; 
+      top: -20px;
     }
 
     .input-container .underline[data-valido="false"]{
       background-color: red;
+    }
+
+    .input-container input[data-valido="false"] ~ .underline{
+      transform: scaleX(1);
     }
 
     .input-container .underline {
