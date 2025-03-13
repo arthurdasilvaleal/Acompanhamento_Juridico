@@ -4,7 +4,6 @@ export const H_align = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     @media (max-width: 768px) {
       padding: 20px 0 20px;
     }
@@ -17,7 +16,7 @@ export const Container = styled.form`
     border: transparent;
     border-radius: 8px;
     padding: 20px 0 20px;
-    width: 450px;
+    /* width: 450px; */
     box-shadow: 0 0 20px #000;
     background-color: rgba(255, 255, 255, 1);
     @media (max-width: 768px) {
@@ -71,8 +70,9 @@ export const Header = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  padding-bottom: 20px;
+  padding: 0 20px 20px 0;
   @media (max-width: 768px) {
     padding: 0 30px 20px 0;
     justify-content: center;
@@ -80,9 +80,8 @@ export const Header = styled.div`
 
     h1{
       font-size: 1.7em;
-      padding-left: 30px;
+      padding-left: 5px;
       @media (max-width: 768px) {
-        padding-left: 5px;
         font-size: 5.5vw;
       }
     }
@@ -169,11 +168,25 @@ export const Header = styled.div`
     }
 `
 
+export const Twin_input = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 15px 0 15px;
+    gap: 5px;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      padding: 0;
+      gap: 0;
+    }
+`
+
 export const Inputs_box = styled.div`
     .input-container {
         position: relative;
         margin: 20px auto;
-        width: 400px;
+        
         @media (max-width: 768px) {
           width: 70vw;
         }

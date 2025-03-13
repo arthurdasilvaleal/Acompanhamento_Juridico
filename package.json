@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-input/mask": "^2.0.4",
     "animate.css": "^4.1.1",
+    "cpf-cnpj-validator": "^1.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-responsive": "^10.0.1",
