@@ -67,7 +67,7 @@ export default function Cadastro(){
                         </div>
                     </Inputs_box>
                     <Inputs_box>
-                        <div className="input-container">
+                        <div className={`input-container ${CPF.length > 0 ? "has-text" : ""}`}>
                             <InputMask type="text" className="input" mask="___.___.___-__" 
                             replacement={{ _: /\d/ }} onChange={(e) => {
                                 const Check_CPF = e.target.value

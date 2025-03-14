@@ -1,8 +1,16 @@
 import { Container, InputSld, H_align } from './style'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import 'animate.css';
 
 export default function Login(){
+
+    const navigate = useNavigate();
+
+    const handleLogin = () => {
+        // Aqui você pode validar os dados antes de redirecionar
+        navigate("/main")
+    }
+
     return(
         <H_align>
             <Container>
@@ -22,7 +30,7 @@ export default function Login(){
                     </div>
                 </InputSld>
                 <h6><Link to={'/cadastro'}>Não tem uma conta?</Link></h6>
-                <button className='btn'>Entrar</button>
+                <button className='btn' onClick={handleLogin}>Entrar</button>
             </Container>
         </H_align>
     )
