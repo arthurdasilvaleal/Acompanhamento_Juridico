@@ -69,11 +69,14 @@ export default function Cadastro(){
                     <Inputs_box>
                         <div className="input-container">
                             <InputMask type="text" className="input" mask="___.___.___-__" 
-                            replacement={{ _: /\d/ }} onChange={(e) => set_CPF(e.target.value)} 
-                            value={CPF} data-valido={cpf.isValid(CPF) || CPF.length < 14} 
-                            onInvalid={(e) => e.target.setCustomValidity("CPF inválido!")}
-                            onInput={(e) => e.target.setCustomValidity("")}
-                            required  />
+                            replacement={{ _: /\d/ }} onChange={(e) => {
+                                const Check_CPF = e.target.value
+                                set_CPF(Check_CPF)
+                                if(Check_CPF.length < 14){e.target.setCustomValidity("CPF incompleto!")}
+                                else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
+                                else{e.target.setCustomValidity("")}
+                            }}
+                            value={CPF} data-valido={cpf.isValid(CPF) || CPF.length < 14} required />
                             <label htmlFor="input" className="label" data-valido={cpf.isValid(CPF) || CPF.length < 14}>CPF</label>
                             <div className="underline" data-valido={cpf.isValid(CPF) || CPF.length < 14}/>
                         </div>

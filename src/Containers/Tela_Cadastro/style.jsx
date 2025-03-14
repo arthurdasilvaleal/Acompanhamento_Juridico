@@ -4,8 +4,10 @@ export const H_align = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
     @media (max-width: 768px) {
       padding: 20px 0 20px;
+      height: auto;
     }
 `
 
@@ -173,8 +175,8 @@ export const Twin_input = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-    padding: 0 15px 0 15px;
-    gap: 5px;
+    padding: 0 20px 0 20px;
+    gap: 30px;
     @media (max-width: 768px) {
       flex-direction: column;
       padding: 0;
