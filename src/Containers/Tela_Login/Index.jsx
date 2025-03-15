@@ -6,14 +6,17 @@ export default function Login(){
 
     const navigate = useNavigate();
 
-    const handleLogin = () => {
-        // Aqui você pode validar os dados antes de redirecionar
-        navigate("/main")
+    const handleLogin = (e) => {
+        e.preventDefault() // Evita que a página recarregue
+
+        const form = e.target
+        if(form.checkValidity()){navigate("/main")}
+        else{form.reportValidity()}
     }
 
     return(
         <H_align>
-            <Container>
+            <Container onSubmit={handleLogin}>
                 <h1>Bem-vindo ao Acompanhamento Jurídico</h1>
                 <InputSld>
                     <div className="input-container">
@@ -30,7 +33,7 @@ export default function Login(){
                     </div>
                 </InputSld>
                 <h6><Link to={'/cadastro'}>Não tem uma conta?</Link></h6>
-                <button className='btn' onClick={handleLogin}>Entrar</button>
+                <button className='btn' type='submit'>Entrar</button>
             </Container>
         </H_align>
     )

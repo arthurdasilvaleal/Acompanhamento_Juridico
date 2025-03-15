@@ -29,7 +29,7 @@ export default function Cadastro(){
                 set_Bairro(data.bairro)
             }
             else {
-                alert("CEP não encontrado!");
+                alert("CEP não encontrado!")
             }
         } catch (error){console.error("Erro ao buscar CEP:", error)}
     }
@@ -86,8 +86,13 @@ export default function Cadastro(){
                     <Inputs_box>
                         <div className="input-container">
                             <InputMask type="text" className="input" mask="(__) _____-____" replacement={{ _: /\d/ }}
-                            onChange={(e) => set_Telefone(e.target.value)} value={telefone} required />
-                            <label htmlFor="input" className="label">Telefone</label>
+                            onChange={(e) => {
+                                const Check_Tel = e.target.value
+                                set_Telefone(Check_Tel)
+                                if(Check_Tel.length < 15){e.target.setCustomValidity("Telefone incompleto!")}
+                                else{e.target.setCustomValidity("")}
+                            }} value={telefone} required />
+                            <label htmlFor="input" className="label">Celular</label>
                             <div className="underline" />
                         </div>
                     </Inputs_box>
@@ -108,8 +113,9 @@ export default function Cadastro(){
                                 const catchCep = e.target.value;
                                 set_Cep(catchCep);
                                 if(catchCep.replace(/\D/g, "").length === 8){buscarCep(catchCep)}
-                            }} 
-                            value={cep} required />
+                                if(catchCep.length < 9){e.target.setCustomValidity("CEP incompleto!")}
+                                else{e.target.setCustomValidity("")}
+                            }} value={cep} required />
                             <label htmlFor="input" className="label">CEP</label>
                             <div className="underline" />
                         </div>
@@ -148,7 +154,11 @@ export default function Cadastro(){
                     </Inputs_box>
                     <Inputs_box>
                         <div className="input-container">
-                            <input type="text" className="input" required />
+                            <input type="text" className="input" onChange={(e) => {
+                                const Catch_ID = e.target
+                                if(Catch_ID.value.length < 6){Catch_ID.setCustomValidity("Seu ID deve ter ao menos 6 caracteres.")}
+                                else{Catch_ID.setCustomValidity("")}
+                            }} required />
                             <label htmlFor="input" className="label">ID Usuário</label>
                             <div className="underline" />
                         </div>
@@ -158,10 +168,29 @@ export default function Cadastro(){
                     <Inputs_box>
                         <div className={`input-container ${password.length > 0 ? "has-text" : ""}`}>
                             <input type="password" className="input" id="first-pass" required 
-                                pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{6,28}$'
-                                onChange={(e) => set_Password(e.target.value)}
-                                onInvalid={(e) => e.target.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUma minúscula;\nUm número.")}
-                                onInput={(e) => e.target.setCustomValidity("")}/>
+                                onChange={(e) => {
+                                    const Catch_Pass = e.target
+                                    set_Password(Catch_Pass.value)
+                                    console.log(Catch_Pass.value.length)
+                                    if(!/[A-Z]/.test(Catch_Pass.value) && !/[a-z]/.test(Catch_Pass.value) && !/[0-9]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUma minúscula;\nUm número.")}
+                                    else if(!/[A-Z]/.test(Catch_Pass.value) && !/[a-z]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUma minúscula.")}
+                                    else if(!/[A-Z]/.test(Catch_Pass.value) && !/[0-9]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUm número.")}
+                                    else if(!/[a-z]/.test(Catch_Pass.value) && !/[0-9]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos:\nUma minúscula;\nUm número.")}
+                                    else if(!/[A-Z]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos uma letra maiúscula.")}
+                                    else if(!/[a-z]/.test(Catch_Pass.value))    
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos uma letra minúscula.")}
+                                    else if(!/[0-9]/.test(Catch_Pass.value))
+                                        {Catch_Pass.setCustomValidity("A senha deve conter ao menos um número.")}
+                                    else if(Catch_Pass.value.length < 6)
+                                        {Catch_Pass.setCustomValidity("A senha deve ter ao menos 6 caracteres.")}
+                                    else{Catch_Pass.setCustomValidity("")}
+                                    {/*TODO: Otimizar essa parte(retirar os IFs)*/}
+                                }}/>
                             <label htmlFor="input" className="label">Criar senha</label>
                             <div className="underline" />
                         </div>
@@ -169,10 +198,12 @@ export default function Cadastro(){
                     <Inputs_box>
                         <div className="input-container">
                             <input type="password" className="input" id="second-pass" required 
-                                onChange={(e) => {set_Retype(e.target.value)}}
-                                data-valido={PassEqual} pattern={password}
-                                onInvalid={(e) => e.target.setCustomValidity("As senhas precisam ser iguais.")}
-                                onInput={(e) => e.target.setCustomValidity("")}/>
+                                onChange={(e) => {
+                                    const Catch_Retype = e.target
+                                    set_Retype(Catch_Retype.value)
+                                    if(Catch_Retype.value !== password){Catch_Retype.setCustomValidity("As senhas precisam ser iguais!")}
+                                    else{Catch_Retype.setCustomValidity("")}
+                                }} data-valido={PassEqual} pattern={password}/>
                             <label htmlFor="input" className="label" data-valido={PassEqual}>Redigite a senha</label>
                             <div className="underline" data-valido={PassEqual}/>
                         </div>
