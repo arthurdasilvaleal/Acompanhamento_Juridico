@@ -9,6 +9,7 @@ export const Main_Menu = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-around;
     height: 100vh;
     width: 200px;
     background-color: #343434;
@@ -39,13 +40,7 @@ export const Main_Menu = styled.div`
         padding-top: 13px;
     }
 
-    li:hover{
-        color: #CDAF6F;
-        font-size: 21.5px;
-        background-color: #2C2C2C;
-    }
-
-    li[data-active="true"]{
+    li:hover, li[data-active="true"]{
         color: #CDAF6F;
         font-size: 21.5px;
         background-color: #2C2C2C;
@@ -53,32 +48,29 @@ export const Main_Menu = styled.div`
 
     #bottone1 {
         color: #fff;
-        padding-left: 33px;
-        padding-right: 33px;
-        padding-bottom: 16px;
-        padding-top: 16px;
-        border-radius: 9px;
+        padding: 16px 33px;
         margin-bottom: 30px;
+        border-radius: 9px;
         background: #ff0000;
         border: none;
         font-family: inherit;
         text-align: center;
         cursor: pointer;
         transition: 0.4s;
+
+        a{
+            text-decoration: none;
+            color: #fff;
+        }
     }
 
-        #bottone1:hover {
+    #bottone1:hover {
         box-shadow: 7px 5px 56px -2px #a71c1c;
     }
 
-        #bottone1:active {
+    #bottone1:active {
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #ff0000;
-    }
-
-    a{
-        text-decoration: none;
-        color: #fff;
     }
 `
 

@@ -8,7 +8,10 @@ export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
 
   const contentMap = {
-    "Visão Geral": <p>Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
+    "Visão Geral": <>
+                    <p>Seja bem-vindo ao sistema de gestão de processos judiciais!</p>
+                    <h2>Hello, second world</h2>
+                  </>,
     "Clientes": <p>Aqui estão os clientes cadastrados no sistema.</p>,
     "Processos": <p>Gerencie seus processos judiciais com eficiência.</p>,
     "Intimações": <p>Veja todas as intimações pendentes e arquivadas.</p>,
@@ -29,7 +32,7 @@ export default function MainScreen() {
             </li>
           ))}
         </ul>
-        <Link to={'/'}><button id="bottone1"><strong>Sair</strong></button></Link>
+        <button id="bottone1"><Link to={'/'}><strong>Sair</strong></Link></button>
       </Main_Menu>
       <Main_Content>
         <h1>{option}</h1>
