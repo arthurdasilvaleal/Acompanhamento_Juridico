@@ -171,7 +171,6 @@ export default function Cadastro(){
                                 onChange={(e) => {
                                     const Catch_Pass = e.target
                                     set_Password(Catch_Pass.value)
-                                    console.log(Catch_Pass.value.length)
                                     if(!/[A-Z]/.test(Catch_Pass.value) && !/[a-z]/.test(Catch_Pass.value) && !/[0-9]/.test(Catch_Pass.value))
                                         {Catch_Pass.setCustomValidity("A senha deve conter ao menos:\nUma letra maiúscula;\nUma minúscula;\nUm número.")}
                                     else if(!/[A-Z]/.test(Catch_Pass.value) && !/[a-z]/.test(Catch_Pass.value))
@@ -190,7 +189,7 @@ export default function Cadastro(){
                                         {Catch_Pass.setCustomValidity("A senha deve ter ao menos 6 caracteres.")}
                                     else{Catch_Pass.setCustomValidity("")}
                                     {/*TODO: Otimizar essa parte(retirar os IFs)*/}
-                                }}/>
+                                }} maxLength={26}/>
                             <label htmlFor="input" className="label">Criar senha</label>
                             <div className="underline" />
                         </div>
