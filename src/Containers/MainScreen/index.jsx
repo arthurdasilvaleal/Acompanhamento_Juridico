@@ -1,7 +1,7 @@
 import { Container, Main_Menu, Main_Content } from './style.jsx'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Logo from '../../Images/Logo.png'
+import Logo from '../../Images/logo.png'
 
 export default function MainScreen() {
 
