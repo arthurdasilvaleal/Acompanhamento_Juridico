@@ -22,7 +22,7 @@ export const Main_Menu = styled.div`
 
     ul{
         list-style-type: none;
-        padding: 5rem 0;
+        padding: 5rem 0 0 0;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -49,6 +49,36 @@ export const Main_Menu = styled.div`
         color: #CDAF6F;
         font-size: 21.5px;
         background-color: #2C2C2C;
+    }
+
+    #bottone1 {
+        color: #fff;
+        padding-left: 33px;
+        padding-right: 33px;
+        padding-bottom: 16px;
+        padding-top: 16px;
+        border-radius: 9px;
+        margin-bottom: 30px;
+        background: #ff0000;
+        border: none;
+        font-family: inherit;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.4s;
+    }
+
+        #bottone1:hover {
+        box-shadow: 7px 5px 56px -2px #a71c1c;
+    }
+
+        #bottone1:active {
+        transform: scale(0.97);
+        box-shadow: 7px 5px 56px -10px #ff0000;
+    }
+
+    a{
+        text-decoration: none;
+        color: #fff;
     }
 `
 

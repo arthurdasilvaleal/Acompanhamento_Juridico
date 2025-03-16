@@ -1,5 +1,6 @@
 import { Container, Main_Menu, Main_Content } from './style.jsx'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Logo from '../../Images/Logo.png'
 
 export default function MainScreen() {
@@ -28,6 +29,7 @@ export default function MainScreen() {
             </li>
           ))}
         </ul>
+        <Link to={'/'}><button id="bottone1"><strong>Sair</strong></button></Link>
       </Main_Menu>
       <Main_Content>
         <h1>{option}</h1>
