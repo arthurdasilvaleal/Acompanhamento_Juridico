@@ -6,7 +6,6 @@ import Logo from '../../Images/logo.png'
 export default function MainScreen() {
 
   const [option, setOption] = useState("Visão Geral")
-
   const contentMap = {
     "Visão Geral": <>
                     <p>Seja bem-vindo ao sistema de gestão de processos judiciais!</p>

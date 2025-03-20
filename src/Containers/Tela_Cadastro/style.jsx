@@ -5,6 +5,9 @@ export const H_align = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+    @media (max-width: 1366px) {
+      height: auto;
+    }
     @media (max-width: 768px) {
       padding: 20px 0 20px;
       height: auto;
@@ -261,6 +264,7 @@ export const Inputs_box = styled.div`
         transform: scaleX(1);
     }
 
+    //Para deixar o campo valido mesmo quando ele não pode ser submetido
     .input-container.has-text .label{
         top: -20px;
         font-size: 16px;

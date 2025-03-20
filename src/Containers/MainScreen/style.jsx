@@ -1,11 +1,11 @@
 import styled from "styled-components"
 
-export const Container = styled.div`
+export const Container = styled.main`
     display: flex;
     flex-direction: row;
 `
 
-export const Main_Menu = styled.div`
+export const Main_Menu = styled.aside`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,16 +14,22 @@ export const Main_Menu = styled.div`
     width: 200px;
     background-color: #343434;
     color: #fff;
+    @media (max-width: 1366px) {
+        height: auto;
+    }
 
     img{
         width: inherit;
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        @media (max-width: 1366px) {
+         display: none;
+        }
     }
 
     ul{
         list-style-type: none;
-        padding: 5rem 0 0 0;
+        padding: 6rem 0 0 0;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -51,7 +57,7 @@ export const Main_Menu = styled.div`
         padding: 16px 33px;
         margin-bottom: 30px;
         border-radius: 9px;
-        background: #ff0000;
+        background: #CDAF6F;
         border: none;
         font-family: inherit;
         text-align: center;
@@ -65,21 +71,22 @@ export const Main_Menu = styled.div`
     }
 
     #bottone1:hover {
-        box-shadow: 7px 5px 56px -2px #a71c1c;
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
     }
 
     #bottone1:active {
         transform: scale(0.97);
-        box-shadow: 7px 5px 56px -10px #ff0000;
+        box-shadow: 7px 5px 56px -10px #CDAF6F;
     }
 `
 
-export const Main_Content = styled.div`
+export const Main_Content = styled.section`
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100vh;
-    width: calc(100% - 200px);
+    width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
     background-color: #2C2C2C;
+    background: linear-gradient(163deg, #405357 33%, #634331 100%);
     color: #fff;
 `
