@@ -13,6 +13,7 @@ export default function Cadastro(){
     const [bairro, set_Bairro] = useState("")
     const [estado, set_Estado] = useState("")
     const [email, set_Email] = useState("")
+    const [ID, setID] = useState("")
     const [password, set_Password] = useState("")
     const [retype, set_Retype] = useState("")
     const PassEqual = password === retype || retype === "";
@@ -107,7 +108,7 @@ export default function Cadastro(){
                 </Twin_input>
                 <Twin_input>
                     <Inputs_box>
-                        <div className="input-container">
+                        <div className={`input-container ${cep.length > 0 ? "has-text" : ""}`}>
                             <InputMask type="text" className="input" mask="_____-___" 
                             replacement={{ _: /\d/ }} onChange={(e) => {
                                 const catchCep = e.target.value;
@@ -153,9 +154,10 @@ export default function Cadastro(){
                         </div>
                     </Inputs_box>
                     <Inputs_box>
-                        <div className="input-container">
+                        <div className={`input-container ${ID.length > 0 ? "has-text" : ""}`}>
                             <input type="text" className="input" onChange={(e) => {
                                 const Catch_ID = e.target
+                                setID(Catch_ID.value)
                                 if(Catch_ID.value.length < 6){Catch_ID.setCustomValidity("Seu ID deve ter ao menos 6 caracteres.")}
                                 else{Catch_ID.setCustomValidity("")}
                             }} required />

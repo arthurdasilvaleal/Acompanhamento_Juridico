@@ -140,4 +140,15 @@ export const InputSld = styled.div`
   .input-container input[type="password"]:valid ~ .underline {
     transform: scaleX(1);
   }
+
+  //Para deixar o campo valido mesmo quando ele não pode ser submetido
+    .input-container.has-text .label{
+        top: -20px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .input-container.has-text .underline {
+        transform: scaleX(1);
+    }
 `
