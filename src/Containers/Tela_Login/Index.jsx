@@ -1,5 +1,5 @@
 import { Container, InputSld, H_align } from './style'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
 import 'animate.css';
 
@@ -45,7 +45,6 @@ export default function Login(){
                         <div className="underline" />
                     </div>
                 </InputSld>
-                <h6><Link to={'/cadastro'}>Não tem uma conta?</Link></h6>
                 <button className='btn' type='submit'>Entrar</button>
             </Container>
         </H_align>

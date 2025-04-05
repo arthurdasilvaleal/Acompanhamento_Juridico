@@ -1,21 +1,33 @@
-import { Container, Main_Menu, Main_Content } from './style.jsx'
+import { Container, Main_Menu, Main_Content, Main_button } from './style.jsx'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '../../Images/logo.png'
+import axios from 'axios'
 
 export default function MainScreen() {
+
+  const [Nome, set_Nome] = useState("")
+
+  const searchData = async () => {
+    try{
+      const response = await axios.get("http://127.0.0.1:5000/clientes")
+      set_Nome(response.data[0].nm_Cliente)
+    }
+    catch (error) {console.error("Erro ao buscar dados:", error)}
+  }
 
   const [option, setOption] = useState("Visão Geral")
   const contentMap = {
     "Visão Geral": <>
                     <p>Seja bem-vindo ao sistema de gestão de processos judiciais!</p>
                     <h2>Hello, second world</h2>
+                    <Main_button onClick={searchData}>Pegar dados</Main_button>
+                    <p>{Nome}</p>
                   </>,
     "Clientes": <p>Aqui estão os clientes cadastrados no sistema.</p>,
     "Processos": <p>Gerencie seus processos judiciais com eficiência.</p>,
     "Intimações": <p>Veja todas as intimações pendentes e arquivadas.</p>,
     "Tarefas": <p>Organize suas tarefas e prazos importantes.</p>,
-    "Configurações": <p>Configure as preferências do sistema.</p>,
     "Relatórios": <p>Visualize relatórios detalhados das suas atividades.</p>
   }
 

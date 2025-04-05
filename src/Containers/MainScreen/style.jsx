@@ -90,3 +90,26 @@ export const Main_Content = styled.section`
     background: linear-gradient(163deg, #405357 33%, #634331 100%);
     color: #fff;
 `
+
+export const Main_button = styled.button`
+    color: #fff;
+    padding: 16px 33px;
+    border-radius: 9px;
+    background: #CDAF6F;
+    border: none;
+    font-family: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition: all 500ms;
+    
+    &:hover{
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
+        transition: all 500ms;
+    }
+
+    &:active{
+        transform: scale(0.97);
+        box-shadow: 7px 5px 56px -10px #CDAF6F;
+        transition: all 500ms;
+    }
+`
