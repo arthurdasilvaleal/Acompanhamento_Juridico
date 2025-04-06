@@ -22,7 +22,7 @@ export const Main_Menu = styled.aside`
         width: inherit;
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
-        @media (max-width: 1366px) {
+        @media (max-width: 1366px) and (max-height: 600px) {
          display: none;
         }
     }
@@ -83,16 +83,40 @@ export const Main_Menu = styled.aside`
 export const Main_Content = styled.section`
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 100vh;
     width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
     background-color: #2C2C2C;
     background: linear-gradient(163deg, #405357 33%, #634331 100%);
     color: #fff;
+
+    h1{
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    hr{
+        margin: 16px 10px;
+    }
+`
+
+export const Main_Title = styled.header`
+    text-align: center;
+    padding: 1rem 0 0 0;
+    margin-bottom: 20px;
+    background-color: #343434;
+    
+    hr{
+        margin: 0;
+        background-color: #CDAF6F;
+        border: none;
+        box-shadow: 0 0 30px #CDAF6F;
+        height: 10px;
+    }
 `
 
 export const Main_button = styled.button`
     color: #fff;
+    width: 20%;
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;
@@ -100,16 +124,87 @@ export const Main_button = styled.button`
     font-family: inherit;
     text-align: center;
     cursor: pointer;
-    transition: all 500ms;
+    transition: all 250ms;
     
     &:hover{
         box-shadow: 7px 5px 56px -2px #CDAF6F;
-        transition: all 500ms;
+        transition: all 250ms;
     }
 
     &:active{
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
-        transition: all 500ms;
+        transition: all 250ms;
+    }
+`
+
+export const Process_Form = styled.form`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    .input-group{
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 10px;
+        text-align: end;
+    }
+
+    .input {
+        height: 44px;
+        background-color: #00000039;
+        color: #fff;
+        border-radius: .5rem;
+        padding: 0 1rem;
+        border: 2px solid transparent;
+        font-size: 1rem;
+        transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    /* SÓ PRA REMOVER AS SETAS DO TYPE=NUMBER */
+    .input[type=number]::-webkit-inner-spin-button { 
+    -webkit-appearance: none;
+    }
+    .input[type=number] { 
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    }
+
+    .label {
+        font-size: .9rem;
+        font-weight: bold;
+        width: 150px;
+        color: #CDAF6F;
+        transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    .input:hover, .input:focus, .input-group:hover .input {
+        outline: none;
+        border-color: #fff;
+    }
+
+    .left-form{
+        display: flex;
+        flex-direction: column;
+        max-width: 410px;
+    }
+
+    .right-form{
+        display: flex;
+        flex-direction: column;
+        max-width: 410px;
+
+        .label{
+            text-align: end;
+            padding-bottom: 80px;
+        }
+
+        textarea{
+            padding: 1rem 1rem;
+            height: 70px;
+            resize: none;
+        }
     }
 `
