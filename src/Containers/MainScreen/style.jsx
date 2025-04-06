@@ -85,9 +85,32 @@ export const Main_Content = styled.section`
     flex-direction: column;
     height: 100vh;
     width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
-    background-color: #2C2C2C;
-    background: linear-gradient(163deg, #405357 33%, #634331 100%);
     color: #fff;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    
+    &::before{
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300vw;
+        height: 300vh;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(163deg, #405357 30%, #634331 100%);
+        animation: girarGradiente 15s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes girarGradiente {
+        from {
+        transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
 
     h1{
         text-align: center;
@@ -140,8 +163,14 @@ export const Main_button = styled.button`
 
 export const Process_Form = styled.form`
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+
+    .main-form{
+        display: flex;
+        flex-direction: column;
+    }
 
     .input-group{
         display: flex;
@@ -151,7 +180,7 @@ export const Process_Form = styled.form`
         text-align: end;
     }
 
-    .input {
+    .input, .input-select {
         height: 44px;
         background-color: #00000039;
         color: #fff;
@@ -160,16 +189,6 @@ export const Process_Form = styled.form`
         border: 2px solid transparent;
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
-    }
-
-    /* SÓ PRA REMOVER AS SETAS DO TYPE=NUMBER */
-    .input[type=number]::-webkit-inner-spin-button { 
-    -webkit-appearance: none;
-    }
-    .input[type=number] { 
-    -moz-appearance: textfield;
-    appearance: textfield;
-
     }
 
     .label {
@@ -201,10 +220,28 @@ export const Process_Form = styled.form`
             padding-bottom: 80px;
         }
 
+        .input-group-select{
+            display: flex;
+            gap: 20px;
+
+            option{
+                background-color: #00000039;
+                color: #000;
+            }
+
+            .label{
+                padding: 0;
+            }
+        }
+
         textarea{
             padding: 1rem 1rem;
             height: 70px;
             resize: none;
         }
+    }
+
+    .form-button{
+        /* margin-left: 100px; */
     }
 `

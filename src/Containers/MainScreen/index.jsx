@@ -1,6 +1,7 @@
 import { Container, Main_Menu, Main_Content, Main_button, Process_Form, Main_Title } from './style.jsx'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { NumericFormat } from 'react-number-format'
 import Logo from '../../Images/logo.png'
 import axios from 'axios'
 
@@ -32,40 +33,60 @@ export default function MainScreen() {
                      <h1>Adicionar um processo</h1>
                      <hr />
                     <Process_Form action="submit" method="post">
-                      <div className="left-form">
-                        <div className="input-group">
-                          <label className="label" htmlFor="nm_Processo">Número do processo</label>
-                          <input autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" required/>
+                      <div className="main-form">
+                        <div className="left-form">
+                          <div className="input-group">
+                            <label className="label" htmlFor="nm_Processo">Número do processo</label>
+                            <input autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group">
+                            <label className="label" htmlFor="nm_Autor">Nome do autor</label>
+                            <input autoComplete="off" name="nm_Autor" id="nm_Autor" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group">
+                            <label className="label" htmlFor="nm_Reu">Nome do réu</label>
+                            <input autoComplete="off" name="nm_Reu" id="nm_Reu" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group">
+                            <label className="label" htmlFor="nm_Cidade">Cidade</label>
+                            <input autoComplete="off" name="nm_Cidade" id="nm_Cidade" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group">
+                            <label className="label" htmlFor="vl_Causa">Valor da Causa</label>
+                            <NumericFormat thousandSeparator="." decimalSeparator="," decimalScale={2} fixedDecimalScale prefix="R$ "
+                            allowNegative={false} 
+                            autoComplete="off" name="vl_Causa" id="vl_Causa" className="input" type="text" required/>
+                          </div>
                         </div>
-                        <div className="input-group">
-                          <label className="label" htmlFor="nm_Autor">Nome do autor</label>
-                          <input autoComplete="off" name="nm_Autor" id="nm_Autor" className="input" type="text" required/>
-                        </div>
-                        <div className="input-group">
-                          <label className="label" htmlFor="nm_Reu">Nome do réu</label>
-                          <input autoComplete="off" name="nm_Reu" id="nm_Reu" className="input" type="text" required/>
-                        </div>
-                        <div className="input-group">
-                          <label className="label" htmlFor="nm_Cidade">Cidade</label>
-                          <input autoComplete="off" name="nm_Cidade" id="nm_Cidade" className="input" type="text" required/>
-                        </div>
-                        <div className="input-group">
-                          <label className="label" htmlFor="vl_Causa">Valor da Causa</label>
-                          <input autoComplete="off" name="vl_Causa" id="vl_Causa" className="input" type="number" required/>
+                        <div className="right-form">
+                          <div className="input-group">
+                            <label className="label" htmlFor="ds_Juizo">Descrição do juizado</label>
+                            <textarea autoComplete="off" name="ds_Juizo" id="ds_Juizo" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group">
+                            <label className="label" htmlFor="ds_Acao">Descrição da ação</label>
+                            <textarea autoComplete="off" name="ds_Acao" id="ds_Acao" className="input" type="text" required/>
+                          </div>
+                          <div className="input-group-select">
+                            <label className="label" htmlFor="sg_Tribunal">Tribunal</label>
+                            <select name="sg_Tribunal" id="sg_Tribunal" className="input-select" required>
+                            <option value="">Selecione</option>
+                              <option value="TJ">TJ</option>
+                              <option value="TRT">TRT</option>
+                              <option value="TRF">TRF</option>
+                              <option value="STJ">STJ</option>
+                              <option value="STF">STF</option>
+                              <option value="JECRIM">JECRIM</option>
+                              <option value="JEFAZ">JEFAZ</option>
+                              <option value="TR">TR</option>
+                              <option value="TST">TST</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div className="right-form">
-                        <div className="input-group">
-                          <label className="label" htmlFor="ds_Juizo">Descrição do juizado</label>
-                          <textarea autoComplete="off" name="ds_Juizo" id="ds_Juizo" className="input" type="text" required/>
-                        </div>
-                        <div className="input-group">
-                          <label className="label" htmlFor="ds_Acao">Descrição da ação</label>
-                          <textarea autoComplete="off" name="ds_Acao" id="ds_Acao" className="input" type="text" required/>
-                        </div>
-                      </div>
+                      <Main_button className='form-button' onClick={searchData}>Enviar</Main_button>
                     </Process_Form>
-
+                    
                     <hr />
                   </>,
     "Intimações": <></>,
