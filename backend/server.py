@@ -21,5 +21,11 @@ def get_clientes():
     result = cursor.fetchall()
     return jsonify(result)
 
+@app.route("/processo", methods=["POST"])
+def post_processo():
+    data = request.get_json()
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

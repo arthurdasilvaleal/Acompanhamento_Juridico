@@ -54,7 +54,7 @@ export const Main_Menu = styled.aside`
 
     #bottone1 {
         color: #fff;
-        padding: 16px 33px;
+        padding: 16px 0;
         margin-bottom: 30px;
         border-radius: 9px;
         background: #CDAF6F;
@@ -65,6 +65,7 @@ export const Main_Menu = styled.aside`
         transition: 0.4s;
 
         a{
+            padding: 16px 33px;
             text-decoration: none;
             color: #fff;
         }
