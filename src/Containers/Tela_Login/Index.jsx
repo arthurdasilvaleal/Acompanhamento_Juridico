@@ -28,7 +28,7 @@ export default function Login(){
                             setLogin(MinimunLenght.value)
                             if(MinimunLenght.value.length < 6){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 6 caracteres.')}
                             else{MinimunLenght.setCustomValidity('')}
-                        }} required />
+                        }} autoComplete='off' required />
                         <label htmlFor="input" className="label">Usuário</label>
                         <div className="underline" />
                     </div>
@@ -40,7 +40,7 @@ export default function Login(){
                             setPass(MinimunLenght.value)
                             if(MinimunLenght.value.length < 8){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 8 caracteres.')}
                             else{MinimunLenght.setCustomValidity('')}
-                        }} required />
+                        }} autoComplete='off' required />
                         <label htmlFor="input" className="label">Senha</label>
                         <div className="underline" />
                     </div>

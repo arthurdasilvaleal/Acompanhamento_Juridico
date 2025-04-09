@@ -89,6 +89,7 @@ export default function MainScreen() {
                             <label className="label" htmlFor="vl_Causa">Valor da Causa</label>
                             <NumericFormat thousandSeparator="." decimalSeparator="," decimalScale={2} fixedDecimalScale prefix="R$ "
                             allowNegative={false} onChange={(e) => {
+                              console.log(e.target.value) //VERIFICAR OQ O STATE PEGA QUANDO DIGITADO APENAS VIRGULA
                               const NewValue = parseFloat(e.target.value.replace(/\./g, "").replace(",", ".").replace("R$ ", ""))
                               set_Causa(NewValue)
                             }} 
@@ -109,14 +110,18 @@ export default function MainScreen() {
                             <select onChange={(e) => set_Tribunal(e.target.value)} name="sg_Tribunal" id="sg_Tribunal" className="input-select" required>
                               <option value="">Selecione</option>
                               <option value="TJ">TJ</option>
+                              <option value="TR">TR</option>
                               <option value="TRT">TRT</option>
                               <option value="TRF">TRF</option>
+                              <option value="TST">TST</option>
+                              <option value="JEC">TSE</option>
+                              <option value="JEC">TRE</option>
                               <option value="STJ">STJ</option>
                               <option value="STF">STF</option>
+                              <option value="STM">STM</option>
+                              <option value="JEC">JEC</option>
                               <option value="JECRIM">JECRIM</option>
                               <option value="JEFAZ">JEFAZ</option>
-                              <option value="TR">TR</option>
-                              <option value="TST">TST</option>
                             </select>
                           </div>
                         </div>

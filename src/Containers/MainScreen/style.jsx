@@ -84,7 +84,6 @@ export const Main_Menu = styled.aside`
 export const Main_Content = styled.section`
     display: flex;
     flex-direction: column;
-    height: 100vh;
     width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
     color: #fff;
     position: relative;
