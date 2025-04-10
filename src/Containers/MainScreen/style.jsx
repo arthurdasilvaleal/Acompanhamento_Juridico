@@ -10,13 +10,12 @@ export const Main_Menu = styled.aside`
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
+    position: fixed;
     height: 100vh;
     width: 200px;
     background-color: #343434;
     color: #fff;
-    @media (max-width: 1366px) {
-        height: auto;
-    }
+    z-index: 1;
 
     img{
         width: inherit;
@@ -29,7 +28,7 @@ export const Main_Menu = styled.aside`
 
     ul{
         list-style-type: none;
-        padding: 6rem 0 0 0;
+        padding: 8rem 0 0 0;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -84,6 +83,7 @@ export const Main_Menu = styled.aside`
 export const Main_Content = styled.section`
     display: flex;
     flex-direction: column;
+    margin-left: 200px; //adiciona a largura do menu ao calculo da largura total
     width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
     color: #fff;
     position: relative;
@@ -242,6 +242,6 @@ export const Process_Form = styled.form`
     }
 
     .form-button{
-        /* margin-left: 100px; */
+        margin-left: 100px;
     }
 `
