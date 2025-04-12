@@ -139,7 +139,7 @@ export const Main_Title = styled.header`
 
 export const Main_button = styled.button`
     color: #fff;
-    width: 20%;
+    
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;
@@ -165,12 +165,6 @@ export const Process_Form = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
-
-    .main-form{
-        display: flex;
-        flex-direction: column;
-    }
 
     .input-group{
         display: flex;
@@ -178,6 +172,16 @@ export const Process_Form = styled.form`
         gap: 20px;
         padding-bottom: 10px;
         text-align: end;
+
+        .input{
+            width: 30vw;
+        }
+
+        textarea{
+            padding: 1rem 1rem;
+            height: 100px;
+            resize: none;
+        }
     }
 
     .input, .input-select {
@@ -199,7 +203,7 @@ export const Process_Form = styled.form`
         transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
     }
 
-    .input:hover, .input:focus, .input-group:hover .input {
+    .input:hover, .input:focus, .input-group:hover .input, select:focus  {
         outline: none;
         border-color: #fff;
     }
@@ -207,41 +211,27 @@ export const Process_Form = styled.form`
     .left-form{
         display: flex;
         flex-direction: column;
-        max-width: 410px;
     }
 
-    .right-form{
+    .input-group-select{
         display: flex;
-        flex-direction: column;
-        max-width: 410px;
+        align-items: center;
+        gap: 20px;
+        option{
+            background-color: #00000039;
+            color: #000;
+        }
+
+        select{
+            width: 30vw;
+        }
 
         .label{
             text-align: end;
-            padding-bottom: 80px;
         }
-
-        .input-group-select{
-            display: flex;
-            gap: 20px;
-
-            option{
-                background-color: #00000039;
-                color: #000;
-            }
-
-            .label{
-                padding: 0;
-            }
-        }
-
-        textarea{
-            padding: 1rem 1rem;
-            height: 70px;
-            resize: none;
-        }
-    }
+    }    
 
     .form-button{
-        margin-left: 100px;
+        margin-top: 40px;
     }
 `
