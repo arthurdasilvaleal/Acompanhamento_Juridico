@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Login from './Tela_Login/Index'
 import Cadastro from './Tela_Cadastro'
 import MainScreen from './MainScreen'
