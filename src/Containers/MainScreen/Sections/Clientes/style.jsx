@@ -73,6 +73,7 @@ export const Client_form = styled.form`
 `
 
 export const Client_button = styled.button`
+    width: 20vw;
     color: #fff;
     padding: 16px 33px;
     border-radius: 9px;
