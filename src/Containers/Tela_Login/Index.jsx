@@ -10,7 +10,7 @@ export default function Login(){
     const [Pass, setPass] = useState("")
 
     const handleLogin = (e) => {
-        e.preventDefault() // Evita que a página recarregue
+        e.preventDefault()
 
         const form = e.target
         if(form.checkValidity()){navigate("/main")}

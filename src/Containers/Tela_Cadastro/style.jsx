@@ -5,7 +5,7 @@ export const H_align = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
-    @media (max-width: 1366px) {
+    @media (max-width: 1366px) and (max-height: 644px) {
       height: auto;
     }
     @media (max-width: 768px) {
