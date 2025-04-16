@@ -29,7 +29,7 @@ export default function Processos(){
         }
         
         try{
-            const response = await axios.post("http://localhost:5173/processo", Add_Processo)
+            const response = await axios.post("http://127.0.0.1:5000/processo", Add_Processo)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
         } catch (error) {
@@ -62,7 +62,7 @@ export default function Processos(){
                 <label className="label" htmlFor="vl_Causa">Valor da Causa</label>
                 <NumericFormat thousandSeparator="." decimalSeparator="," decimalScale={2} fixedDecimalScale prefix="R$ "
                 allowNegative={false} onChange={(e) => {
-                    console.log(e.target.value) //VERIFICAR OQ O STATE PEGA QUANDO DIGITADO APENAS VIRGULA
+                    // console.log(e.target.value) //VERIFICAR OQ O STATE PEGA QUANDO DIGITADO APENAS VIRGULA
                     const NewValue = parseFloat(e.target.value.replace(/\./g, "").replace(",", ".").replace("R$ ", ""))
                     set_Causa(NewValue)
                 }} 
@@ -98,6 +98,7 @@ export default function Processos(){
                 <Process_button className='form-button' onClick={handleSubmit}>Enviar</Process_button>
             </Process_Form>
             <hr />
+            <h1>Processos cadastrados</h1>
         </>
     )
 }

@@ -36,7 +36,7 @@ def post_processo():
     Tribunal = data.get("sg_Tribunal")
 
     query = """
-        INSERT INTO processo (cd_NumProcesso, nm_Autor, nm_Reu, nm_Cidade, vl_Causa, ds_Juizo, ds_Acao, sg_Tribunal)
+        INSERT INTO processo (cd_NumeroProcesso, nm_Autor, nm_Reu, nm_Cidade, vl_Causa, ds_Juizo, ds_Acao, sg_Tribunal)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
     values = (NumProcesso, Autor, Reu, Cidade, Causa, Juizo, Acao, Tribunal)
     try:

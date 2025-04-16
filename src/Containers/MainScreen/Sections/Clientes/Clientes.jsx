@@ -1,6 +1,7 @@
 import { Client_form, Client_button } from "./style"
 import { useState, useEffect } from "react"
 import { InputMask } from "@react-input/mask"
+import { cpf } from 'cpf-cnpj-validator'
 import axios from "axios"
 
 export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
@@ -64,7 +65,15 @@ export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_CPF">CPF</label>
-                    <input onChange={(e) => set_cdCPF(e.target.value)} autoComplete="off" name="cd_CPF" id="cd_CPF" className="input" type="text" required/>
+                    <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} onChange={(e) => {
+                        const Check_CPF = e.target.value
+                        const valueParsed = parseInt(Check_CPF.replace(".", "").replace("-", ""))
+                        set_cdCPF(valueParsed)
+                        console.log(cd_CPF)
+                        if(Check_CPF.length < 14){e.target.setCustomValidity("CPF incompleto!")}
+                        else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
+                        else{e.target.setCustomValidity("")}
+                    }} autoComplete="off" name="cd_CPF" id="cd_CPF" className="input" type="text" required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_CEP">CEP</label>
@@ -115,6 +124,7 @@ export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
                 <Client_button onClick={handleSubmit}>Adicionar</Client_button>
             </Client_form>
             <hr />
+            <h1>Clientes cadastrados</h1>
         </>
     )
 }
