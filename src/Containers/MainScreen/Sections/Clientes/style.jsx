@@ -73,8 +73,8 @@ export const Client_form = styled.form`
 `
 
 export const Client_button = styled.button`
-    width: 20vw;
     color: #fff;
+    margin-top: 30px;
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;
@@ -93,5 +93,27 @@ export const Client_button = styled.button`
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: all 250ms;
+    }
+`
+
+export const Cliente_card = styled.div`
+    background-color: #f9f9f984;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 12px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+
+    h3 {
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    p {
+        margin: 0.2rem 0;
+        color: #555;
+    }
+
+    hr {
+        margin-top: 1rem;
     }
 `

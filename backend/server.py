@@ -13,16 +13,62 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor(dictionary=True)
 
-@app.route("/clientes", methods=["GET"])
+@app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = "SELECT * FROM cliente;"
+    query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_CPF, C.cd_NumeroEndereco, C.ds_ComplementoEndereco, 
+            C.cd_Telefone, C.ds_Email, E.nm_Logradouro, E.nm_Cidade, E.nm_Estado, E.cd_CEP
+            FROM cliente C
+            JOIN Endereço E ON E.cd_endereco = C.cd_Endereco"""
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify(result)
 
+@app.route("/post_cliente", methods=["POST"])
+def post_cliente():
+    data = request.get_json()
 
-@app.route("/processo", methods=["POST"])
+    # Dados do endereço
+    Logradouro = data.get("nm_Logradouro")
+    Cidade = data.get("nm_Cidade")
+    Estado = data.get("nm_Estado")
+    CEP = data.get("cd_CEP")
+
+    # Dados do cliente
+    Nome = data.get("nm_Cliente")
+    CPF = data.get("cd_CPF")
+    Numero = data.get("cd_NumeroEndereco")
+    Complemento = data.get("nm_Complemento")
+    Telefone = data.get("cd_Telefone")
+    Email = data.get("ds_Email")
+
+    # Inserindo o endereço do cliente primeiro
+    queryEndereco = """
+        INSERT INTO Endereço (nm_Logradouro, nm_Cidade, nm_Estado, cd_CEP)
+        VALUES (%s, %s, %s, %s);
+        """
+    valuesEndereco = (Logradouro, Cidade, Estado, CEP)
+
+    # Inserindo os dados do Cliente
+    queryCliente = """
+        INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, cd_Endereco)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """
+
+    try:
+        cursor.execute(queryEndereco, valuesEndereco)
+        db.commit()
+        cd_Endereco = cursor.lastrowid  # Pega o ID do último endereço inserido
+        valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, cd_Endereco)
+        cursor.execute(queryCliente, valuesCliente)
+        db.commit()
+        return jsonify({"message": "Cliente inserido com sucesso!"}), 201
+    except mysql.connector.Error as err:
+        print("Erro:", err)
+        return jsonify({"error": str(err)}), 500
+
+
+@app.route("/post_processo", methods=["POST"])
 def post_processo():
     data = request.get_json()
 

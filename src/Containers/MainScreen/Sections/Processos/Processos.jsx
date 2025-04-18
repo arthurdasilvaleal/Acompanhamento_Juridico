@@ -17,7 +17,7 @@ export default function Processos(){
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        const Add_Processo = {
+        const post_processo = {
             cd_NumProcesso,
             nm_Autor,
             nm_Reu,
@@ -29,7 +29,7 @@ export default function Processos(){
         }
         
         try{
-            const response = await axios.post("http://127.0.0.1:5000/processo", Add_Processo)
+            const response = await axios.post("http://127.0.0.1:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
         } catch (error) {
@@ -41,7 +41,7 @@ export default function Processos(){
         <>
             <h1>Adicionar um processo</h1>
             <hr />
-            <Process_Form action={"submit"} method="post">
+            <Process_Form onSubmit={handleSubmit}>
                 <div className="input-group">
                 <label className="label" htmlFor="nm_Processo">Número do processo</label>
                 <input onChange={(e) => set_NumProcesso(e.target.value)} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" required/>
@@ -95,7 +95,7 @@ export default function Processos(){
                     <option value="JEFAZ">JEFAZ</option>
                 </select>
                 </div>
-                <Process_button className='form-button' onClick={handleSubmit}>Enviar</Process_button>
+                <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
             <hr />
             <h1>Processos cadastrados</h1>
