@@ -24,7 +24,8 @@ export const Main_Menu = styled.aside`
     }
 
     @media (max-width: 768px) {
-        
+        height: 103vh;
+        justify-content: space-evenly;
     }
 
     img{
@@ -101,20 +102,18 @@ export const Main_Menu = styled.aside`
 export const Main_ToggleButton = styled.button`
     position: fixed;
     top: 30px;
-    left: 30px;
-    width: 90px;
+    left: 10px;
+    width: 50px;
     height: 30px;
     z-index: 1000;
     background: none;
     border: none;
     cursor: pointer;
 
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' /%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-size: 60%;
     background-position: center;
-    background-image: ${({ $isOpen }) =>
-    $isOpen
+    background-image: ${({ $isOpen }) => $isOpen
       ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' /%3E%3C/svg%3E")`
       : `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' /%3E%3C/svg%3E")`};
 
@@ -133,8 +132,7 @@ export const Main_Content = styled.section`
     position: relative;
     overflow: hidden;
     transition: filter 0.3s, transform 0.3s;
-    transform: ${({ $isBlocked }) => ($isBlocked ? "scale(0.98) translateX(10px)" : "scale(1) translateX(0)")};
-
+    transform: ${({ $isBlocked }) => ($isBlocked ? "translateX(10px)" : "translateX(0)")};
     z-index: 0;
 
     ${({ $isBlocked }) =>

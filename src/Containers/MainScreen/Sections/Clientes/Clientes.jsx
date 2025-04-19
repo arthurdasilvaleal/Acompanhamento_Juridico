@@ -166,7 +166,8 @@ export default function Clientes(){
                     <p><strong>CPF:</strong> {cliente.cd_CPF}</p>
                     <p><strong>Telefone:</strong> {cliente.cd_Telefone}</p>
                     <p><strong>Email:</strong> {cliente.ds_Email}</p>
-                    <p><strong>Endereço:</strong> {cliente.nm_Logradouro}, {cliente.cd_NumeroEndereco} {cliente.ds_ComplementoEndereco}</p>
+                    <p><strong>Endereço:</strong> {cliente.nm_Logradouro}, {cliente.cd_NumeroEndereco}</p>
+                    <p><strong>Complemento:</strong> {cliente.ds_ComplementoEndereco} </p>
                     <p><strong>Cidade/Estado:</strong> {cliente.nm_Cidade} - {cliente.nm_Estado}</p>
                     <p><strong>CEP:</strong> {cliente.cd_CEP}</p>
                     <hr />

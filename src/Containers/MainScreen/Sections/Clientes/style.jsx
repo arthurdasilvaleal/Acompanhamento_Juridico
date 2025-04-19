@@ -105,7 +105,6 @@ export const Clients_list = styled.div`
     padding: 1rem;
 
     .clientes-card{
-        
         background-color: #f9f9f984;
         padding: 1rem;
         margin-top: 1rem;
