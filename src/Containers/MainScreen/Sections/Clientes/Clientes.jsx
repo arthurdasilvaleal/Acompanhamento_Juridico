@@ -1,10 +1,10 @@
-import { Client_form, Client_button, Cliente_card } from "./style"
+import { Client_form, Client_button, Clients_list } from "./style"
 import { useState, useEffect } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf } from 'cpf-cnpj-validator'
 import axios from "axios"
 
-export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
+export default function Clientes(){
     const [nm_Cliente, set_nmCliente] = useState("")
     const [cd_CPF, set_cdCPF] = useState("")
     const [cd_CEP, set_cdCEP] = useState("")
@@ -28,11 +28,8 @@ export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
 
     //Tentativa de buscar dados ao clicar em "Clientes"
     useEffect(() => {
-        if (Section === "Clientes" && !DataLoaded) {
-            set_DataLoaded(true)
-            searchData()
-        }
-    }, [Section, DataLoaded])
+        searchData()
+    }, [])
 
     const buscarCep = async (cep) => {
         try{
@@ -162,9 +159,9 @@ export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
             <hr />
             <h1>Clientes cadastrados</h1>
             {clientes.length > 0 ? (
-            <div className="clientes-lista">
+            <Clients_list>
                 {clientes.map((cliente) => (
-                <Cliente_card key={cliente.cd_Cliente}>
+                <div className="clientes-card" key={cliente.cd_Cliente}>
                     <h3>{cliente.nm_Cliente}</h3>
                     <p><strong>CPF:</strong> {cliente.cd_CPF}</p>
                     <p><strong>Telefone:</strong> {cliente.cd_Telefone}</p>
@@ -173,11 +170,11 @@ export default function Clientes({ Section, DataLoaded, set_DataLoaded }){
                     <p><strong>Cidade/Estado:</strong> {cliente.nm_Cidade} - {cliente.nm_Estado}</p>
                     <p><strong>CEP:</strong> {cliente.cd_CEP}</p>
                     <hr />
-                </Cliente_card>
+                </div>
                 ))}
-            </div>
+            </Clients_list>
             ) : (
-            <p style={{ marginTop: "1rem" }}>Nenhum cliente cadastrado ainda.</p>
+            <p style={{ textAlign:"center", marginTop: "1rem" }}>Nenhum cliente cadastrado</p>
             )}
 
         </>

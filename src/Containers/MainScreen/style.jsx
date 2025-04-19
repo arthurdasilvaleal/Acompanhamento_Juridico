@@ -15,10 +15,16 @@ export const Main_Menu = styled.aside`
     width: 200px;
     background-color: #343434;
     color: #fff;
-    z-index: 1;
+    z-index: 999;
+    transition: transform 0.3s ease-in-out;
+    transform: ${({ $isOpen }) => ($isOpen ? "translateX(0)" : "translateX(-100%)")};
 
-    @media  (max-width: 768px){
-        display: none;
+    @media (min-width: 769px) {
+        transform: translateX(0);
+    }
+
+    @media (max-width: 768px) {
+        
     }
 
     img{
@@ -27,6 +33,10 @@ export const Main_Menu = styled.aside`
         border-bottom-right-radius: 15px;
         @media (max-width: 1366px) and (max-height: 600px) {
          display: none;
+        }
+
+        @media (max-width: 768px) {
+            display: none;
         }
     }
 
@@ -38,6 +48,10 @@ export const Main_Menu = styled.aside`
         flex-direction: column;
         height: 100%;
         width: 100%;
+        @media (max-width: 768px) {
+            height: 40%;
+            padding-top: 9rem;
+        }
     }
 
     li{
@@ -84,6 +98,32 @@ export const Main_Menu = styled.aside`
     }
 `
 
+export const Main_ToggleButton = styled.button`
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    width: 90px;
+    height: 30px;
+    z-index: 1000;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center;
+    background-image: ${({ $isOpen }) =>
+    $isOpen
+      ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12' /%3E%3C/svg%3E")`
+      : `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23CDAF6F'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12' /%3E%3C/svg%3E")`};
+
+
+    @media (min-width: 769px) {
+        display: none;
+    }
+`
+
 export const Main_Content = styled.section`
     display: flex;
     flex-direction: column;
@@ -92,7 +132,18 @@ export const Main_Content = styled.section`
     color: #fff;
     position: relative;
     overflow: hidden;
+    transition: filter 0.3s, transform 0.3s;
+    transform: ${({ $isBlocked }) => ($isBlocked ? "scale(0.98) translateX(10px)" : "scale(1) translateX(0)")};
+
     z-index: 0;
+
+    ${({ $isBlocked }) =>
+        $isBlocked &&
+        `
+        filter: blur(3px);
+        pointer-events: none;
+        user-select: none;
+    `};
 
     @media (max-width: 768px) {
         width: 100%;

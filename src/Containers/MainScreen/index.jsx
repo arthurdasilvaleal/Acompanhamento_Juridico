@@ -1,19 +1,30 @@
-import { Container, Main_Menu, Main_Content, Main_Title } from './style.jsx'
-import { useState } from 'react'
+import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton } from './style.jsx'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import  Clientes  from './Sections/Clientes/Clientes.jsx'
 import Processos from './Sections/Processos/Processos.jsx'
 import Logo from '../../Images/logo.png'
 
 export default function MainScreen() {
-  const [DataLoaded, set_DataLoaded] = useState(false)
-
   const [option, setOption] = useState("Visão Geral")
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuOpen && menuRef.current && !menuRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
   const contentMap = {
-    "Visão Geral": <>
-                  
-                  </>,
-    "Clientes": <Clientes Section={option} DataLoaded={DataLoaded} set_DataLoaded={set_DataLoaded}/>,
+    "Visão Geral": <></>,
+    "Clientes": <Clientes/>,
     "Processos": <Processos />,
     "Intimações": <></>,
     "Tarefas": <></>,
@@ -33,7 +44,8 @@ export default function MainScreen() {
 
   return (
     <Container>
-      <Main_Menu>
+      <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
+      <Main_Menu ref={menuRef} $isOpen={menuOpen}>
         <img src={Logo} alt="Logo" />
         <ul>
           {Object.keys(contentMap).map((item) => (
@@ -45,7 +57,7 @@ export default function MainScreen() {
         </ul>
         <button id="bottone1"><Link to={'/'}><strong>Sair</strong></Link></button>
       </Main_Menu>
-      <Main_Content>
+      <Main_Content $isBlocked={menuOpen}>
         <Main_Title>
           <h1>{option}</h1>
           {/* Adicionando o subtitulo dinamicamente */}

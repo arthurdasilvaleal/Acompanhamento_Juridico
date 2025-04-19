@@ -96,24 +96,34 @@ export const Client_button = styled.button`
     }
 `
 
-export const Cliente_card = styled.div`
-    background-color: #f9f9f984;
+export const Clients_list = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
     padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 12px;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
 
-    h3 {
-        margin-bottom: 0.5rem;
-        color: #333;
-    }
-
-    p {
-        margin: 0.2rem 0;
-        color: #555;
-    }
-
-    hr {
+    .clientes-card{
+        
+        background-color: #f9f9f984;
+        padding: 1rem;
         margin-top: 1rem;
+        border-radius: 24px;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+
+        h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        p {
+            margin: 0.2rem 0;
+            color: #555;
+        }
+
+        hr {
+            margin: 1rem 0 0.5rem 0;
+        }
     }
 `
