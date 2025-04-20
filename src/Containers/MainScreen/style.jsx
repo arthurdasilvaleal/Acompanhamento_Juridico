@@ -109,6 +109,8 @@ export const Main_ToggleButton = styled.button`
     background: none;
     border: none;
     cursor: pointer;
+    background-color: #343434;
+    border-radius: 5px;
 
     background-repeat: no-repeat;
     background-size: 60%;

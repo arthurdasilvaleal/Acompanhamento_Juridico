@@ -19,7 +19,7 @@ def get_clientes():
     query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_CPF, C.cd_NumeroEndereco, C.ds_ComplementoEndereco, 
             C.cd_Telefone, C.ds_Email, E.nm_Logradouro, E.nm_Cidade, E.nm_Estado, E.cd_CEP
             FROM cliente C
-            JOIN Endereço E ON E.cd_endereco = C.cd_Endereco"""
+            JOIN Endereco E ON E.cd_endereco = C.cd_Endereco"""
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify(result)
@@ -44,7 +44,7 @@ def post_cliente():
 
     # Inserindo o endereço do cliente primeiro
     queryEndereco = """
-        INSERT INTO Endereço (nm_Logradouro, nm_Cidade, nm_Estado, cd_CEP)
+        INSERT INTO Endereco (nm_Logradouro, nm_Cidade, nm_Estado, cd_CEP)
         VALUES (%s, %s, %s, %s);
         """
     valuesEndereco = (Logradouro, Cidade, Estado, CEP)
@@ -68,6 +68,8 @@ def post_cliente():
         return jsonify({"error": str(err)}), 500
 
 
+#Fazer a rota pra buscar processos...
+
 @app.route("/post_processo", methods=["POST"])
 def post_processo():
     data = request.get_json()
@@ -81,12 +83,22 @@ def post_processo():
     Acao = data.get("ds_Acao")
     Tribunal = data.get("sg_Tribunal")
 
-    query = """
-        INSERT INTO processo (cd_NumeroProcesso, nm_Autor, nm_Reu, nm_Cidade, vl_Causa, ds_Juizo, ds_Acao, sg_Tribunal)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
-    values = (NumProcesso, Autor, Reu, Cidade, Causa, Juizo, Acao, Tribunal)
+    # Buscar cliente pelo nome no campo "Autor"
+    query_cliente = "SELECT cd_Cliente FROM cliente WHERE nm_Cliente = %s or nm_Cliente = %s;"
+    cursor.execute(query_cliente, (Autor, Reu))
+    resultado = cursor.fetchone()
+
+    if not resultado:
+        return jsonify({"error": f"Cliente '{Autor} ou {Reu}' não encontrado."}), 400
+
+    códigoCliente = resultado["cd_Cliente"]
+
+    query_processo = """
+        INSERT INTO processo (cd_NumeroProcesso, nm_Autor, nm_Reu, nm_Cidade, vl_Causa, ds_Juizo, ds_Acao, sg_Tribunal, cd_Cliente)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    values = (NumProcesso, Autor, Reu, Cidade, Causa, Juizo, Acao, Tribunal, códigoCliente)
     try:
-        cursor.execute(query, values)
+        cursor.execute(query_processo, values)
         db.commit()
         return jsonify({"message": "Processo inserido com sucesso!"}), 201
     except mysql.connector.Error as err:
