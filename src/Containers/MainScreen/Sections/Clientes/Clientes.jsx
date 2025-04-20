@@ -19,14 +19,14 @@ export default function Clientes(){
     
     const searchData = async () => {
         try{
-            const response = await axios.get("http://127.0.0.1:5000/get_clientes")
+            const response = await axios.get("http://192.168.100.3:5000/get_clientes")
             console.log(response.data)
             setClientes(response.data)
         }
         catch (error) {console.error("Erro ao buscar dados:", error)}
     }
 
-    //Tentativa de buscar dados ao clicar em "Clientes"
+    // Busca dados ao clicar em "Clientes"
     useEffect(() => {
         searchData()
     }, [])
@@ -68,7 +68,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://127.0.0.1:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
 
@@ -97,7 +97,10 @@ export default function Clientes(){
             <Client_form onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Processo">Nome</label>
-                    <input onChange={(e) => set_nmCliente(e.target.value)} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={nm_Cliente} required/>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmCliente(ParsedString)}}
+                        autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={nm_Cliente} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_CPF">CPF / CNPJ</label>
@@ -122,15 +125,21 @@ export default function Clientes(){
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Logradouro">Logradouro</label>
-                    <input onChange={(e) => set_nmLogradouro(e.target.value)} autoComplete="off" name="nm_Logradouro" id="nm_Logradouro" className="input" type="text" value={nm_Logradouro} required/>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmLogradouro(ParsedString)}} autoComplete="off" name="nm_Logradouro" id="nm_Logradouro" className="input" type="text" value={nm_Logradouro} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Cidade">Cidade</label>
-                    <input onChange={(e) => set_nmCidade(e.target.value)} autoComplete="off" name="nm_Cidade" id="nm_Cidade" className="input" type="text" value={nm_Cidade} required/>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmCidade(ParsedString)}} autoComplete="off" name="nm_Cidade" id="nm_Cidade" className="input" type="text" value={nm_Cidade} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Estado">Estado</label>
-                    <input onChange={(e) => set_nmEstado(e.target.value)} autoComplete="off" name="nm_Estado" id="nm_Estado" className="input" type="text" value={nm_Estado} required/>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmEstado(ParsedString)}} autoComplete="off" name="nm_Estado" id="nm_Estado" className="input" type="text" value={nm_Estado} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_NumeroEndereco">Número</label>
@@ -138,7 +147,9 @@ export default function Clientes(){
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Complemento">Complemento</label>
-                    <input onChange={(e) => set_nmComplemento(e.target.value)} autoComplete="off" name="nm_Complemento" id="nm_Complemento" className="input" type="text" value={nm_Complemento} required/>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmComplemento(ParsedString)}} autoComplete="off" name="nm_Complemento" id="nm_Complemento" className="input" type="text" value={nm_Complemento} maxLength={20} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_Telefone">Telefone</label>

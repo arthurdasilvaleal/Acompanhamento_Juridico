@@ -3,7 +3,7 @@ from flask_cors import CORS
 import mysql.connector
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"]) # Resolve o erro do navegador bloquear a conexão
+CORS(app, origins="*") # Resolve o erro do navegador bloquear a conexão
 
 db = mysql.connector.connect(
     host="localhost",
@@ -93,6 +93,5 @@ def post_processo():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

@@ -148,30 +148,30 @@ export const Main_Content = styled.section`
         margin-left: 0;
     }
     
-    &::before{
+    &::before {
         content: '';
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 300vw;
-        height: 300vh;
+        width: 300vmax;
+        height: 300vmax;
         transform: translate(-50%, -50%);
         background: linear-gradient(163deg, #405357 30%, #634331 100%);
         animation: girarGradiente 15s linear infinite;
         z-index: -1;
-        
+
         @media (max-width: 768px) {
-            height: 400vh;
-            width: 400vw;
+            width: 400vmax;
+            height: 400vmax;
         }
     }
 
     @keyframes girarGradiente {
         from {
-            transform: translate(-50%, -50%) rotate(0deg);
+            transform: translate(-50%, -50%) rotate(0deg) scale(1.1);
         }
         to {
-            transform: translate(-50%, -50%) rotate(360deg);
+            transform: translate(-50%, -50%) rotate(360deg) scale(1.1);
         }
     }
 
