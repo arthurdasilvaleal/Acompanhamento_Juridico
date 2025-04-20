@@ -67,8 +67,15 @@ def post_cliente():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
-
-#Fazer a rota pra buscar processos...
+@app.route("/get_processos", methods=["GET"])
+def get_processos():
+    query = """SELECT C.nm_Cliente, P.cd_Processo, P.cd_NumeroProcesso, P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+            FROM Processo P
+            JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente"""
+    
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify(result)
 
 @app.route("/post_processo", methods=["POST"])
 def post_processo():
@@ -89,7 +96,7 @@ def post_processo():
     resultado = cursor.fetchone()
 
     if not resultado:
-        return jsonify({"error": f"Cliente '{Autor} ou {Reu}' não encontrado."}), 400
+        return jsonify({"error": f"Cliente {Autor} ou {Reu} não encontrado."}), 400
 
     códigoCliente = resultado["cd_Cliente"]
 

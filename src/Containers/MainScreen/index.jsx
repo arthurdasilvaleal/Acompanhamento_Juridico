@@ -1,6 +1,7 @@
 import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import  Clientes  from './Sections/Clientes/Clientes.jsx'
 import Processos from './Sections/Processos/Processos.jsx'
 import Logo from '../../Images/logo.png'
@@ -23,7 +24,7 @@ export default function MainScreen() {
   }, [menuOpen]);
 
   const contentMap = {
-    "Visão Geral": <></>,
+    "Visão Geral": <VisaoGeral />,
     "Clientes": <Clientes/>,
     "Processos": <Processos />,
     "Intimações": <></>,

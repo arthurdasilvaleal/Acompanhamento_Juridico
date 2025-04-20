@@ -1,10 +1,9 @@
-import { Process_Form, Process_button } from "./style"
-import { useState } from "react"
+import { Process_Form, Process_button, Process_list } from "./style"
+import { useState, useEffect } from "react"
 import { NumericFormat } from 'react-number-format'
 import axios from "axios"
 
 export default function Processos(){
-    // Requisições (METODO POST [adicionar processo - Tela Processo])
     const [cd_NumProcesso, set_NumProcesso] = useState("")
     const [nm_Autor, set_Autor] = useState("")
     const [nm_Reu, set_Reu] = useState("")
@@ -13,6 +12,20 @@ export default function Processos(){
     const [ds_Juizo, set_Juizo] = useState("")
     const [ds_Acao, set_Acao] = useState("")
     const [sg_Tribunal, set_Tribunal] = useState("")
+    const [processos, set_Processos] = useState([])
+
+    const searchData = async () => {
+        try{
+            const response = await axios.get("http://192.168.100.3:5000/get_processos")
+            console.log(response.data)
+            set_Processos(response.data)
+        }
+        catch (error) {console.error("Erro ao buscar dados:", error)}
+    }
+        
+    useEffect(() => {
+        searchData()
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -34,9 +47,34 @@ export default function Processos(){
             const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
+
+            searchData()
+
+            set_NumProcesso("")
+            set_Autor("")
+            set_Reu("")
+            set_Cidade("")
+            set_Causa("")
+            set_Juizo("")
+            set_Acao("")
+            set_Tribunal("")
+            
         } catch (error) {
             console.error("Erro ao adicionar processo:", error)
+            if(error.response.status === 400){
+                alert(error.response.data.error)
+            }
+            
         }
+    }
+
+    function formatValue(money){
+        const value = Number(money)
+        if (isNaN(money)) return "R$ 0,00"
+        return value.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        })
     }
 
     return(
@@ -109,6 +147,26 @@ export default function Processos(){
             </Process_Form>
             <hr />
             <h1>Processos cadastrados</h1>
+            {processos.length > 0 ? (
+                <Process_list>
+                    {processos.map((processo) => (
+                        <div className="Process-card" key={processo.cd_Processo}>
+                            <h3>Cliente: {processo.nm_Cliente}</h3>
+                            <p><strong>Processo:</strong> {processo.cd_NumeroProcesso}</p>
+                            <p><strong>Autor:</strong> {processo.nm_Autor}</p>
+                            <p><strong>Réu:</strong> {processo.nm_Reu}</p>
+                            <p><strong>Cidade:</strong> {processo.nm_Cidade}</p>
+                            <p><strong>Valor da Causa:</strong> {formatValue(processo.vl_Causa)}</p>
+                            <p><strong>Juizado:</strong> {processo.ds_Juizo}</p>
+                            <p><strong>Ação:</strong> {processo.ds_Acao}</p>
+                            <p><strong>Tribunal:</strong> {processo.sg_Tribunal}</p>
+                            <hr />
+                        </div>
+                    ))}
+                </Process_list>
+            ) : ( 
+                <p style={{ textAlign:"center", marginTop: "1rem" }}>Nenhum processo cadastrado</p>
+            )}
         </>
     )
 }

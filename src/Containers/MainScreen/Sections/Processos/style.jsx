@@ -94,3 +94,34 @@ export const Process_button = styled.button`
         transition: all 250ms;
     }
 `
+
+export const Process_list = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 1rem;
+
+    .Process-card{
+        background-color: #f9f9f984;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 24px;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+
+        h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        p {
+            margin: 0.2rem 0;
+            color: #555;
+        }
+
+        hr {
+            margin: 1rem 0 0.5rem 0;
+        }
+    }
+`
