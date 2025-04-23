@@ -57,6 +57,10 @@ export const Process_Form = styled.form`
         align-items: center;
         gap: 20px;
 
+        .input-select{
+            width: calc(30vw + 36px);
+        }
+
         option{
             background-color: #00000039;
             color: #000;

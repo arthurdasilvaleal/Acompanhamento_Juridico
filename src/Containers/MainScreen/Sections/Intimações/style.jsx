@@ -16,6 +16,10 @@ export const Intimation_form = styled.form`
             width: 30vw;
         }
 
+        .input-select{
+            width: calc(30vw + 36px);
+        }
+
         textarea{
             padding: 1rem 1rem;
             height: 100px;
