@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import  Clientes  from './Sections/Clientes/Clientes.jsx'
 import Processos from './Sections/Processos/Processos.jsx'
+import Intimacoes from './Sections/Intimações/Intimações.jsx'
 import Logo from '../../Images/logo.png'
 
 export default function MainScreen() {
@@ -27,7 +28,7 @@ export default function MainScreen() {
     "Visão Geral": <VisaoGeral />,
     "Clientes": <Clientes/>,
     "Processos": <Processos />,
-    "Intimações": <></>,
+    "Intimações": <Intimacoes/>,
     "Tarefas": <></>,
     "Relatórios": <></>
   }
