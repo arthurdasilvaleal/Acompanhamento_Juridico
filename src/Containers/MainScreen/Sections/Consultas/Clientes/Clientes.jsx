@@ -19,7 +19,7 @@ export default function Clientes(){
     
     const searchData = async () => {
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_clientes")
+            const response = await axios.get("http://10.66.43.13:5000/get_clientes")
             console.log(response.data)
             setClientes(response.data)
         }
@@ -68,9 +68,9 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
-            console.log("Processo adicionado com sucesso:", response.data)
-            alert("Processo adicionado com sucesso!")
+            const response = await axios.post("http://10.66.43.13:5000/post_cliente", post_cliente)
+            console.log("Cliente adicionado com sucesso:", response.data)
+            alert("Cliente adicionado com sucesso!")
 
             searchData()
 
@@ -148,7 +148,7 @@ export default function Clientes(){
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Complemento">Complemento</label>
                     <input onChange={(e) => {
-                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
                         set_nmComplemento(ParsedString)}} autoComplete="off" name="nm_Complemento" id="nm_Complemento" className="input" type="text" value={nm_Complemento} maxLength={20} required/>
                 </div>
                 <div className="input-group">

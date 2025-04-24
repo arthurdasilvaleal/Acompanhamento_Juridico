@@ -1,0 +1,3 @@
+1 - Deixar o select na aba "Intimações" livre para auto-complete de processos vindos do banco
+
+Olhar o Figma e fazer de exemplo

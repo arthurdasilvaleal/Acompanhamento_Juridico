@@ -1,9 +1,12 @@
 import styled from "styled-components"
 
-export const Intimation_form = styled.form`
+export const Consult_form = styled.form`
     display: flex;
     flex-direction: column;
-    align-items: center;
+    padding: 10px 30px;
+    background-color: #00000070;
+    // Aplicar props para quando pesquisar
+    height: ${({ $Enviado }) => $Enviado ? `100vh` : `calc(100vh - 150px)`};
 
     .input-group{
         display: flex;
@@ -14,10 +17,6 @@ export const Intimation_form = styled.form`
 
         .input{
             width: 30vw;
-        }
-
-        .input-select{
-            width: calc(30vw + 36px);
         }
 
         textarea{
@@ -61,6 +60,10 @@ export const Intimation_form = styled.form`
         align-items: center;
         gap: 20px;
 
+        .input-select{
+            width: calc(30vw + 36px);
+        }
+
         option{
             background-color: #00000039;
             color: #000;
@@ -76,7 +79,7 @@ export const Intimation_form = styled.form`
     }
 `
 
-export const Intimation_button = styled.button`
+export const Consult_button = styled.button`
     color: #fff;
     padding: 16px 33px;
     border-radius: 9px;

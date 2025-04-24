@@ -2,9 +2,7 @@ import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton } fro
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
-import  Clientes  from './Sections/Clientes/Clientes.jsx'
-import Processos from './Sections/Processos/Processos.jsx'
-import Intimacoes from './Sections/Intimações/Intimações.jsx'
+import Consulta from './Sections/Consultas/Consultas.jsx'
 import Logo from '../../Images/logo.png'
 
 export default function MainScreen() {
@@ -26,9 +24,7 @@ export default function MainScreen() {
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
-    "Clientes": <Clientes/>,
-    "Processos": <Processos />,
-    "Intimações": <Intimacoes/>,
+    "Consultas": <Consulta />,
     "Tarefas": <></>,
     "Relatórios": <></>
   }
@@ -36,11 +32,9 @@ export default function MainScreen() {
   const SubTitleObject = {
     SubTitles: [
       <p key="Visão Geral">Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
-      <p key="Clientes">Aqui você pode visualizar e gerenciar todos os clientes cadastrados.</p>,
-      <p key="Processos">Adicione e gerencie processos de forma eficiente.</p>,
-      <p key="Intimações">Veja todas as intimações pendentes e arquivadas.</p>,
-      <p key="Tarefas">Organize suas tarefas e prazos importantes.</p>,
-      <p key="Relatórios">Visualize relatórios detalhados das suas atividades.</p>
+      <p key="Consultas">Aqui você pode preencher as informações para consulta</p>,
+      <p key="Tarefas">Organize suas tarefas e prazos importantes</p>,
+      <p key="Relatórios">Visualize relatórios detalhados das suas atividades</p>
     ]
   }
 

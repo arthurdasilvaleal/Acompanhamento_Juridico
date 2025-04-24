@@ -8,7 +8,7 @@ CORS(app, origins="*") # Resolve o erro do navegador bloquear a conexão
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="root",
+    password="fatec#2025",
     database="bd_aj"
 )
 cursor = db.cursor(dictionary=True)
@@ -73,7 +73,7 @@ def get_processos():
     processNumber = request.args.get("processNumber")
     
     if processNumber is not None:
-        query = "SELECT cd_NumeroProcesso FROM Processo"
+        query = "SELECT cd_NumeroProcesso, cd_Processo FROM Processo"
         cursor.execute(query)
         numbers = [row[0] for row in cursor.fetchall()]
         return jsonify(numbers)

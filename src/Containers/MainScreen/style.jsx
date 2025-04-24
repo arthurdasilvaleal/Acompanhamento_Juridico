@@ -190,7 +190,6 @@ export const Main_Content = styled.section`
 export const Main_Title = styled.header`
     text-align: center;
     padding: 1rem 0 0 0;
-    margin-bottom: 20px;
     background-color: #343434;
     
     hr{
