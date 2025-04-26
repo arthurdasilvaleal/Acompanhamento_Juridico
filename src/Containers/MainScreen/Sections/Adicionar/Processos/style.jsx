@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-export const Client_form = styled.form`
+export const Process_Form = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -57,6 +57,10 @@ export const Client_form = styled.form`
         align-items: center;
         gap: 20px;
 
+        .input-select{
+            width: calc(30vw + 36px);
+        }
+
         option{
             background-color: #00000039;
             color: #000;
@@ -72,9 +76,8 @@ export const Client_form = styled.form`
     }
 `
 
-export const Client_button = styled.button`
+export const Process_button = styled.button`
     color: #fff;
-    margin-top: 30px;
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;
@@ -93,36 +96,5 @@ export const Client_button = styled.button`
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: all 250ms;
-    }
-`
-
-export const Clients_list = styled.div`
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 1rem;
-
-    .clientes-card{
-        background-color: #f9f9f984;
-        padding: 1rem;
-        margin-top: 1rem;
-        border-radius: 24px;
-        box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
-
-        h3 {
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        p {
-            margin: 0.2rem 0;
-            color: #555;
-        }
-
-        hr {
-            margin: 1rem 0 0.5rem 0;
-        }
     }
 `

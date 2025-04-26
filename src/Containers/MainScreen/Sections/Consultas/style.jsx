@@ -5,8 +5,10 @@ export const Consult_form = styled.form`
     flex-direction: column;
     padding: 10px 30px;
     background-color: #00000070;
-    // Aplicar props para quando pesquisar
-    height: ${({ $Enviado }) => $Enviado ? `100vh` : `calc(100vh - 150px)`};
+    
+    // Pode quebrar
+    height: ${({ $Enviado }) => $Enviado ? `163px` : `calc(100vh - 148px)`};
+    transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
 
     .input-group{
         display: flex;
@@ -72,15 +74,13 @@ export const Consult_form = styled.form`
         .label{
             text-align: end;
         }
-    }    
-
-    .form-button{
-        margin-top: 40px;
-    }
+    }  
 `
 
 export const Consult_button = styled.button`
     color: #fff;
+    width: 170px;
+    margin-left: 170px;
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;

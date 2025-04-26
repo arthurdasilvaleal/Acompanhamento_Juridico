@@ -8,7 +8,7 @@ CORS(app, origins="*") # Resolve o erro do navegador bloquear a conexão
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="fatec#2025",
+    password="root",
     database="bd_aj"
 )
 cursor = db.cursor(dictionary=True)

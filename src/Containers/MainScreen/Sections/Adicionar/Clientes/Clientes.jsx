@@ -1,5 +1,6 @@
-import { Client_form, Client_button, Clients_list } from "./style"
-import { useState, useEffect } from "react"
+import { Client_form, Client_button } from "./style"
+import { Division_Line } from "../style"
+import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf } from 'cpf-cnpj-validator'
 import axios from "axios"
@@ -15,22 +16,8 @@ export default function Clientes(){
     const [nm_Complemento, set_nmComplemento] = useState("")
     const [cd_Telefone, set_cdTelefone] = useState("")
     const [ds_Email, set_dsEmail] = useState("")
-    const [clientes, setClientes] = useState([])
-    
-    const searchData = async () => {
-        try{
-            const response = await axios.get("http://10.66.43.13:5000/get_clientes")
-            console.log(response.data)
-            setClientes(response.data)
-        }
-        catch (error) {console.error("Erro ao buscar dados:", error)}
-    }
 
     // Busca dados ao clicar em "Clientes"
-    useEffect(() => {
-        searchData()
-    }, [])
-
     const buscarCep = async (cep) => {
         try{
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
@@ -68,7 +55,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://10.66.43.13:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             alert("Cliente adicionado com sucesso!")
 
@@ -167,28 +154,7 @@ export default function Clientes(){
                 </div>
                 <Client_button type="submit">Adicionar</Client_button>
             </Client_form>
-            <hr />
-            <h1>Clientes cadastrados</h1>
-            {clientes.length > 0 ? (
-                <Clients_list>
-                    {clientes.map((cliente) => (
-                    <div className="clientes-card" key={cliente.cd_Cliente}>
-                        <h3>{cliente.nm_Cliente}</h3>
-                        <p><strong>CPF:</strong> {cliente.cd_CPF}</p>
-                        <p><strong>Telefone:</strong> {cliente.cd_Telefone}</p>
-                        <p><strong>Email:</strong> {cliente.ds_Email}</p>
-                        <p><strong>Endereço:</strong> {cliente.nm_Logradouro}, {cliente.cd_NumeroEndereco}</p>
-                        <p><strong>Complemento:</strong> {cliente.ds_ComplementoEndereco} </p>
-                        <p><strong>Cidade/Estado:</strong> {cliente.nm_Cidade} - {cliente.nm_Estado}</p>
-                        <p><strong>CEP:</strong> {cliente.cd_CEP}</p>
-                        <hr />
-                    </div>
-                    ))}
-                </Clients_list>
-            ) : (
-            <p style={{ textAlign:"center", marginTop: "1rem" }}>Nenhum cliente cadastrado</p>
-            )}
-
+            <Division_Line />
         </>
     )
 }

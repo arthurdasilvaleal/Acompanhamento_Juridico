@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react"
 import { Consult_form, Consult_button } from "./style"
-import Clientes from "./Clientes/Clientes"
-import Processos from "./Processos/Processos"
 
 export default function(){
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
@@ -31,7 +29,8 @@ export default function(){
                         set_nmCliente(ParsedInteger)}}
                         autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente} required/>
                 </div>
-                <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
+                
+                    <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
             </Consult_form>
         </>
     )
