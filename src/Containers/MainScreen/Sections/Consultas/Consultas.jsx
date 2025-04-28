@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
 import axios from "axios"
 
 export default function Consulta(){
@@ -7,7 +7,8 @@ export default function Consulta(){
     const [cd_ListNumeroProcesso, set_cdListNumeroProcesso] = useState([])
     const [nm_Cliente, set_nmCliente] = useState("")
     const [processos, set_Processos] = useState([])
-    const [buttonClicked, set_buttonClicked] = useState(false)
+    const [foundProcess, set_foundProcess] = useState(false)
+    const [notFound, set_NotFound] = useState(false)
     
     useEffect(() => {
         axios.get("http://192.168.100.3:5000/get_processos?only=numbers")
@@ -28,23 +29,34 @@ export default function Consulta(){
             const response = await axios.get("http://192.168.100.3:5000/get_processos", {params: { cd_NumeroProcesso }})
             console.log(response.data)
             set_Processos(response.data)
-            set_buttonClicked(true)
+            if(response.data.length > 0){
+                set_foundProcess(true)
+                set_NotFound(false)
+                console.log(notFound)
+            }
+            if(response.data.length == 0){
+                set_foundProcess(false)
+                set_NotFound(true)
+            }
         }catch(error){
             console.error("Erro ao buscar processo:", error)
+            set_NotFound(true)
         }
     }
 
     return(
         <>
-            <Consult_form $Enviado={buttonClicked} onSubmit={handleSubmit}>
+            <Consult_form $Enviado={foundProcess} onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
-                    <input onChange={(e) => {
+                    <div>
+                    <InputError onChange={(e) => {
                         const ParsedInteger = e.target.value.replace(/[^0-9]/g, "")
-                        set_cdNumeroEndereco(ParsedInteger)
-                    console.log(cd_NumeroProcesso)}}
-                        autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
-                        list="processes-number" required/>
+                        set_cdNumeroEndereco(ParsedInteger)}}
+                    autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
+                    list="processes-number" $found_data={notFound} required/>
+                    {notFound === true ? (<NotFound_Error>Processo não encontrado.</NotFound_Error>) : (<></>)}
+                    </div>
                         <datalist id="processes-number">
                             {cd_ListNumeroProcesso.map((numero, index) => (
                                 <option key={index} value={numero}></option>
@@ -57,7 +69,7 @@ export default function Consulta(){
                         const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ]/g, "")
                         set_nmCliente(ParsedInteger)}}
                         autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente} required/>
-                </div>      */}
+                </div> */}
                     <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
             </Consult_form>
             {processos.length > 0 ? (

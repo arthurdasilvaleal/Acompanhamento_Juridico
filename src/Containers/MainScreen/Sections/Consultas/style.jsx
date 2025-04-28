@@ -4,37 +4,37 @@ export const Consult_form = styled.form`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding: 10px 30px;
+    padding: 20px 30px 0 30px;
     gap: 20px;
     background-color: #00000070;
+
+    // Pode quebrar
+    height: ${({ $Enviado }) => $Enviado ? `80px` : `calc(100vh - 148px)`};
+    transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
+
     @media (max-width: 768px) {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: start;
+        // Pode quebrar
+        height: ${({ $Enviado }) => $Enviado ? `163px` : `calc(100vh - 148px)`};
+        transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
     }
-    
-    // Pode quebrar
-    height: ${({ $Enviado }) => $Enviado ? `163px` : `calc(100vh - 148px)`};
-    transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
 
     .input-group{
         display: flex;
         gap: 20px;
-        padding-bottom: 10px;
         text-align: end;
-
-        .input{
-            width: 30vw;
-        }
+        height: 48px;
     }
 
-    .input, .input-select {
+    .input {
         height: 44px;
+        width: 30vw;
         background-color: #00000039;
         color: #fff;
         border-radius: .5rem;
         padding: 0 1rem;
-        border: 2px solid transparent;
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
     }
@@ -49,7 +49,7 @@ export const Consult_form = styled.form`
         transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
     }
 
-    .input:hover, .input:focus, .input-group:hover .input, select:focus  {
+    .input:hover, .input:focus, .input-group:hover .input {
         outline: none;
         border-color: #fff;
     }
@@ -79,4 +79,17 @@ export const Consult_button = styled.button`
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: all 250ms;
     }
+`
+
+export const NotFound_Error = styled.p`
+    display: flex;
+    color: red;
+    transition: opacity 0.5s ease;
+    @media (max-width: 768px) {
+        margin: 10px 0 0 37px;
+    }
+`
+
+export const InputError = styled.input`
+    border: ${ props => props.$found_data ? `2px solid red` : `2px solid transparent`};
 `
