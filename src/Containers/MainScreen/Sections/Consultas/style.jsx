@@ -2,9 +2,16 @@ import styled from "styled-components"
 
 export const Consult_form = styled.form`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
     padding: 10px 30px;
+    gap: 20px;
     background-color: #00000070;
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+    }
     
     // Pode quebrar
     height: ${({ $Enviado }) => $Enviado ? `163px` : `calc(100vh - 148px)`};
@@ -12,19 +19,12 @@ export const Consult_form = styled.form`
 
     .input-group{
         display: flex;
-        align-items: center;
         gap: 20px;
         padding-bottom: 10px;
         text-align: end;
 
         .input{
             width: 30vw;
-        }
-
-        textarea{
-            padding: 1rem 1rem;
-            height: 100px;
-            resize: none;
         }
     }
 
@@ -40,7 +40,9 @@ export const Consult_form = styled.form`
     }
 
     .label {
+        height: 48px;
         font-size: .9rem;
+        place-content: center;
         font-weight: bold;
         width: 150px;
         color: #CDAF6F;
@@ -51,36 +53,13 @@ export const Consult_form = styled.form`
         outline: none;
         border-color: #fff;
     }
-
-    .left-form{
-        display: flex;
-        flex-direction: column;
-    }
-
-    .input-group-select{
-        display: flex;
-        align-items: center;
-        gap: 20px;
-
-        .input-select{
-            width: calc(30vw + 36px);
-        }
-
-        option{
-            background-color: #00000039;
-            color: #000;
-        }
-
-        .label{
-            text-align: end;
-        }
-    }  
 `
 
 export const Consult_button = styled.button`
     color: #fff;
     width: 170px;
-    margin-left: 170px;
+    height: 48px;
+    /* margin-left: 170px; */
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;

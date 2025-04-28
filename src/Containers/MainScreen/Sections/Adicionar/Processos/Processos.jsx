@@ -35,8 +35,6 @@ export default function Processos(){
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
 
-            searchData()
-
             set_NumProcesso("")
             set_Autor("")
             set_Reu("")
@@ -64,7 +62,7 @@ export default function Processos(){
                     <label className="label" htmlFor="nm_Processo">Número do Processo</label>
                     <input onChange={(e) => {
                         const ParsedInteger = e.target.value.replace(/\D/g, "")
-                        set_NumProcesso(ParsedInteger)}} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={cd_NumProcesso} required/>
+                        set_NumProcesso(ParsedInteger)}} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={cd_NumProcesso} maxLength={25} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Autor">Nome do Autor</label>
@@ -94,13 +92,13 @@ export default function Processos(){
                     <label className="label" htmlFor="ds_Juizo">Descrição do Juízo</label>
                     <textarea onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ,.0-9°ºª\s]/g, "")
-                        set_Juizo(ParsedString)}} autoComplete="off" name="ds_Juizo" id="ds_Juizo" className="input" type="text" value={ds_Juizo} required/>
+                        set_Juizo(ParsedString)}} autoComplete="off" name="ds_Juizo" id="ds_Juizo" className="input" type="text" value={ds_Juizo} maxLength={30} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="ds_Acao">Descrição da Ação</label>
                     <textarea onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ,.0-9ºª°\s]/g, "")
-                        set_Acao(ParsedString)}} autoComplete="off" name="ds_Acao" id="ds_Acao" className="input" type="text" value={ds_Acao} required/>
+                        set_Acao(ParsedString)}} autoComplete="off" name="ds_Acao" id="ds_Acao" className="input" type="text" value={ds_Acao} maxLength={50} required/>
                 </div>
                 <div className="input-group-select">
                     <label className="label" htmlFor="sg_Tribunal">Tribunal</label>

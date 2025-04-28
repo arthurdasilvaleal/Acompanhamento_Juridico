@@ -59,8 +59,6 @@ export default function Clientes(){
             console.log("Cliente adicionado com sucesso:", response.data)
             alert("Cliente adicionado com sucesso!")
 
-            searchData()
-
             // Resetando o formulário
             set_nmCliente("")
             set_cdCPF("")

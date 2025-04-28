@@ -3,7 +3,7 @@ from flask_cors import CORS
 import mysql.connector
 
 app = Flask(__name__)
-CORS(app, origins="*") # Resolve o erro do navegador bloquear a conexão
+CORS(app) # Resolve o erro do navegador bloquear a conexão
 
 db = mysql.connector.connect(
     host="localhost",
@@ -70,19 +70,24 @@ def post_cliente():
 @app.route("/get_processos", methods=["GET"])
 def get_processos():
 
-    processNumber = request.args.get("processNumber")
-    
-    if processNumber is not None:
-        query = "SELECT cd_NumeroProcesso, cd_Processo FROM Processo"
+    only_numeros = request.args.get("only") == "numbers"
+
+    if only_numeros:
+        query = """SELECT cd_NumeroProcesso FROM Processo"""
         cursor.execute(query)
-        numbers = [row[0] for row in cursor.fetchall()]
-        return jsonify(numbers)
+        result = cursor.fetchall()
+        numeros = [row["cd_NumeroProcesso"] for row in result]
+        return jsonify(numeros)
+    
+    Num_Processo = request.args.get("cd_NumeroProcesso")
 
     query = """SELECT C.nm_Cliente, P.cd_Processo, P.cd_NumeroProcesso, P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
             FROM Processo P
-            JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente"""
+            JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
+            WHERE cd_NumeroProcesso = %s"""
     
-    cursor.execute(query)
+
+    cursor.execute(query, (Num_Processo,)) # -> precisa ser uma tupla = (...args,)
     result = cursor.fetchall()
     return jsonify(result)
 
