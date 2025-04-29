@@ -42,7 +42,7 @@ export default function MainScreen() {
   }
 
   return (
-    <Container>
+    <Container $isOpen={menuOpen}>
       <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
       <Main_Menu ref={menuRef} $isOpen={menuOpen}>
         <img src={Logo} alt="Logo" />

@@ -3,6 +3,7 @@ import styled from "styled-components"
 export const Container = styled.main`
     display: flex;
     flex-direction: row;
+    overflow: ${props => props.$isOpen ? `hidden` : `visible`};
 `
 
 export const Main_Menu = styled.aside`

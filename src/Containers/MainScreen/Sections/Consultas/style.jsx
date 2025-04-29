@@ -86,10 +86,19 @@ export const NotFound_Error = styled.p`
     color: red;
     transition: opacity 0.5s ease;
     @media (max-width: 768px) {
-        margin: 10px 0 0 37px;
+        margin: 25px 0 0 37px;
     }
 `
 
 export const InputError = styled.input`
     border: ${ props => props.$found_data ? `2px solid red` : `2px solid transparent`};
+`
+
+export const ProcessLeft_side = styled.div`
+    display: flex;
+    padding-left: 10px;
+`
+
+export const ProcessRight_side = styled.div`
+    display: flex;
 `

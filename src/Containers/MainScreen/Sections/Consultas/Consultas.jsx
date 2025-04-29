@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError, ProcessLeft_side, ProcessRight_side } from "./style"
 import axios from "axios"
 
 export default function Consulta(){
@@ -73,9 +73,13 @@ export default function Consulta(){
                     <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
             </Consult_form>
             {processos.length > 0 ? (
-                <div>
-                    <p>Processo encontrado</p>
-                </div>
+                <ProcessLeft_side>
+                    {processos.map((processo) =>(
+                        <div key={processo.cd_Processo}>
+                            <h2>Processo {processo.cd_NumeroProcesso}</h2>
+                        </div>
+                    ))}
+                </ProcessLeft_side>
             ) : (<></>)}
         </>
     )
