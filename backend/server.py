@@ -79,17 +79,30 @@ def get_processos():
         numeros = [row["cd_NumeroProcesso"] for row in result]
         return jsonify(numeros)
     
-    Num_Processo = request.args.get("cd_NumeroProcesso")
+    Num_Processo = request.args.get("id_processo")
+    Nome_Parte = request.args.get("parte")
 
-    query = """SELECT C.nm_Cliente, P.cd_Processo, P.cd_NumeroProcesso, P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
-            FROM Processo P
-            JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
-            WHERE cd_NumeroProcesso = %s"""
+    if Nome_Parte == "" or Num_Processo == "":
+        query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+                FROM Processo P
+                JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
+                WHERE P.cd_NumeroProcesso = %s OR P.nm_Autor = %s OR P.nm_Reu = %s"""
+        
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte,))
+        result = cursor.fetchall()
+        return jsonify(result)
     
-
-    cursor.execute(query, (Num_Processo,)) # -> precisa ser uma tupla = (...args,)
-    result = cursor.fetchall()
-    return jsonify(result)
+    else:
+        query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+        P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+        FROM Processo P
+        JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
+        WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s)"""
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte,))
+        result = cursor.fetchall()
+        return jsonify(result)
+    
 
 @app.route("/post_processo", methods=["POST"])
 def post_processo():
@@ -125,6 +138,10 @@ def post_processo():
     except mysql.connector.Error as err:
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
+
+# @app.route("/post_intimacoes" method=["POST"])
+# def post_Intimacoes():
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="0.0.0.0")
