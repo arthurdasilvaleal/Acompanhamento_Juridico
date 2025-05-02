@@ -9,8 +9,12 @@ export const Consult_form = styled.form`
     overflow: hidden;
 
     // Pode quebrar
-    height: ${({ $Enviado }) => $Enviado ? `163px` : `calc(100vh - 148px)`};
+    height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 148px)`};
     transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
+
+    @media (max-width: 1280px) and (max-height: 600px){
+        height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 149px)`};
+    }
 
     @media (max-width: 768px){
         display: flex;
@@ -101,25 +105,60 @@ export const InputError = styled.input`
     border: ${ props => props.$found_data ? `2px solid red` : `2px solid transparent`};
 `
 
-export const Process_Card = styled.div`
+export const Process_Cards = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    margin: 0;
+    transition: background-color 150ms ease;
+    width: 100%;
+    min-height: calc(100vh - 298px);
+
+    .OneCard > h2{
+        display: flex;
+        align-items: center;
+        height: 48px;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+        cursor: pointer;
+        transition: font-size 0.2s, background-color 0.5s;
+        text-decoration: none;
+    }
+
+    .OneCard > hr{
+        border-color: #ffffff9d;
+        height: 2px;
+        margin: 0;
+        background-color: #ffffff9d;
+    }
+
+    .OneCard > h2:hover{
+        font-size: 1.6em;
+        transition: font-size 0.2s, background-color 0.5s;
+        background-color: #000;
+    }
+`
+
+export const Card = styled.div`
+    max-height: ${({ $cardOpen }) => ($cardOpen ? "500px" : "0")};
+    opacity: ${({ $cardOpen }) => ($cardOpen ? "1" : "0")};
+    transform: ${({ $cardOpen }) => ($cardOpen ? "translateY(0)" : "translateY(-30px)")};
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.8s ease, transform 0.8s ease;
+    background-color: #00000070;
 
     .Client-info{
+        overflow: hidden;
         width: fit-content;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        text-align: center;
-        margin-left: auto;
+        text-align: start;
+        padding: 10px 10px 20px;
     }
 
     .Client-info > *{
         margin: 10px 0 0 0;
     }
 
-    hr{
-        margin: 10px 0;
-    }
 `

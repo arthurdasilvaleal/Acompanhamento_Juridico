@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Card } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card } from "./style"
 import axios from "axios"
 
 export default function Consulta(){
@@ -9,9 +9,12 @@ export default function Consulta(){
     const [processos, set_Processos] = useState([])
     const [foundProcess, set_foundProcess] = useState(false)
     const [notFound, set_NotFound] = useState(false)
+    const [cardOn, set_CardOn] = useState(false)
+    const [openCardId, setOpenCardId] = useState(null);
+
     
     useEffect(() => {
-        axios.get("http://192.168.100.3:5000/get_processos?only=numbers")
+        axios.get("http://localhost:5000/get_processos?only=numbers")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -26,7 +29,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+            const response = await axios.get("http://localhost:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -73,14 +76,20 @@ export default function Consulta(){
                             autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente}
                             $found_data={notFound} />
                     </div>
-                        {notFound === true ? (<NotFound_Error>Processo não encontrado.</NotFound_Error>) : (<></>)}
+                        {notFound === true && (<NotFound_Error>Processo não encontrado.</NotFound_Error>)}
                 </div>
                 <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>   
             </Consult_form>
-            {processos.length > 0 ? (
-                <Process_Card>
-                    {processos.map((processo) =>(
-                        <div key={processo.cd_Processo}>
+            {processos.length > 0 && (
+            <Process_Cards>
+                {processos.map((processo) => {
+                const isOpen = openCardId === processo.cd_Processo;
+                return (
+                    <div key={processo.cd_Processo} className="OneCard">
+                        <hr />
+                        <h2 onClick={() => setOpenCardId(isOpen ? null : processo.cd_Processo)}>Processo Nº {processo.cd_NumeroProcesso}</h2>
+
+                        <Card $cardOpen={isOpen}>
                             <div className="Client-info">
                                 <h2>Dados do Cliente</h2>
                                 <hr />
@@ -88,11 +97,12 @@ export default function Consulta(){
                                 <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                             </div>
-                            <hr />
-                        </div>
-                    ))}
-                </Process_Card>
-            ) : (<></>)}
+                        </Card>
+                    </div>
+                );
+                })}
+            </Process_Cards>
+            )}
         </>
     )
 }

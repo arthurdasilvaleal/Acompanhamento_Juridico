@@ -55,7 +55,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+            const response = await axios.post("http:/192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             alert("Cliente adicionado com sucesso!")
 
@@ -72,6 +72,7 @@ export default function Clientes(){
             set_dsEmail("")
         } catch (error) {
             console.error("Erro ao adicionar processo:", error)
+            alert(error.response.data.error)
         }
     }
 

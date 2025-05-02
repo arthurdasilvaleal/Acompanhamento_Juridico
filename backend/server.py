@@ -119,7 +119,7 @@ def post_processo():
 
     # Buscar cliente pelo nome no campo "Autor"
     query_cliente = "SELECT cd_Cliente FROM cliente WHERE nm_Cliente = %s or nm_Cliente = %s;"
-    cursor.execute(query_cliente, (Autor, Reu))
+    cursor.execute(query_cliente, (Autor, Reu,))
     resultado = cursor.fetchone()
 
     if not resultado:

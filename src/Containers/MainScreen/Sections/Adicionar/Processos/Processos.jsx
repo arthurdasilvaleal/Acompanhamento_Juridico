@@ -46,10 +46,7 @@ export default function Processos(){
             
         } catch (error) {
             console.error("Erro ao adicionar processo:", error)
-            if(error.response.status === 400){
-                alert(error.response.data.error)
-            }
-            
+            alert(error.response.data.error)
         }
     }
 
@@ -85,7 +82,7 @@ export default function Processos(){
                 <div className="input-group">
                     <label className="label" htmlFor="vl_Causa">Valor da Causa</label>
                     <NumericFormat thousandSeparator="." decimalSeparator="," decimalScale={2} fixedDecimalScale prefix="R$ "
-                        allowNegative={false} onChange={(e) => set_Causa(e.target.value)}
+                        allowNegative={false} onChange={(e) => set_Causa(e.target.value)} maxLength={16}
                         autoComplete="off" name="vl_Causa" id="vl_Causa" className="input" type="text" value={vl_Causa} required/>
                 </div>
                 <div className="input-group">

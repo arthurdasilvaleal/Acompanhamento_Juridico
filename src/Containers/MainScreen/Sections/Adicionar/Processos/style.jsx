@@ -18,7 +18,7 @@ export const Process_Form = styled.form`
 
         textarea{
             padding: 1rem 1rem;
-            height: 100px;
+            height: 50px;
             resize: none;
         }
     }
