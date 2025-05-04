@@ -16,10 +16,9 @@ cursor = db.cursor(dictionary=True)
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_CPF, C.cd_NumeroEndereco, C.ds_ComplementoEndereco, 
-            C.cd_Telefone, C.ds_Email, E.nm_Logradouro, E.nm_Cidade, E.nm_Estado, E.cd_CEP
-            FROM cliente C
-            JOIN Endereco E ON E.cd_endereco = C.cd_Endereco"""
+    query = """SELECT cd_Cliente, nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, 
+            cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, nm_Estado, cd_CEP
+            FROM cliente"""
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify(result)
