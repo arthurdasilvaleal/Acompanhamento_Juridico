@@ -9,8 +9,11 @@ export const Consult_form = styled.form`
     overflow: hidden;
 
     // Pode quebrar
-    height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 148px)`};
-    transition: height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1);
+    height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 148px)`}; //Envio do form
+    max-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 148px)" : "0"}; //Abertura do cartão
+    padding-top: ${({ $cardOpen }) => $cardOpen ? "20px" : "0"};
+    transition: padding 0.9s ease, height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1), max-height 0.9s ease;
+    
 
     @media (max-width: 1280px) and (max-height: 600px){
         height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 149px)`};
@@ -80,6 +83,7 @@ export const Consult_button = styled.button`
     text-align: center;
     cursor: pointer;
     transition: box-shadow 250ms, transform 250ms;
+    // TODO: Impedir que o usuário mude de processo no meio da transição (Apesar de não quebrar nada)
     
     &:hover{
         box-shadow: 7px 5px 56px -2px #CDAF6F;
@@ -113,8 +117,8 @@ export const Process_Cards = styled.div`
     display: flex;
     flex-direction: column;
     margin: 0;
-    transition: background-color 150ms ease;
-    min-height: calc(100vh - 298px);
+    min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 298px)" : "calc(100vh - 128px)"};
+    transition: min-height 0.8s ease-out, background-color 150ms ease;
 
     @media (max-width: 768px) {
         min-height: calc(100vh - 370px);

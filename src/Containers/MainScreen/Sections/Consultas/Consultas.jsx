@@ -9,9 +9,9 @@ export default function Consulta(){
     const [processos, set_Processos] = useState([])
     const [foundProcess, set_foundProcess] = useState(false)
     const [notFound, set_NotFound] = useState(false)
-    const [openCardId, setOpenCardId] = useState(null);
+    const [openCardId, set_OpenCardId] = useState(null);
+    const [CloseForm, set_CloseForm] = useState(true)
 
-    
     useEffect(() => {
         axios.get("http://localhost:5000/get_processos?only=id")
           .then(response => {
@@ -50,7 +50,7 @@ export default function Consulta(){
 
     return(
         <>
-            <Consult_form $Enviado={foundProcess} onSubmit={handleSubmit}>
+            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} onSubmit={handleSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
@@ -80,13 +80,16 @@ export default function Consulta(){
                 <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>   
             </Consult_form>
             {processos.length > 0 && (
-                <Process_Cards>
+                <Process_Cards $cardOpen={CloseForm}>
                     {processos.map((processo) => {
-                    const isOpen = openCardId === processo.cd_Processo;
+                    const isOpen = openCardId === processo.cd_Processo
                     return (
                         <div key={processo.cd_Processo} className="OneCard">
                             <hr />
-                            <Card_Title $cardOpen={isOpen} onClick={() => setOpenCardId(isOpen ? null : processo.cd_Processo)}>Processo Nº {processo.cd_NumeroProcesso}</Card_Title>
+                            <Card_Title $cardOpen={isOpen} onClick={() => {
+                                set_OpenCardId(isOpen ? null : processo.cd_Processo)
+                                set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
+                                console.log(CloseForm)}}>Processo Nº {processo.cd_NumeroProcesso}</Card_Title>
 
                             <Card $cardOpen={isOpen}>
                                 <div className="Client-info">
