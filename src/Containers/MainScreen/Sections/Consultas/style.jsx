@@ -19,6 +19,9 @@ export const Consult_form = styled.form`
     @media (max-width: 768px){
         display: flex;
         flex-direction: column;
+        height: ${({ $Enviado }) => $Enviado ? `240px` : `calc(100vh - 170px)`};
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .GroupBy{
@@ -44,6 +47,9 @@ export const Consult_form = styled.form`
         padding: 0 1rem;
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+        @media (max-width: 768px){
+            width: 40vw;
+        }
     }
 
     .label {
@@ -91,8 +97,6 @@ export const Consult_button = styled.button`
     }
 `
 
-
-
 export const NotFound_Error = styled.p`
     display: flex;
     color: red;
@@ -110,8 +114,11 @@ export const Process_Cards = styled.div`
     flex-direction: column;
     margin: 0;
     transition: background-color 150ms ease;
-    width: 100%;
     min-height: calc(100vh - 298px);
+
+    @media (max-width: 768px) {
+        min-height: calc(100vh - 370px);
+    }
 
     .OneCard > h2{
         display: flex;
@@ -137,15 +144,29 @@ export const Process_Cards = styled.div`
         transition: font-size 0.2s, background-color 0.5s;
         background-color: #000;
     }
+
+    .OneCard > h2:active{
+        font-size: 1.5em;
+        transition: font-size 0.2s;
+    }
+`
+
+export const Card_Title = styled.h2`
+    font-size: ${({ $cardOpen }) => $cardOpen ? "1.6em" : "1.5em"};
+    background-color: ${({ $cardOpen }) => $cardOpen ? "#000" : "none"};
 `
 
 export const Card = styled.div`
-    max-height: ${({ $cardOpen }) => ($cardOpen ? "500px" : "0")};
-    opacity: ${({ $cardOpen }) => ($cardOpen ? "1" : "0")};
-    transform: ${({ $cardOpen }) => ($cardOpen ? "translateY(0)" : "translateY(-30px)")};
+    max-height: ${({ $cardOpen }) => $cardOpen ? "500px" : "0"};
+    opacity: ${({ $cardOpen }) => $cardOpen ? "1" : "0"};
+    transform: ${({ $cardOpen }) => $cardOpen ? "translateY(0)" : "translateY(-30px)"};
     overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.8s ease, transform 0.8s ease;
+    transition: max-height 0.2s ease-out, opacity 1s ease, transform 0.8s ease-out;
     background-color: #00000070;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+
 
     .Client-info{
         overflow: hidden;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card, Card_Title } from "./style"
 import axios from "axios"
 
 export default function Consulta(){
@@ -9,12 +9,11 @@ export default function Consulta(){
     const [processos, set_Processos] = useState([])
     const [foundProcess, set_foundProcess] = useState(false)
     const [notFound, set_NotFound] = useState(false)
-    const [cardOn, set_CardOn] = useState(false)
     const [openCardId, setOpenCardId] = useState(null);
 
     
     useEffect(() => {
-        axios.get("http://localhost:5000/get_processos?only=numbers")
+        axios.get("http://localhost:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -29,7 +28,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://localhost:5000/get_processos", {
+            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -39,7 +38,7 @@ export default function Consulta(){
                 set_foundProcess(true)
                 set_NotFound(false)
             }
-            if(response.data.length == 0){
+            else{
                 set_foundProcess(false)
                 set_NotFound(true)
             }
@@ -57,21 +56,21 @@ export default function Consulta(){
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
                         <div>
                             <InputError onChange={(e) => {
-                                const ParsedInteger = e.target.value.replace(/[^0-9]/g, "")
+                                const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
                                 set_cdNumeroEndereco(ParsedInteger)}}
                             autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
                             list="processes-number" $found_data={notFound} />
                         </div>
-                            <datalist id="processes-number">
-                                {cd_ListNumeroProcesso.map((numero, index) => (
-                                    <option key={index} value={numero}></option>
-                                ))}
-                            </datalist>
+                        <datalist id="processes-number">
+                            {cd_ListNumeroProcesso.map((numero, index) => (
+                                <option key={index} value={numero}></option>
+                            ))}
+                        </datalist> 
                     </div>
                     <div className="input-group">
                         <label className="label" htmlFor="nm_Cliente">Nome da parte</label>
                         <InputError onChange={(e) => {
-                            const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ]/g, "")
+                            const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ]\s/g, "")
                             set_nmCliente(ParsedInteger)}}
                             autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente}
                             $found_data={notFound} />
@@ -81,27 +80,28 @@ export default function Consulta(){
                 <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>   
             </Consult_form>
             {processos.length > 0 && (
-            <Process_Cards>
-                {processos.map((processo) => {
-                const isOpen = openCardId === processo.cd_Processo;
-                return (
-                    <div key={processo.cd_Processo} className="OneCard">
-                        <hr />
-                        <h2 onClick={() => setOpenCardId(isOpen ? null : processo.cd_Processo)}>Processo Nº {processo.cd_NumeroProcesso}</h2>
+                <Process_Cards>
+                    {processos.map((processo) => {
+                    const isOpen = openCardId === processo.cd_Processo;
+                    return (
+                        <div key={processo.cd_Processo} className="OneCard">
+                            <hr />
+                            <Card_Title $cardOpen={isOpen} onClick={() => setOpenCardId(isOpen ? null : processo.cd_Processo)}>Processo Nº {processo.cd_NumeroProcesso}</Card_Title>
 
-                        <Card $cardOpen={isOpen}>
-                            <div className="Client-info">
-                                <h2>Dados do Cliente</h2>
-                                <hr />
-                                <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
-                                <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
-                                <p><strong>E-mail: </strong>{processo.ds_Email}</p>
-                            </div>
-                        </Card>
-                    </div>
-                );
-                })}
-            </Process_Cards>
+                            <Card $cardOpen={isOpen}>
+                                <div className="Client-info">
+                                    <h2>Dados do Cliente</h2>
+                                    <hr />
+                                    <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
+                                    <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
+                                    <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                </div>
+                                <Consult_button>Adicionar</Consult_button>
+                            </Card>
+                        </div>
+                    );
+                    })}
+                </Process_Cards>
             )}
         </>
     )

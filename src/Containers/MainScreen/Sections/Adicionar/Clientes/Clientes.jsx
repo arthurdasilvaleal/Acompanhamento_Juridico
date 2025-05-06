@@ -10,6 +10,7 @@ export default function Clientes(){
     const [cd_CPF, set_cdCPF] = useState("")
     const [cd_CEP, set_cdCEP] = useState("")
     const [nm_Logradouro, set_nmLogradouro] = useState("")
+    const [nm_Bairro, set_nmBairro] = useState("")
     const [nm_Cidade, set_nmCidade] = useState("")
     const [nm_Estado, set_nmEstado] = useState("")
     const [cd_NumeroEndereco, set_cdNumeroEndereco] = useState("")
@@ -22,9 +23,11 @@ export default function Clientes(){
         try{
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
             const data = await response.json()
+            console.log(data)
         
             if(!data.erro){
                 set_nmLogradouro(data.logradouro)
+                set_nmBairro(data.bairro)
                 set_nmCidade(data.localidade)
                 set_nmEstado(data.estado)
             }
@@ -47,6 +50,7 @@ export default function Clientes(){
             cd_Telefone: cleaned_Telefone,
             cd_CEP: cleaned_CEP,
             nm_Logradouro,
+            nm_Bairro,
             nm_Cidade,
             nm_Estado,
             cd_NumeroEndereco,
@@ -65,6 +69,7 @@ export default function Clientes(){
             set_cdTelefone("")
             set_cdCEP("")
             set_nmLogradouro("")
+            set_nmBairro("")
             set_nmCidade("")
             set_nmEstado("")
             set_cdNumeroEndereco("")
@@ -114,6 +119,12 @@ export default function Clientes(){
                     <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
                         set_nmLogradouro(ParsedString)}} autoComplete="off" name="nm_Logradouro" id="nm_Logradouro" className="input" type="text" value={nm_Logradouro} required/>
+                </div>
+                <div className="input-group">
+                    <label className="label" htmlFor="nm_Logradouro">Bairro</label>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmBairro(ParsedString)}} autoComplete="off" name="nm_Logradouro" id="nm_Logradouro" className="input" type="text" value={nm_Bairro} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Cidade">Cidade</label>

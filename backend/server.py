@@ -27,13 +27,11 @@ def get_clientes():
 def post_cliente():
     data = request.get_json()
 
-    # Dados do endereço
     Logradouro = data.get("nm_Logradouro")
+    Bairro = data.get("nm_Bairro")
     Cidade = data.get("nm_Cidade")
     Estado = data.get("nm_Estado")
     CEP = data.get("cd_CEP")
-
-    # Dados do cliente
     Nome = data.get("nm_Cliente")
     CPF = data.get("cd_CPF")
     Numero = data.get("cd_NumeroEndereco")
@@ -41,24 +39,14 @@ def post_cliente():
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
 
-    # Inserindo o endereço do cliente primeiro
-    queryEndereco = """
-        INSERT INTO Endereco (nm_Logradouro, nm_Cidade, nm_Estado, cd_CEP)
-        VALUES (%s, %s, %s, %s);
-        """
-    valuesEndereco = (Logradouro, Cidade, Estado, CEP)
-
     # Inserindo os dados do Cliente
     queryCliente = """
-        INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, cd_Endereco)
+        INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, nm_Estado, cd_CEP)
         VALUES (%s, %s, %s, %s, %s, %s, %s);
         """
 
     try:
-        cursor.execute(queryEndereco, valuesEndereco)
-        db.commit()
-        cd_Endereco = cursor.lastrowid  # Pega o ID do último endereço inserido
-        valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, cd_Endereco)
+        valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, Logradouro, Bairro, Cidade, Estado, CEP)
         cursor.execute(queryCliente, valuesCliente)
         db.commit()
         return jsonify({"message": "Cliente inserido com sucesso!"}), 201
@@ -69,7 +57,7 @@ def post_cliente():
 @app.route("/get_processos", methods=["GET"])
 def get_processos():
 
-    only_numeros = request.args.get("only") == "numbers"
+    only_numeros = request.args.get("only") == "id"
 
     if only_numeros:
         query = """SELECT cd_NumeroProcesso FROM Processo"""
