@@ -58,7 +58,7 @@ export default function Processos(){
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Processo">Número do Processo</label>
                     <input onChange={(e) => {
-                        const ParsedInteger = e.target.value.replace(/\D/g, "")
+                        const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
                         set_NumProcesso(ParsedInteger)}} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={cd_NumProcesso} maxLength={25} required/>
                 </div>
                 <div className="input-group">

@@ -27,7 +27,6 @@ export default function MainScreen() {
     "Visão Geral": <VisaoGeral />,
     "Consultas": <Consulta />,
     "Adicionar": <Adicionar />,
-    "Tarefas": <></>,
     "Relatórios": <></>
   }
 
@@ -36,7 +35,6 @@ export default function MainScreen() {
       <p key="Visão Geral">Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
       <p key="Consultas">Aqui você pode preencher as informações para consulta</p>,
       <p key="Adicionar">Adicione novos clientes e processos</p>,
-      <p key="Tarefas">Organize suas tarefas e prazos importantes</p>,
       <p key="Relatórios">Visualize relatórios detalhados das suas atividades</p>
     ]
   }

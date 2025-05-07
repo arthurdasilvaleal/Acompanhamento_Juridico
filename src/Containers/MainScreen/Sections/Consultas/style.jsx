@@ -22,9 +22,12 @@ export const Consult_form = styled.form`
     @media (max-width: 768px){
         display: flex;
         flex-direction: column;
-        height: ${({ $Enviado }) => $Enviado ? `240px` : `calc(100vh - 170px)`};
+        height: ${({ $Enviado }) => $Enviado ? `240px` : `calc(100vh - 148px)`};
         padding-left: 0;
         padding-right: 0;
+        button{
+            margin-left: 30vw;
+        }
     }
 
     .GroupBy{
@@ -74,7 +77,7 @@ export const Consult_button = styled.button`
     color: #fff;
     width: 170px;
     height: 48px;
-    margin-top: 25px;
+    /* margin-top: 25px; */
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;
@@ -94,10 +97,6 @@ export const Consult_button = styled.button`
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: box-shadow 250ms, transform 250ms;
-    }
-
-    @media (max-width: 768px){
-        margin-left: 20vw;
     }
 `
 
@@ -121,7 +120,8 @@ export const Process_Cards = styled.div`
     transition: min-height 0.8s ease-out, background-color 150ms ease;
 
     @media (max-width: 768px) {
-        min-height: calc(100vh - 370px);
+        transition: min-height 830ms;
+        min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 388px)" : "calc(100vh - 128px)"};
     }
 
     .OneCard > h2{
@@ -164,13 +164,16 @@ export const Card = styled.div`
     max-height: ${({ $cardOpen }) => $cardOpen ? "500px" : "0"};
     opacity: ${({ $cardOpen }) => $cardOpen ? "1" : "0"};
     transform: ${({ $cardOpen }) => $cardOpen ? "translateY(0)" : "translateY(-30px)"};
+    padding: ${({ $cardOpen }) => $cardOpen ? "20px" : "0"};
     overflow: hidden;
-    transition: max-height 0.2s ease-out, opacity 1s ease, transform 0.8s ease-out;
+    transition: padding 0.2s ease, max-height 0.2s ease-out, opacity 1s ease, transform 0.8s ease-out;
     background-color: #00000070;
     display: flex;
     flex-direction: row;
-    gap: 30px;
-
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 80px;
 
     .Client-info{
         overflow: hidden;
@@ -184,6 +187,31 @@ export const Card = styled.div`
 
     .Client-info > *{
         margin: 10px 0 0 0;
+    }
+
+    .Client-info-add{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: ${( props ) => props.$buttonOpen ? "100px" : "0"};
+        opacity: ${( props ) => props.$buttonOpen ? "1" : "0"};
+        transition : width 0.3s ease-in-out, opacity 0.3s ease, height 0.3s ease;
+
+        .Intimação, .Tarefa{
+            width: 100px;
+            height: 36px;
+            pointer-events: ${( props ) => props.$buttonOpen ? "auto" : "none"};
+            padding: 0;
+            
+        }
+
+        .Intimação{
+            background-color: #b38e3f;
+        }
+
+        .Tarefa{
+            background-color: #57534c;
+        }
     }
 
 `
