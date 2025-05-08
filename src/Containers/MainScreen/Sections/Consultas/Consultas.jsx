@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
+import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import axios from "axios"
 
 
@@ -108,67 +109,67 @@ export default function Consulta(){
             {processos.length > 0 && (
                 <Process_Cards $cardOpen={CloseForm}>
                     {processos.map((processo) => {
-                    const isOpen = openCardId === processo.cd_Processo
-                    return (
-                        <div key={processo.cd_Processo} className="OneCard">
-                            <hr />
-                            <Card_Title $cardOpen={isOpen} onClick={() => {
-                                set_OpenCardId(isOpen ? null : processo.cd_Processo)
-                                set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
-                                }}>Processo Nº {processo.cd_NumeroProcesso}
-                            </Card_Title>
+                        const isOpen = openCardId === processo.cd_Processo
+                        return (
+                            <div key={processo.cd_Processo} className="OneCard">
+                                <hr />
+                                <Card_Title $cardOpen={isOpen} onClick={() => {
+                                    set_OpenCardId(isOpen ? null : processo.cd_Processo)
+                                    set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
+                                    }}>Processo Nº {processo.cd_NumeroProcesso}
+                                </Card_Title>
 
-                            <Card $cardOpen={isOpen}>
-                                <First_info>
-                                    <div className="Primary-data">
-                                        <div className="Client-info">
-                                            <h2>Dados do Cliente</h2>
-                                            <hr />
-                                            <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
-                                            <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
-                                            <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                <Card $cardOpen={isOpen}>
+                                    <First_info>
+                                        <div className="Primary-data">
+                                            <div className="Client-info">
+                                                <h2>Dados do Cliente</h2>
+                                                <hr />
+                                                <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
+                                                <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
+                                                <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                            </div>
+                                            <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
-                                        <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
-                                    </div>
-                                    <div className="Forms">
-                                        <Consult_cardForm $buttonOpen={OpenButtons}>
-                                            <h2>Adicionar Intimação</h2>
-                                            <div className="input-group">
-                                                <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
-                                                name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
-                                            </div>
-                                            <div className="input-group">
-                                                <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                <input onChange={(e) => {
-                                                    const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ.,]\s/g, "")
-                                                    set_dsIntimacao(ParsedInteger)}} 
-                                                autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
-                                            </div>
-                                        </Consult_cardForm>
-                                        <Consult_cardForm $buttonOpen={OpenButtons}>
-                                            <h2>Adicionar Tarefa</h2>
-                                            <div className="input-group">
-                                                <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
-                                                name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
-                                            </div>
-                                            <div className="input-group-select">
-                                                <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
-                                                <select onChange={(e) => set_nmStatusTarefa(e.target.value)} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" value={nm_StatusTarefa} required>
-                                                    <option value="">Selecione</option>
-                                                    <option value="Aguardando">Aguardando</option>
-                                                    <option value="Em andamento">Em andamento</option>
-                                                    <option value="Concluído">Concluído</option>
-                                                </select>
-                                            </div>
-                                        </Consult_cardForm>
-                                    </div>
+                                        <div className="Forms">
+                                            <Consult_cardForm $buttonOpen={OpenButtons}>
+                                                <h2>Adicionar Intimação</h2>
+                                                <hr />
+                                                <div className="input-group">
+                                                    <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
+                                                    <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
+                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
+                                                </div>
+                                                <div className="input-group">
+                                                    <label className="label" htmlFor="ds_Intimacao">Descrição</label>
+                                                    <input onChange={(e) => set_dsIntimacao(e.target.value)}
+                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
+                                                </div>
+                                            </Consult_cardForm>
+                                            <Consult_cardForm $buttonOpen={OpenButtons}>
+                                                <h2>Adicionar Tarefa</h2>
+                                                <hr />
+                                                <div className="input-group">
+                                                    <label className="label" htmlFor="dt_Prazo">Prazo</label>
+                                                    <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
+                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
+                                                </div>
+                                                <div className="input-group-select">
+                                                    <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
+                                                    <select onChange={(e) => set_nmStatusTarefa(e.target.value)} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" value={nm_StatusTarefa} required>
+                                                        <option value="">Selecione</option>
+                                                        <option value="Aguardando">Aguardando</option>
+                                                        <option value="Em andamento">Em andamento</option>
+                                                        <option value="Concluído">Concluído</option>
+                                                    </select>
+                                                </div>
+                                            </Consult_cardForm>
+                                        </div>
 
-                                </First_info>
-                            </Card>
-                        </div>
-                    );
+                                    </First_info>
+                                </Card>
+                            </div>
+                        );
                     })}
                 </Process_Cards>
             )}

@@ -229,6 +229,16 @@ export const Consult_cardForm = styled.form`
 
     & > h2{
         text-align: center;
+        text-transform: uppercase;
+        margin: 10px 0;
+    }
+
+    & > hr{
+        margin: 0;
+        background-color: #CDAF6F;
+        border: none;
+        box-shadow: 0 0 30px #CDAF6F;
+        height: 2px;
     }
 
     .GroupBy{
