@@ -31,7 +31,7 @@ export default function Processos(){
         }
         
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
+            const response = await axios.post("http://10.66.43.13:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
 
@@ -101,18 +101,12 @@ export default function Processos(){
                     <label className="label" htmlFor="sg_Tribunal">Tribunal</label>
                     <select onChange={(e) => set_Tribunal(e.target.value)} name="sg_Tribunal" id="sg_Tribunal" className="input-select" value={sg_Tribunal} required>
                         <option value="">Selecione</option>
-                        <option value="TJ">TJ</option>
-                        <option value="TRT">TRT</option>
-                        <option value="TRF">TRF</option>
+                        <option value="TJSP">TJSP</option>
+                        <option value="TRT2">TRT2</option>
+                        <option value="TRF3">TRF3</option>
                         <option value="TST">TST</option>
-                        <option value="JEC">TSE</option>
-                        <option value="JEC">TRE</option>
                         <option value="STJ">STJ</option>
                         <option value="STF">STF</option>
-                        <option value="STM">STM</option>
-                        <option value="JEC">JEC</option>
-                        <option value="JECRIM">JECRIM</option>
-                        <option value="JEFAZ">JEFAZ</option>
                     </select>
                 </div>
                 <Process_button className='form-button' type="submit">Enviar</Process_button>

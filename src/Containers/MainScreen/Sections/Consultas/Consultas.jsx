@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card, Card_Title } from "./style"
+import { Consult_form, Consult_button, NotFound_Error, InputError, Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import axios from "axios"
-import { use } from "react"
+
 
 export default function Consulta(){
 
@@ -16,7 +16,13 @@ export default function Consulta(){
     const [notFound, set_NotFound] = useState(false)
     const [openCardId, set_OpenCardId] = useState(null)
     const [CloseForm, set_CloseForm] = useState(true)
-    const [OpenButtons, set_OpenButtons] = useState(false)
+    const [OpenButtons, set_OpenButtons] = useState(true)
+
+    // Formulário post_Intimação
+    const [dt_Recebimento, set_dtRecebimento] = useState(() => {return new Date().toISOString().split("T")[0]})
+    const [ds_Intimacao, set_dsIntimacao] = useState("")
+    const [dt_Prazo, set_dtPrazo] = useState(() => {return new Date().toISOString().split("T")[0]})
+    const [nm_StatusTarefa, set_nmStatusTarefa] = useState("")
 
     // Pegando os numeros dos processos
     useEffect(() => {
@@ -109,22 +115,63 @@ export default function Consulta(){
                             <Card_Title $cardOpen={isOpen} onClick={() => {
                                 set_OpenCardId(isOpen ? null : processo.cd_Processo)
                                 set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
-                                }}>Processo Nº {processo.cd_NumeroProcesso}</Card_Title>
+                                }}>Processo Nº {processo.cd_NumeroProcesso}
+                            </Card_Title>
 
-                            <Card $cardOpen={isOpen} $buttonOpen={OpenButtons}>
-                                <div className="Client-info">
-                                    <h2>Dados do Cliente</h2>
-                                    <hr />
-                                    <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
-                                    <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
-                                    <p><strong>E-mail: </strong>{processo.ds_Email}</p>
-                                </div>
-                                <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
-                                
-                                <div className="Client-info-add">
-                                    <Consult_button className="Intimação">Intimação</Consult_button>
-                                    <Consult_button className="Tarefa">Tarefa</Consult_button>
-                                </div>
+                            <Card $cardOpen={isOpen}>
+                                <First_info>
+                                    <div className="Primary-data">
+                                        <div className="Client-info">
+                                            <h2>Dados do Cliente</h2>
+                                            <hr />
+                                            <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
+                                            <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
+                                            <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                        </div>
+                                        <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
+                                    </div>
+                                    <div className="Forms">
+                                        <Consult_cardForm $buttonOpen={OpenButtons}>
+                                            <h2>Adicionar Intimação</h2>
+                                            <div className="input-group">
+                                                <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
+                                                <div>
+                                                    <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
+                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
+                                                </div>
+                                            </div>
+                                            <div className="input-group">
+                                                <label className="label" htmlFor="ds_Intimacao">Descrição</label>
+                                                <div>
+                                                    <input onChange={(e) => {
+                                                        const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ.,]\s/g, "")
+                                                        set_dsIntimacao(ParsedInteger)}} 
+                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
+                                                </div>
+                                            </div>
+                                        </Consult_cardForm>
+                                        <Consult_cardForm $buttonOpen={OpenButtons}>
+                                            <h2>Adicionar Tarefa</h2>
+                                            <div className="input-group">
+                                                <label className="label" htmlFor="dt_Prazo">Prazo</label>
+                                                <div>
+                                                    <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
+                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
+                                                </div>
+                                            </div>
+                                            <div className="input-group-select">
+                                                <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
+                                                <select onChange={(e) => set_nmStatusTarefa(e.target.value)} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" value={nm_StatusTarefa} required>
+                                                    <option value="">Selecione</option>
+                                                    <option value="Aguardando">Aguardando</option>
+                                                    <option value="Em andamento">Em andamento</option>
+                                                    <option value="Concluído">Concluído</option>
+                                                </select>
+                                            </div>
+                                        </Consult_cardForm>
+                                    </div>
+
+                                </First_info>
                             </Card>
                         </div>
                     );

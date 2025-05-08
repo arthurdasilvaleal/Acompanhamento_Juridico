@@ -124,16 +124,22 @@ export const Process_Cards = styled.div`
         min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 388px)" : "calc(100vh - 128px)"};
     }
 
+    @media (max-width: 1280px) and (max-height: 600px){
+        min-height: ${({ $cardOpen }) => $cardOpen ? `calc(100vh - 299px)` : `calc(100vh - 129px)`};
+        transition: min-height 830ms;
+    }
+
     .OneCard > h2{
         display: flex;
-        align-items: center;
         height: 48px;
         justify-content: center;
+        align-items: center;
         margin: 0;
         padding: 20px;
         cursor: pointer;
         transition: font-size 0.2s, background-color 0.5s;
         text-decoration: none;
+        text-align: center;
     }
 
     .OneCard > hr{
@@ -161,7 +167,7 @@ export const Card_Title = styled.h2`
 `
 
 export const Card = styled.div`
-    max-height: ${({ $cardOpen }) => $cardOpen ? "500px" : "0"};
+    max-height: ${({ $cardOpen }) => $cardOpen ? "2000px" : "0"};
     opacity: ${({ $cardOpen }) => $cardOpen ? "1" : "0"};
     transform: ${({ $cardOpen }) => $cardOpen ? "translateY(0)" : "translateY(-30px)"};
     padding: ${({ $cardOpen }) => $cardOpen ? "20px" : "0"};
@@ -169,49 +175,116 @@ export const Card = styled.div`
     transition: padding 0.2s ease, max-height 0.2s ease-out, opacity 1s ease, transform 0.8s ease-out;
     background-color: #00000070;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 80px;
-
-    .Client-info{
-        overflow: hidden;
-        width: fit-content;
+    flex-direction: column;
+    /* align-items: center; */
+    
+    .Primary-data{
         display: flex;
+        align-items: center;
         flex-direction: column;
-        justify-content: center;
-        text-align: start;
-        padding: 10px 10px 20px;
+
+        .Client-info{
+            overflow: hidden;
+            width: fit-content;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: start;
+            padding: 10px 10px 20px;
+        }
+
+        .Client-info > *{
+            margin: 10px 0 0 0;
+        }
     }
 
-    .Client-info > *{
-        margin: 10px 0 0 0;
-    }
+`
 
-    .Client-info-add{
+export const First_info = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
+
+    .Forms{
         display: flex;
         flex-direction: column;
         gap: 20px;
-        width: ${( props ) => props.$buttonOpen ? "100px" : "0"};
-        opacity: ${( props ) => props.$buttonOpen ? "1" : "0"};
-        transition : width 0.3s ease-in-out, opacity 0.3s ease, height 0.3s ease;
+    }
+`
 
-        .Intimação, .Tarefa{
-            width: 100px;
-            height: 36px;
-            pointer-events: ${( props ) => props.$buttonOpen ? "auto" : "none"};
-            padding: 0;
-            
-        }
+export const Consult_cardForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    gap: 20px;
+    background-color: #00000070;
+    overflow: hidden;
+    border-radius: 16px;
+    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "290.5px"};
+    transform: ${({ $buttonOpen }) => $buttonOpen ? "translateX(20px)" : "translateX(0)"};
+    opacity: ${({ $buttonOpen }) => $buttonOpen ? "0" : "1"};
+    pointer-events: ${({ $buttonOpen }) => $buttonOpen ? "none" : ""};
+    transition: transform 0.2s ease, opacity 0.2s ease, height 0.8s ease;
 
-        .Intimação{
-            background-color: #b38e3f;
-        }
+    & > h2{
+        text-align: center;
+    }
 
-        .Tarefa{
-            background-color: #57534c;
+    .GroupBy{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 105px;
+    }
+
+    .input-group{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input {
+        height: 44px;
+        width: 30vw;
+        background-color: #00000039;
+        color: #fff;
+        border-radius: .5rem;
+        border-style: none;
+        padding: 0 1rem;
+        font-size: 1rem;
+        transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+        @media (max-width: 768px){
+            width: 30vw;
         }
     }
 
+    .label {
+        font-size: .9rem;
+        place-content: center;
+        font-weight: bold;
+        width: 150px;
+        color: #CDAF6F;
+        transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    .input:hover, .input:focus, .input-group:hover .input {
+        outline: none;
+        border-color: #fff;
+    }
+    
+    .input-group-select{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .input-select{
+            width: calc(30vw + 36px);
+        }
+
+        option{
+            background-color: #00000039;
+            color: #000;
+        }
+    }
 `
