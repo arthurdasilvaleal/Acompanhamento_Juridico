@@ -244,13 +244,13 @@ export const Consult_cardForm = styled.form`
         gap: 10px;
     }
 
-    .input {
+    .input, .input-select {
         height: 44px;
         width: 30vw;
         background-color: #00000039;
         color: #fff;
+        border: 2px solid transparent;
         border-radius: .5rem;
-        border-style: none;
         padding: 0 1rem;
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
@@ -268,7 +268,7 @@ export const Consult_cardForm = styled.form`
         transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
     }
 
-    .input:hover, .input:focus, .input-group:hover .input {
+    .input:hover, .input:focus, .input-group:hover .input, .input-select:hover, .input-select:focus {
         outline: none;
         border-color: #fff;
     }
@@ -286,5 +286,7 @@ export const Consult_cardForm = styled.form`
             background-color: #00000039;
             color: #000;
         }
+
+        
     }
 `

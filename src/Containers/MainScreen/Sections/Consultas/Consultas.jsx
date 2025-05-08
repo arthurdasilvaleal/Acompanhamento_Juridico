@@ -135,29 +135,23 @@ export default function Consulta(){
                                             <h2>Adicionar Intimação</h2>
                                             <div className="input-group">
                                                 <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                <div>
-                                                    <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
-                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
-                                                </div>
+                                                <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
+                                                name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
                                             </div>
                                             <div className="input-group">
                                                 <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                <div>
-                                                    <input onChange={(e) => {
-                                                        const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ.,]\s/g, "")
-                                                        set_dsIntimacao(ParsedInteger)}} 
-                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
-                                                </div>
+                                                <input onChange={(e) => {
+                                                    const ParsedInteger = e.target.value.replace(/[^a-zA-ZÀ-ÿ.,]\s/g, "")
+                                                    set_dsIntimacao(ParsedInteger)}} 
+                                                autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
                                             </div>
                                         </Consult_cardForm>
                                         <Consult_cardForm $buttonOpen={OpenButtons}>
                                             <h2>Adicionar Tarefa</h2>
                                             <div className="input-group">
                                                 <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                <div>
-                                                    <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
-                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
-                                                </div>
+                                                <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
+                                                name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
                                             </div>
                                             <div className="input-group-select">
                                                 <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
