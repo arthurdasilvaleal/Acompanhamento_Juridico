@@ -155,6 +155,7 @@ export default function Consulta(){
                                                     value={formData[processo.cd_Processo]?.ds_Intimacao || ''}
                                                     autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
                                                 </div>
+                                                <Consult_button>Enviar</Consult_button>
                                             </Consult_cardForm>
                                             <Consult_cardForm $buttonOpen={OpenButtons}>
                                                 <h2>Adicionar Tarefa</h2>
@@ -175,6 +176,7 @@ export default function Consulta(){
                                                         <option value="Concluído">Concluído</option>
                                                     </select>
                                                 </div>
+                                                <Consult_button>Enviar</Consult_button>
                                             </Consult_cardForm>
                                         </div>
 

@@ -85,18 +85,18 @@ export const Consult_button = styled.button`
     font-family: inherit;
     text-align: center;
     cursor: pointer;
-    transition: box-shadow 250ms, transform 250ms;
+    transition: box-shadow 250ms, transform 250ms, background-color 0.8s ease;
     // TODO: Impedir que o usuário mude de processo no meio da transição (Apesar de não quebrar nada)
     
     &:hover{
         box-shadow: 7px 5px 56px -2px #CDAF6F;
-        transition: box-shadow 250ms;
+        transition: box-shadow 250ms, background-color 0.8s ease;
     }
 
     &:active{
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
-        transition: box-shadow 250ms, transform 250ms;
+        transition: box-shadow 250ms, transform 250ms, background-color 0.8s ease;
     }
 `
 
@@ -214,7 +214,10 @@ export const First_info = styled.div`
     
     button{
         background-color: ${({ $buttonOpen }) => $buttonOpen ? "#CDAF6F" : "#eca305"};
-        transition: background-color 0.8s ease;
+    }
+
+    button:hover{
+        box-shadow: ${({ $buttonOpen }) => $buttonOpen ? "7px 5px 56px -2px #CDAF6F" : "7px 5px 56px -2px #eca305"};
     }
 `
 
@@ -226,7 +229,7 @@ export const Consult_cardForm = styled.form`
     background-color: #00000070;
     overflow: hidden;
     border-radius: 16px;
-    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "290.5px"};
+    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "325px"};
     transform: ${({ $buttonOpen }) => $buttonOpen ? "translateX(20px)" : "translateX(0)"};
     opacity: ${({ $buttonOpen }) => $buttonOpen ? "0" : "1"};
     pointer-events: ${({ $buttonOpen }) => $buttonOpen ? "none" : ""};
@@ -301,5 +304,9 @@ export const Consult_cardForm = styled.form`
             background-color: #00000039;
             color: #000;
         }
+    }
+
+    button{
+        margin: auto;
     }
 `
