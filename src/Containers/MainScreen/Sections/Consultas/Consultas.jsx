@@ -19,11 +19,19 @@ export default function Consulta(){
     const [CloseForm, set_CloseForm] = useState(true)
     const [OpenButtons, set_OpenButtons] = useState(true)
 
-    // Formulário post_Intimação
-    const [dt_Recebimento, set_dtRecebimento] = useState(() => {return new Date().toISOString().split("T")[0]})
-    const [ds_Intimacao, set_dsIntimacao] = useState("")
-    const [dt_Prazo, set_dtPrazo] = useState(() => {return new Date().toISOString().split("T")[0]})
-    const [nm_StatusTarefa, set_nmStatusTarefa] = useState("")
+    // Variável dos formulários de cada card
+    const [formData, setFormData] = useState({})
+    // Função para atualizar dados de cada processo
+    const handleChange = (processoId, field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [processoId]: {
+                ...prev[processoId],
+                [field]: value
+            }
+        }))
+    }
+    
 
     // Pegando os numeros dos processos
     useEffect(() => {
@@ -42,7 +50,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+            const response = await axios.get("http://localhost:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -120,7 +128,7 @@ export default function Consulta(){
                                 </Card_Title>
 
                                 <Card $cardOpen={isOpen}>
-                                    <First_info>
+                                    <First_info $buttonOpen={OpenButtons}>
                                         <div className="Primary-data">
                                             <div className="Client-info">
                                                 <h2>Dados do Cliente</h2>
@@ -132,18 +140,20 @@ export default function Consulta(){
                                             <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
                                         <div className="Forms">
-                                            <Consult_cardForm $buttonOpen={OpenButtons}>
+                                            <Consult_cardForm $buttonOpen={OpenButtons} key={processo.cd_NumeroProcesso}>
                                                 <h2>Adicionar Intimação</h2>
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                    <input onChange={(e) => set_dtRecebimento(e.target.value)} autoComplete="off" 
-                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" value={dt_Recebimento} />
+                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off" 
+                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" required/>
                                                 </div>
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                    <input onChange={(e) => set_dsIntimacao(e.target.value)}
-                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" value={ds_Intimacao} />
+                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.ds_Intimacao || ''}
+                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
                                                 </div>
                                             </Consult_cardForm>
                                             <Consult_cardForm $buttonOpen={OpenButtons}>
@@ -151,12 +161,14 @@ export default function Consulta(){
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                    <input onChange={(e) => set_dtPrazo(e.target.value)} autoComplete="off" 
-                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" value={dt_Prazo} />
+                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off" 
+                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
                                                 </div>
                                                 <div className="input-group-select">
                                                     <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
-                                                    <select onChange={(e) => set_nmStatusTarefa(e.target.value)} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" value={nm_StatusTarefa} required>
+                                                    <select onChange={(e) => handleChange(processo.cd_Processo, 'nm_StatusTarefa', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
                                                         <option value="">Selecione</option>
                                                         <option value="Aguardando">Aguardando</option>
                                                         <option value="Em andamento">Em andamento</option>

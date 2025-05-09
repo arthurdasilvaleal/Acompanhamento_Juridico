@@ -211,6 +211,11 @@ export const First_info = styled.div`
         flex-direction: column;
         gap: 20px;
     }
+    
+    button{
+        background-color: ${({ $buttonOpen }) => $buttonOpen ? "#CDAF6F" : "#eca305"};
+        transition: background-color 0.8s ease;
+    }
 `
 
 export const Consult_cardForm = styled.form`
@@ -296,7 +301,5 @@ export const Consult_cardForm = styled.form`
             background-color: #00000039;
             color: #000;
         }
-
-        
     }
 `

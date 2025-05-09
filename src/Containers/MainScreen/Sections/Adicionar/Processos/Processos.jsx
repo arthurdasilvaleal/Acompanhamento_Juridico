@@ -31,7 +31,7 @@ export default function Processos(){
         }
         
         try{
-            const response = await axios.post("http://10.66.43.13:5000/post_processo", post_processo)
+            const response = await axios.post("http://localhost:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             alert("Processo adicionado com sucesso!")
 
