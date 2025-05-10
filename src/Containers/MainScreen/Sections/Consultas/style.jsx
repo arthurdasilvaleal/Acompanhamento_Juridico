@@ -178,7 +178,7 @@ export const Card = styled.div`
     flex-direction: column;
     /* align-items: center; */
     
-    .Primary-data{
+    .Core-data{
         display: flex;
         align-items: center;
         flex-direction: column;
@@ -210,6 +210,19 @@ export const First_info = styled.div`
         display: flex;
         flex-direction: column;
         gap: 20px;
+
+        textarea{
+            padding-top: 20px;
+            resize: none;
+        }
+
+        .firstForm{
+            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(325px + 100px)"};
+        }
+
+        #ds_Intimacao{
+            height: 126px;
+        }
     }
     
     button{

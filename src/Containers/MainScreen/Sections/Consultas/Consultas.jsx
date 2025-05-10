@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
+import { InputMask } from "@react-input/mask"
 import axios from "axios"
 
 
@@ -21,6 +22,7 @@ export default function Consulta(){
 
     // Variável dos formulários de cada card
     const [formData, setFormData] = useState({})
+
     // Função para atualizar dados de cada processo
     const handleChange = (processoId, field, value) => {
         setFormData(prev => ({
@@ -45,8 +47,8 @@ export default function Consulta(){
     }, [])
 
 
-    // Enviando o form
-    const handleSubmit = async (e) => {
+    // Pesquisando o processo (por nome e/ou numero)
+    const getProcessSubmit = async (e) => {
         e.preventDefault()
 
         try{
@@ -83,9 +85,21 @@ export default function Consulta(){
         
     }, [CloseForm, foundProcess])
 
+    // Enviando os dados dos formularios dos cards
+    const PostIntimaçãoSubmit = async (e, id) => {
+        e.preventDefault()
+        
+        console.log(id)
+    }
+
+    const PostTaskSubmit = async (e, id) => {
+        e.preventDefault()
+        console.log(id)
+    }
+
     return(
         <>
-            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} onSubmit={handleSubmit}>
+            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
@@ -118,6 +132,7 @@ export default function Consulta(){
                 <Process_Cards $cardOpen={CloseForm}>
                     {processos.map((processo) => {
                         const isOpen = openCardId === processo.cd_Processo
+                        const formatedPhone = processo.cd_Telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
                         return (
                             <div key={processo.cd_Processo} className="OneCard">
                                 <hr />
@@ -129,42 +144,42 @@ export default function Consulta(){
 
                                 <Card $cardOpen={isOpen}>
                                     <First_info $buttonOpen={OpenButtons}>
-                                        <div className="Primary-data">
+                                        <div className="Core-data">
                                             <div className="Client-info">
                                                 <h2>Dados do Cliente</h2>
                                                 <hr />
                                                 <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
-                                                <p><strong>Telefone: </strong>{processo.cd_Telefone}</p>
+                                                <p><strong>Telefone: </strong>{formatedPhone}</p>
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                                             </div>
                                             <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
                                         <div className="Forms">
-                                            <Consult_cardForm $buttonOpen={OpenButtons} key={processo.cd_NumeroProcesso}>
+                                            <Consult_cardForm className="firstForm" $buttonOpen={OpenButtons} key={processo.cd_NumeroProcesso} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
                                                 <h2>Adicionar Intimação</h2>
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off" 
-                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" required/>
+                                                    <InputMask mask="__/__/____" onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off" replacement={{ _: /\d/ }}
+                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="text" required/>
                                                 </div>
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
+                                                    <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
                                                     value={formData[processo.cd_Processo]?.ds_Intimacao || ''}
                                                     autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
                                                 </div>
                                                 <Consult_button>Enviar</Consult_button>
                                             </Consult_cardForm>
-                                            <Consult_cardForm $buttonOpen={OpenButtons}>
+                                            <Consult_cardForm $buttonOpen={OpenButtons} onSubmit={(e) => PostTaskSubmit(e, processo.cd_Processo)}>
                                                 <h2>Adicionar Tarefa</h2>
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off" 
-                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
+                                                    <InputMask mask="__/__/____" onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off" replacement={{ _: /\d/ }}
+                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="text" required/>
                                                 </div>
                                                 <div className="input-group-select">
                                                     <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
@@ -179,7 +194,6 @@ export default function Consulta(){
                                                 <Consult_button>Enviar</Consult_button>
                                             </Consult_cardForm>
                                         </div>
-
                                     </First_info>
                                 </Card>
                             </div>
