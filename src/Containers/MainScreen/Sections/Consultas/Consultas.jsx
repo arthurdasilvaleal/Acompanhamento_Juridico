@@ -89,12 +89,33 @@ export default function Consulta(){
     const PostIntimaçãoSubmit = async (e, id) => {
         e.preventDefault()
         
-        console.log(id)
+        console.log(formData[id].dt_Recebimento + "\n" + formData[id].ds_Intimacao)
+        const IntimacaoData = {
+            dataRecebimento: formData[id].dt_Recebimento,
+            descricaoIntimacao: formData[id].ds_Intimacao
+        }
+
+        try{
+            const response = await axios.post("http://192.168.100.3:5000/post_card", IntimacaoData)
+            console.log("Intimação adicionada com sucesso!", response.data)
+            alert("Intimação adicionada com sucesso!")
+
+        }catch(error){
+            console.error("Erro ao adicionar Intimação:", error)
+            alert("Erro: " + error.response.data.error)
+        }
     }
 
     const PostTaskSubmit = async (e, id) => {
         e.preventDefault()
-        console.log(id)
+
+        console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa)
+        const taskDta ={
+            dataPrazo: formData[id].dt_Prazo,
+            StatusTarefa: formData[id].nm_StatusTarefa
+        }
+
+
     }
 
     return(
@@ -155,7 +176,7 @@ export default function Consulta(){
                                             <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
                                         <div className="Forms">
-                                            <Consult_cardForm className="firstForm" $buttonOpen={OpenButtons} key={processo.cd_NumeroProcesso} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
+                                            <Consult_cardForm className="firstForm" $buttonOpen={OpenButtons} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
                                                 <h2>Adicionar Intimação</h2>
                                                 <hr />
                                                 <div className="input-group">
@@ -182,7 +203,7 @@ export default function Consulta(){
                                                     name="dt_Prazo" id="dt_Prazo" className="input" type="text" required/>
                                                 </div>
                                                 <div className="input-group-select">
-                                                    <label className="label" htmlFor="nm_StatusTarefa">Tribunal</label>
+                                                    <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
                                                     <select onChange={(e) => handleChange(processo.cd_Processo, 'nm_StatusTarefa', e.target.value)}
                                                     value={formData[processo.cd_Processo]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
                                                         <option value="">Selecione</option>

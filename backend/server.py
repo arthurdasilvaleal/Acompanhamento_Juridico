@@ -126,8 +126,9 @@ def post_processo():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
-# @app.route("/post_intimacoes" method=["POST"])
-# def post_Intimacoes():
+@app.route("/post_card", methods=["POST"])
+def post_intimacao():
+    data = request.get_json()
 
 
 if __name__ == "__main__":
