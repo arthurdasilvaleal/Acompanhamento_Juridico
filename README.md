@@ -1,14 +1,76 @@
-# React + Vite
+# Sistema de Gerenciamento Jurídico
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é um sistema web para gerenciamento de processos jurídicos, intimações e tarefas. Desenvolvido com **React.js** no front-end, **Flask (Python)** no back-end, e **MySQL** como banco de dados.
 
-Currently, two official plugins are available:
+## 📚 Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Cadastro e consulta de processos jurídicos
+- Adição e listagem de intimações
+- Criação de tarefas vinculadas a processos
+- Integração entre front-end e back-end via API
+- Validação de dados com máscaras de input
+- Transições suaves entre estados de UI
 
-# Passos feitos
-- Tela de login feita (Concluida, 1.0)
-- Tela de Cadastro feita (Concluida, 1.0)
-- Feito a das telas: [Cadastro, Login] 
-- Tela de cadastro atualizada (responsiva, API viaCep, UX improved, 2.0)
+## 🛠️ Tecnologias Utilizadas
+
+### Front-end
+- React.js
+- styled-components
+- axios
+- React-Router-Dom
+- React useState
+- React useEffect
+  Libs:
+  - cpf-cnpj-validator
+  - react-number-format
+  - @react-input/mask
+
+### Back-end
+- Flask (Python)
+- Flask-CORS
+- MySQL Connector
+
+### Banco de Dados
+- MySQL
+- Tabelas: `Cliente`, `Processo`, `Intimacao`, `Tarefa`, `Tribunal`, `Colaborador`, `TipoColaborador`, `StatusTarefa`, `TipoLogradouro` 
+
+## 🚀 Como Rodar o Projeto
+
+### Pré-requisitos
+- Node.js
+- Python 3
+- MySQL Server
+
+### Instalação do Front-end (React.js)
+
+```bash
+npm install
+npm i react-number-format
+npm i cpf-cnpj-validator
+npm i inputmask
+```
+
+### Instalação do Back-end (Python + Flask)
+```bash
+pip install flask
+pip install flask-mysql-connector
+pip install flask-cors
+```
+
+### Rodar o projeto
+```bash
+npm run dev
+```
+
+### Abra outro terminal para rodar o servidor
+
+```bash
+cd ./backend
+py ./server.py
+```
+
+### 📬 Contato
+Caso tenha dúvidas ou sugestões, entre em contato:<br>
+**Arthur - Desenvolvedor Web Front-end**<br>
+**https://github.com/arthurdasilvaleal**<br>
+**https://www.linkedin.com/in/arthurdasilvaleal/**
