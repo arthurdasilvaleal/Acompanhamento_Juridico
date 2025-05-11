@@ -4,7 +4,7 @@ export const Consult_form = styled.form`
     display: flex;
     flex-direction: row;
     padding: 20px 30px 0 30px;
-    gap: 20px;
+    gap: 40px;
     background-color: #00000070;
     overflow: hidden;
 
@@ -26,7 +26,7 @@ export const Consult_form = styled.form`
         padding-left: 0;
         padding-right: 0;
         button{
-            margin-left: 30vw;
+            margin-left: 170px;
         }
     }
 
@@ -176,12 +176,14 @@ export const Card = styled.div`
     background-color: #00000070;
     display: flex;
     flex-direction: column;
+    gap: 20px;
     /* align-items: center; */
     
     .Core-data{
         display: flex;
         align-items: center;
         flex-direction: column;
+        gap: 15px;
 
         .Client-info{
             overflow: hidden;
@@ -191,6 +193,9 @@ export const Card = styled.div`
             justify-content: center;
             text-align: start;
             padding: 10px 10px 20px;
+            background-color: #00000070;
+            border-radius: 16px;
+
         }
 
         .Client-info > *{
@@ -206,6 +211,10 @@ export const First_info = styled.div`
     justify-content: space-around;
     gap: 10px;
 
+    @media (max-width: 768px){
+        flex-direction: column;
+    }
+
     .Forms{
         display: flex;
         flex-direction: column;
@@ -217,7 +226,7 @@ export const First_info = styled.div`
         }
 
         .firstForm{
-            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(325px + 120px)"};
+            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(325px + 126px)"};
         }
 
         #ds_Intimacao{
@@ -286,7 +295,7 @@ export const Consult_cardForm = styled.form`
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
         @media (max-width: 768px){
-            width: 30vw;
+            width: auto;
         }
     }
 
@@ -321,5 +330,25 @@ export const Consult_cardForm = styled.form`
 
     button{
         margin: auto;
+    }
+`
+
+export const Intimacao_card = styled.div`
+
+    
+    
+    & > hr{
+        margin: 0;
+        background-color: #ffffff;
+        border: none;
+        box-shadow: 0 0 25px #ffffff;
+        height: 2px;
+    }
+
+    .Intimacao-group{
+        
+        hr{
+            margin: 0;
+        }
     }
 `

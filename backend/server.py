@@ -125,11 +125,44 @@ def post_processo():
     except mysql.connector.Error as err:
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
+    
+
+# Para os Cards da consulta
+@app.route("/get_card", methods=["GET"])
+def get_intimacao():
+
+    cd_Processo = request.args.get("id_processo")
+
+    query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo 
+            FROM Intimacao I
+            JOIN Processo P ON P.cd_Processo = I.cd_Processo
+            WHERE I.cd_Processo = %s"""
+    
+    cursor.execute(query, (cd_Processo,))
+    result = cursor.fetchall()
+    return jsonify(result)
 
 @app.route("/post_card", methods=["POST"])
 def post_intimacao():
     data = request.get_json()
 
+    intimacao = request.args.get("form") == "intimacao"
+    tarefa = request.args.get("form") == "task"
+
+    if intimacao:
+        dataRecebimento = data.get("dataRecebimento")
+        descrição = data.get("descricaoIntimacao")
+        codigoProcesso = data.get("codigoProcesso")
+
+        query = "INSERT INTO Intimacao (cd_Processo, dt_Recebimento, ds_Intimacao) VALUES (%s, %s, %s)"
+
+        try:
+            cursor.execute(query, (codigoProcesso, dataRecebimento, descrição,))
+            db.commit()
+            return jsonify({"message": "Intimação inserida com sucesso!"}), 201
+        except mysql.connector.Error as err:
+            print("Erro:", err)
+            return jsonify({"erro": str(err)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="0.0.0.0")

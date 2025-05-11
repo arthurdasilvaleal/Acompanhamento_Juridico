@@ -143,8 +143,8 @@ export const Main_Content = styled.section`
         `
         filter: blur(3px);
         pointer-events: none;
-        user-select: none;
-    `};
+        user-select: none;`
+        };
 
     @media (max-width: 768px) {
         width: 100%;

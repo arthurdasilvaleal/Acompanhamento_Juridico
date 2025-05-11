@@ -8,6 +8,7 @@ export const H_align = styled.div`
     height: 100vh;
     @media (max-width: 768px) {
       padding: 0 20px 0 20px;
+      height: 100dvh; // Arruma a altura do dispositivo
     }
 `
 

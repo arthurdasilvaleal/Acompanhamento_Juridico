@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
+import { Intimacao_card } from "./style"
 import { InputMask } from "@react-input/mask"
 import axios from "axios"
 
@@ -12,6 +13,7 @@ export default function Consulta(){
     const [cd_ListNumeroProcesso, set_cdListNumeroProcesso] = useState([])
     const [nm_Cliente, set_nmCliente] = useState("Carlos Silva")
     const [processos, set_Processos] = useState([])
+    const [Intimacoes, set_Intimacoes] = useState([])
 
     // Váriáveis de Estado
     const [foundProcess, set_foundProcess] = useState(false)
@@ -52,7 +54,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://localhost:5000/get_processos", {
+            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -91,15 +93,26 @@ export default function Consulta(){
         
         console.log(formData[id].dt_Recebimento + "\n" + formData[id].ds_Intimacao)
         const IntimacaoData = {
-            dataRecebimento: formData[id].dt_Recebimento,
-            descricaoIntimacao: formData[id].ds_Intimacao
+            dataRecebimento: formData[id].dt_Recebimento.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1"),
+            descricaoIntimacao: formData[id].ds_Intimacao,
+            codigoProcesso: id
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card", IntimacaoData)
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
             console.log("Intimação adicionada com sucesso!", response.data)
             alert("Intimação adicionada com sucesso!")
 
+            setFormData(prev => ({
+                ...prev,
+                [IntimacaoData.codigoProcesso]: {
+                    ...prev[IntimacaoData.codigoProcesso],
+                    dt_Recebimento: '',
+                    ds_Intimacao: ''
+                }
+            }))
+
+            CatchIntimacoes()
         }catch(error){
             console.error("Erro ao adicionar Intimação:", error)
             alert("Erro: " + error.response.data.error)
@@ -109,14 +122,40 @@ export default function Consulta(){
     const PostTaskSubmit = async (e, id) => {
         e.preventDefault()
 
-        console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa)
-        const taskDta ={
-            dataPrazo: formData[id].dt_Prazo,
-            StatusTarefa: formData[id].nm_StatusTarefa
-        }
+        // console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa)
+        // const taskData ={
+        //     dataPrazo: formData[id].dt_Prazo,
+        //     StatusTarefa: formData[id].nm_StatusTarefa,
+            
+        // }
+        // try{
+        //     const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
+        //     console.log("Tarefa adicionada com sucesso!", response.data)
+        //     alert("Tarefa adicionada com sucesso!")
 
-
+        // }catch(error){
+        //     console.error("Erro ao adicionar Tarefa:", error)
+        //     alert("Erro: " + error.response.data.error)
+        // } 
+        // NÃO ESTA PRONTO (CÓDIGO DA INTIMAÇÃO REQUERIDO)
     }
+
+    // Buscando Intimações
+
+    const CatchIntimacoes = () => {
+        axios.get("http://192.168.100.3:5000/get_card", {params: { id_processo: openCardId}})
+            .then(response => {
+                set_Intimacoes(response.data)
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.error("Erro ao buscar intimações:", error)
+            })
+    }
+
+    useEffect(() =>{
+        if(openCardId !== null){CatchIntimacoes()}
+    }, [openCardId])
 
     return(
         <>
@@ -188,7 +227,7 @@ export default function Consulta(){
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="ds_Intimacao">Descrição</label>
                                                     <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.ds_Intimacao || ''}
+                                                    value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
                                                     autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
                                                 </div>
                                                 <Consult_button>Enviar</Consult_button>
@@ -216,6 +255,23 @@ export default function Consulta(){
                                             </Consult_cardForm>
                                         </div>
                                     </First_info>
+                                    {Intimacoes.length > 0 && (
+                                        <Intimacao_card>
+                                            <hr />
+                                            {Intimacoes.map((intimacao) => {
+                                                const formatedDate = new Date(intimacao.dt_Recebimento).toLocaleDateString("pt-BR")
+                                                return(
+                                                    <div className="Intimacao-group">
+                                                        <h2>Dados da Intimação</h2>
+                                                        <p><strong>Data do recebimento: </strong>{formatedDate}</p>
+                                                        <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
+                                                        <hr />
+                                                    </div>         
+                                                )
+                                            })}
+                                        </Intimacao_card>
+                                    )}
+                                    
                                 </Card>
                             </div>
                         );
