@@ -20,7 +20,7 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
 - React-Router-Dom
 - React useState
 - React useEffect
-  Libs:
+- Libs:
   - cpf-cnpj-validator
   - react-number-format
   - @react-input/mask
