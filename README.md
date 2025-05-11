@@ -24,6 +24,7 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
   - cpf-cnpj-validator
   - react-number-format
   - @react-input/mask
+  - downshift
 
 ### Back-end
 - Flask (Python)
@@ -48,6 +49,7 @@ npm install
 npm i react-number-format
 npm i cpf-cnpj-validator
 npm i inputmask
+npm i downshift
 ```
 
 ### Instalação do Back-end (Python + Flask)
