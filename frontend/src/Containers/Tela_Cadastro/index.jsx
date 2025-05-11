@@ -161,7 +161,7 @@ export default function Cadastro(){
                                 if(Catch_ID.value.length < 6){Catch_ID.setCustomValidity("Seu ID deve ter ao menos 6 caracteres.")}
                                 else{Catch_ID.setCustomValidity("")}
                             }} required />
-                            <label htmlFor="input" className="label">ID Usuário</label>
+                            <label htmlFor="input" className="label">Login Usuário</label>
                             <div className="underline" />
                         </div>
                     </Inputs_box>

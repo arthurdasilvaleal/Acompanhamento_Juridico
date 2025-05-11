@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { } from "./style"
+import { } from "./style.jsx"
 import Processos from './Processos/Processos.jsx'
 import Clientes from './Clientes/Clientes.jsx'
 
