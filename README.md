@@ -71,14 +71,14 @@ cd ./backend
 py ./server.py
 ```
 
-### 📬 Contato
+## 📬 Contato
 Caso tenha dúvidas ou sugestões, entre em contato:<br>
 **Arthur - Desenvolvedor Web Front-end**<br>
 **https://github.com/arthurdasilvaleal**<br>
 **https://www.linkedin.com/in/arthurdasilvaleal/**
 
-### 🤝 Contribuição
+## 🤝 Contribuição
 Sinta-se à vontade para abrir issues ou enviar pull requests. Todo tipo de feedback é bem-vindo!
 
-### 📄 Licença
+## 📄 Licença
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
