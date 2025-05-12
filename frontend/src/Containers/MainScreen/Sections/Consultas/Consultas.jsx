@@ -261,7 +261,7 @@ export default function Consulta(){
                                             {Intimacoes.map((intimacao) => {
                                                 const formatedDate = new Date(intimacao.dt_Recebimento).toLocaleDateString("pt-BR")
                                                 return(
-                                                    <div className="Intimacao-group">
+                                                    <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
                                                         <h2>Dados da Intimação</h2>
                                                         <p><strong>Data do recebimento: </strong>{formatedDate}</p>
                                                         <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>

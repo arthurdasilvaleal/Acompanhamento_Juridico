@@ -133,7 +133,7 @@ def get_intimacao():
 
     cd_Processo = request.args.get("id_processo")
 
-    query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo 
+    query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
             FROM Intimacao I
             JOIN Processo P ON P.cd_Processo = I.cd_Processo
             WHERE I.cd_Processo = %s"""
