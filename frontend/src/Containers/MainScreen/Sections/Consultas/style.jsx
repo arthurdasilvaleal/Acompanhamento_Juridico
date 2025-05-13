@@ -282,6 +282,11 @@ export const Consult_cardForm = styled.form`
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        input[type="date"]::-webkit-calendar-picker-indicator{
+            filter: invert(1); /* inverte a cor — útil em temas escuros */
+            cursor: pointer;
+        }
     }
 
     .input, .input-select {

@@ -92,31 +92,31 @@ export default function Consulta(){
         e.preventDefault()
         
         console.log(formData[id].dt_Recebimento + "\n" + formData[id].ds_Intimacao)
-        const IntimacaoData = {
-            dataRecebimento: formData[id].dt_Recebimento.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1"),
-            descricaoIntimacao: formData[id].ds_Intimacao,
-            codigoProcesso: id
-        }
+        // const IntimacaoData = {
+        //     dataRecebimento: formData[id].dt_Recebimento,
+        //     descricaoIntimacao: formData[id].ds_Intimacao,
+        //     codigoProcesso: id
+        // }
 
-        try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
-            console.log("Intimação adicionada com sucesso!", response.data)
-            alert("Intimação adicionada com sucesso!")
+        // try{
+        //     const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
+        //     console.log("Intimação adicionada com sucesso!", response.data)
+        //     alert("Intimação adicionada com sucesso!")
 
-            setFormData(prev => ({
-                ...prev,
-                [IntimacaoData.codigoProcesso]: {
-                    ...prev[IntimacaoData.codigoProcesso],
-                    dt_Recebimento: '',
-                    ds_Intimacao: ''
-                }
-            }))
+        //     setFormData(prev => ({
+        //         ...prev,
+        //         [IntimacaoData.codigoProcesso]: {
+        //             ...prev[IntimacaoData.codigoProcesso],
+        //             dt_Recebimento: '',
+        //             ds_Intimacao: ''
+        //         }
+        //     }))
 
-            CatchIntimacoes()
-        }catch(error){
-            console.error("Erro ao adicionar Intimação:", error)
-            alert("Erro: " + error.response.data.error)
-        }
+        //     CatchIntimacoes()
+        // }catch(error){
+        //     console.error("Erro ao adicionar Intimação:", error)
+        //     alert("Erro: " + error.response.data.error)
+        // }
     }
 
     const PostTaskSubmit = async (e, id) => {
@@ -220,9 +220,9 @@ export default function Consulta(){
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                    <InputMask mask="__/__/____" onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off" replacement={{ _: /\d/ }}
-                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="text" required/>
+                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off"
+                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" required/>
                                                 </div>
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="ds_Intimacao">Descrição</label>
@@ -237,9 +237,9 @@ export default function Consulta(){
                                                 <hr />
                                                 <div className="input-group">
                                                     <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                    <InputMask mask="__/__/____" onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off" replacement={{ _: /\d/ }}
-                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="text" required/>
+                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
+                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off"
+                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
                                                 </div>
                                                 <div className="input-group-select">
                                                     <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
@@ -259,11 +259,20 @@ export default function Consulta(){
                                         <Intimacao_card>
                                             <hr />
                                             {Intimacoes.map((intimacao) => {
-                                                const formatedDate = new Date(intimacao.dt_Recebimento).toLocaleDateString("pt-BR")
+                                                
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
+                                                function formatDateWithoutTimezone(dateStr) {
+                                                    const date = new Date(dateStr);
+                                                    const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+                                                    return localDate.toLocaleDateString("pt-BR");
+                                                }
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
+
+                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento);
                                                 return(
                                                     <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
                                                         <h2>Dados da Intimação</h2>
-                                                        <p><strong>Data do recebimento: </strong>{formatedDate}</p>
+                                                        <p><strong>Data do recebimento: </strong>{formatted}</p>
                                                         <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
                                                         <hr />
                                                     </div>         

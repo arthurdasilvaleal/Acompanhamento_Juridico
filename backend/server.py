@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app) # Resolve o erro do navegador bloquear a conexão
