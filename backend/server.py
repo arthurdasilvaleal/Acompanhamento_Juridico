@@ -14,22 +14,24 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor(dictionary=True)
 
+# Para o Login
 @app.route("/submit_login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("Login")
     password = data.get("Pass")
 
-    query = """SELECT * FROM Colaborador
+    query = """SELECT nm_Colaborador, cd_TipoColaborador FROM Colaborador
             WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
     
     cursor.execute(query, (username, password))
     user = cursor.fetchone()
 
     if user:
-        return jsonify({"sucess": True, "message": "Login -bem-sucedido", "user": user })
+        return jsonify({"success": True, "message": "Login bem-sucedido", "user": user })
     else:
         return jsonify({"success": False, "message": "Usuário ou senha incorretos"}), 401
+
 
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():

@@ -42,9 +42,13 @@ export const Main_Menu = styled.aside`
         }
     }
 
+    .Info{
+        padding-top: 4rem;
+    }
+
     ul{
         list-style-type: none;
-        padding: 8rem 0 0 0;
+        padding: 4rem 0 0 0;
         margin: 0;
         display: flex;
         flex-direction: column;

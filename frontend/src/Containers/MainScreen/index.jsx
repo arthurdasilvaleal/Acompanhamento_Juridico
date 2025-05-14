@@ -1,6 +1,6 @@
 import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import Consulta from './Sections/Consultas/Consultas.jsx'
 import Adicionar from './Sections/Adicionar/Adicionar.jsx'
@@ -8,9 +8,13 @@ import Logo from '../../Images/logo.png'
 
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-  const buttonRef = useRef(null);
+  const location = useLocation()
+  const {nome, codigo} = location.state || {} // Se location.state, usará um objeto vazio
+
+  // Variáveis de estado
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+  const buttonRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -44,6 +48,10 @@ export default function MainScreen() {
       <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
       <Main_Menu ref={menuRef} $isOpen={menuOpen}>
         <img src={Logo} alt="Logo" />
+        <div className='Info'>
+          <p>Logado como: <strong>{nome}</strong></p>
+          <p>Código: <strong>{codigo}</strong></p>
+        </div>
         <ul>
           {Object.keys(contentMap).map((item) => (
             <li key={item} onClick={() => setOption(item)}

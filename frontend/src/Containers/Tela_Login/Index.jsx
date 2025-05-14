@@ -15,23 +15,24 @@ export default function Login(){
     const handleLogin = async (e) => {
         e.preventDefault()
 
-        const params = {
-            Login,
-            Pass
-        }
-
+        const params = {Login, Pass}
         try{
             const response = await axios.post("http://localhost:5000/submit_login", params)
             
-            if(response.data.sucess){
+            if(response.data.success){
                 alert("Sucesso")
-            }else{
-                alert("Usuário ou senha incorretos")
+                console.log(response.data)
+                navigate("/main", {
+                    state: {
+                        nome: response.data.user.nm_Colaborador,
+                        codigo: response.data.user.cd_TipoColaborador
+                    }
+                })
             }
         }
         catch(error){
             console.error("Erro ao tentar logar:", error)
-            alert("Erro na autenticação.")
+            alert(error.response.data.message)
         }
     }
 
