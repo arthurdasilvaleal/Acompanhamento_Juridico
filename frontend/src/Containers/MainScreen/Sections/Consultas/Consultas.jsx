@@ -92,31 +92,31 @@ export default function Consulta(){
         e.preventDefault()
         
         console.log(formData[id].dt_Recebimento + "\n" + formData[id].ds_Intimacao)
-        // const IntimacaoData = {
-        //     dataRecebimento: formData[id].dt_Recebimento,
-        //     descricaoIntimacao: formData[id].ds_Intimacao,
-        //     codigoProcesso: id
-        // }
+        const IntimacaoData = {
+            dataRecebimento: formData[id].dt_Recebimento,
+            descricaoIntimacao: formData[id].ds_Intimacao,
+            codigoProcesso: id
+        }
 
-        // try{
-        //     const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
-        //     console.log("Intimação adicionada com sucesso!", response.data)
-        //     alert("Intimação adicionada com sucesso!")
+        try{
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
+            console.log("Intimação adicionada com sucesso!", response.data)
+            alert("Intimação adicionada com sucesso!")
 
-        //     setFormData(prev => ({
-        //         ...prev,
-        //         [IntimacaoData.codigoProcesso]: {
-        //             ...prev[IntimacaoData.codigoProcesso],
-        //             dt_Recebimento: '',
-        //             ds_Intimacao: ''
-        //         }
-        //     }))
+            setFormData(prev => ({
+                ...prev,
+                [IntimacaoData.codigoProcesso]: {
+                    ...prev[IntimacaoData.codigoProcesso],
+                    dt_Recebimento: '',
+                    ds_Intimacao: ''
+                }
+            }))
 
-        //     CatchIntimacoes()
-        // }catch(error){
-        //     console.error("Erro ao adicionar Intimação:", error)
-        //     alert("Erro: " + error.response.data.error)
-        // }
+            CatchIntimacoes()
+        }catch(error){
+            console.error("Erro ao adicionar Intimação:", error)
+            alert("Erro: " + error.response.data.error)
+        }
     }
 
     const PostTaskSubmit = async (e, id) => {

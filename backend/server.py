@@ -14,6 +14,23 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor(dictionary=True)
 
+@app.route("/submit_login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("Login")
+    password = data.get("Pass")
+
+    query = """SELECT * FROM Colaborador
+            WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
+    
+    cursor.execute(query, (username, password))
+    user = cursor.fetchone()
+
+    if user:
+        return jsonify({"sucess": True, "message": "Login -bem-sucedido", "user": user })
+    else:
+        return jsonify({"success": False, "message": "Usuário ou senha incorretos"}), 401
+
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
@@ -40,7 +57,6 @@ def post_cliente():
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
 
-    # Inserindo os dados do Cliente
     queryCliente = """
         INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, nm_Estado, cd_CEP)
         VALUES (%s, %s, %s, %s, %s, %s, %s);

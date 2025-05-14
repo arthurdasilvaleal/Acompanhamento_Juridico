@@ -1,29 +1,33 @@
 import styled from "styled-components";
 
-export const H_align = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    @media (max-width: 768px) {
-      padding: 0 20px 0 20px;
-      height: 100dvh; // Arruma a altura do dispositivo
-    }
-`
-
 export const Container = styled.form`
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     border: transparent;
-    border-radius: 16px;
     overflow: hidden;
-    padding: 20px 0 20px;
-    width: 450px;
     box-shadow: 0 0 20px #000;
-    background-color: rgba(255, 255, 255, 1);
+    color: white;
+    /* background-color: #fff; */
+    height: 100vh;
+    width: 450px;
+    backdrop-filter: blur(20px);
+    animation: popLeft;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    @media (max-width: 768px) {
+      height: 100dvh; // Arruma a altura do dispositivo
+    }
+
+    @keyframes popLeft {
+      from{
+        transform: translateX(-450px);
+      }
+      to{
+        transform: translateX(0);
+      }
+    }
 
     h1{
         font-size: 24px;
@@ -73,15 +77,18 @@ export const Container = styled.form`
         transition: all 0.5s;
     }
 
-    a{
-        text-decoration: none;
-        color: inherit;
-        transition: color 0.2s ease-in-out;
+    .gifs{
+      display: flex;
+      flex-direction: row;
+      gap: 15px;
+      img{
+        width: 60px;
+      }
     }
 
-    a:hover{
-        transition: color 0.2s ease-in-out;
-        color: blue;
+    p{
+      
+      margin-top: auto;
     }
 `
 
@@ -100,17 +107,18 @@ export const InputSld = styled.div`
     font-size: 20px;
     width: 100%;
     border: none;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #8b8b8b;
     padding: 5px 0;
     background-color: transparent;
     outline: none;
+    color: #fff;
   }
 
   .input-container .label {
     position: absolute;
     top: 0;
     left: 0;
-    color: #ccc;
+    color: #8b8b8b;
     transition: all 0.3s ease;
     pointer-events: none;
   }
@@ -121,7 +129,7 @@ export const InputSld = styled.div`
   .input-container input[type="password"]:valid ~ .label {
     top: -20px;
     font-size: 16px;
-    color: #333;
+    color: #fff;
   }
 
   .input-container .underline {
@@ -130,7 +138,7 @@ export const InputSld = styled.div`
     left: 0;
     height: 2px;
     width: 100%;
-    background-color: #333;
+    background-color: #fff;
     transform: scaleX(0);
     transition: all 0.3s ease;
   }
@@ -146,7 +154,7 @@ export const InputSld = styled.div`
     .input-container.has-text .label{
         top: -20px;
         font-size: 16px;
-        color: #333;
+        color: #fff;
     }
 
     .input-container.has-text .underline {
