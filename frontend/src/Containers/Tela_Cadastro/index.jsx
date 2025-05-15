@@ -5,6 +5,7 @@ import { InputMask } from "@react-input/mask"
 import { cpf } from 'cpf-cnpj-validator'
 
 export default function Cadastro(){
+    const [nome, set_Nome] = useState("")
     const [cep, set_Cep] = useState("")
     const [CPF, set_CPF] = useState("")
     const [telefone, set_Telefone] = useState("")
@@ -12,12 +13,16 @@ export default function Cadastro(){
     const [cidade, set_Cidade] = useState("")
     const [bairro, set_Bairro] = useState("")
     const [estado, set_Estado] = useState("")
+    const [complemento, set_Complemento] = useState("")
+    const [NumeroEndereco, set_NumeroEndereco] = useState("")
     const [email, set_Email] = useState("")
     const [ID, setID] = useState("")
     const [password, set_Password] = useState("")
     const [retype, set_Retype] = useState("")
+    const [typeWorker, set_typeWorker] = useState("")
     const PassEqual = password === retype || retype === "";
     
+    // Buscar dados do CEP ao completar o CEP
     const buscarCep = async (cep) => {
         try{
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
@@ -35,9 +40,56 @@ export default function Cadastro(){
         } catch (error){console.error("Erro ao buscar CEP:", error)}
     }
 
+    // Ao enviar o form
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        
+
+        params = {
+            nm_Nome: nome,
+            cd_cep: cep,
+            cd_cpf: CPF,
+            cd_Telefone: telefone,
+            nm_Logradouro: endereco,
+            nm_Cidade: cidade,
+            nm_Bairro: bairro,
+            sg_Estado: estado,
+            ds_Complemento: complemento,
+            cd_NumeroEndereco: NumeroEndereco,
+            ds_Email: email,
+            nm_Usuario: ID,
+            ds_Senha: password,
+            cd_TipoColaborador: typeWorker
+        }
+        try{
+            const response = await axios.post("http://localhost:5000/post_cadastro", params)
+            console.log(response.data)
+            alert("Colaborador cadastrado com sucesso!")
+            set_Nome("")
+            set_Cep("")
+            set_CPF("")
+            set_Telefone("")
+            set_Endereco("")
+            set_Cidade("")
+            set_Bairro("")
+            set_Estado("")
+            set_Complemento("")
+            set_NumeroEndereco("")
+            set_Email("")
+            setID("")
+            set_Password("")
+            set_Retype("")
+
+        }catch(error){
+
+        }
+
+    }
+
     return(
         <H_align>
-            <Container>
+            <Container onSubmit={handleSubmit}>
                 <Header>
                     <Link to={"/"}>
                         <div className="styled-wrapper">
@@ -57,12 +109,16 @@ export default function Cadastro(){
                             </button>
                         </div>
                     </Link>
-                    <h1>Cadastre sua conta</h1>
+                    <h1>Cadastrar conta</h1>
                 </Header>
                 <Twin_input>
                     <Inputs_box>
                         <div className="input-container">
-                            <input type="text" className="input" required />
+                            <input type="text" className="input" required value={nome}
+                            onChange={(e) => {
+                                const formatValue = e.target.value
+                                const parsedValue = formatValue.replace(/[^a-zA-ZÀ-ÿ]\s/)
+                                set_Nome(parsedValue)}} />
                             <label htmlFor="input" className="label">Nome</label>
                             <div className="underline" />
                         </div>
@@ -78,7 +134,7 @@ export default function Cadastro(){
                                 else{e.target.setCustomValidity("")}
                             }}
                             value={CPF} data-valido={cpf.isValid(CPF) || CPF.length < 14} required />
-                            <label htmlFor="input" className="label" data-valido={cpf.isValid(CPF) || CPF.length < 14}>CPF</label>
+                            <label htmlFor="input" className="label" data-valido={cpf.isValid(CPF) || CPF.length < 14}>CPF/CNPJ</label>
                             <div className="underline" data-valido={cpf.isValid(CPF) || CPF.length < 14}/>
                         </div>
                     </Inputs_box>
@@ -148,8 +204,24 @@ export default function Cadastro(){
                 <Twin_input>
                     <Inputs_box>
                         <div className="input-container">
-                            <input type="text" className="input" value={estado} onChange={(e) => set_Estado(e.target.value)} required />
+                            <input type="text" className="input" value={estado} onChange={(e) => set_Estado(e.target.value)} minLength={2} required />
                             <label htmlFor="input" className="label">Estado</label>
+                            <div className="underline" />
+                        </div>
+                    </Inputs_box>
+                    <Inputs_box>
+                        <div className="input-container">
+                            <input type="text" className="input" value={complemento} onChange={(e) => set_Complemento(e.target.value)} required />
+                            <label htmlFor="input" className="label">Complemento</label>
+                            <div className="underline" />
+                        </div>
+                    </Inputs_box>
+                </Twin_input>
+                <Twin_input>
+                    <Inputs_box>
+                        <div className="input-container">
+                            <input type="text" className="input" value={NumeroEndereco} onChange={(e) => set_NumeroEndereco(e.target.value)} required />
+                            <label htmlFor="input" className="label">Numero</label>
                             <div className="underline" />
                         </div>
                     </Inputs_box>
@@ -160,7 +232,7 @@ export default function Cadastro(){
                                 setID(Catch_ID.value)
                                 if(Catch_ID.value.length < 6){Catch_ID.setCustomValidity("Seu ID deve ter ao menos 6 caracteres.")}
                                 else{Catch_ID.setCustomValidity("")}
-                            }} required />
+                                }} value={ID} required />
                             <label htmlFor="input" className="label">Login Usuário</label>
                             <div className="underline" />
                         </div>
@@ -191,7 +263,7 @@ export default function Cadastro(){
                                         {Catch_Pass.setCustomValidity("A senha deve ter ao menos 6 caracteres.")}
                                     else{Catch_Pass.setCustomValidity("")}
                                     {/*TODO: Otimizar essa parte(retirar os IFs)*/}
-                                }} maxLength={26}/>
+                                }} maxLength={26} value={password}/>
                             <label htmlFor="input" className="label">Criar senha</label>
                             <div className="underline" />
                         </div>
@@ -204,11 +276,23 @@ export default function Cadastro(){
                                     set_Retype(Catch_Retype.value)
                                     if(Catch_Retype.value !== password){Catch_Retype.setCustomValidity("As senhas precisam ser iguais!")}
                                     else{Catch_Retype.setCustomValidity("")}
-                                }} data-valido={PassEqual} pattern={password}/>
+                                }} value={retype} data-valido={PassEqual} pattern={password}/>
                             <label htmlFor="input" className="label" data-valido={PassEqual}>Redigite a senha</label>
                             <div className="underline" data-valido={PassEqual}/>
                         </div>
                     </Inputs_box>
+                </Twin_input>
+                <Twin_input>
+                    <div className="input-select">
+                        <label htmlFor="cd_tipoColaborador">Cargo</label>
+                        <select name="cd_tipoColaborador" id="cd_tipoColaborador" value={typeWorker} onChange={(e) => {set_typeWorker(e.target.value)}}>
+                            <option value="">Selecione</option>
+                            <option value="1">Administrador do Sistema</option>
+                            <option value="2">Advogado</option>
+                            <option value="3">Estagiário</option>
+                            <option value="4">Assistente</option>
+                        </select>
+                    </div>
                 </Twin_input>
                 <button className='btn'>Cadastrar</button>
             </Container>

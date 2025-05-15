@@ -87,21 +87,21 @@ export default function Clientes(){
             <hr />
             <Client_form onSubmit={handleSubmit}>
                 <div className="input-group">
+                    <label className="label" htmlFor="cd_CPF">CPF / CNPJ</label>
+                    <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} onChange={(e) => {
+                        const Check_CPF = e.target.value
+                        set_cdCPF(Check_CPF)
+                        if(Check_CPF.length < 14){e.target.setCustomValidity("CPF/CNPJ incompleto!")}
+                        else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
+                        else{e.target.setCustomValidity("")}
+                    }} autoComplete="off" name="cd_CPF" id="cd_CPF" className="input" type="text" value={cd_CPF} required/>
+                </div>
+                <div className="input-group">
                     <label className="label" htmlFor="nm_Processo">Nome</label>
                     <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
                         set_nmCliente(ParsedString)}}
                         autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={nm_Cliente} required/>
-                </div>
-                <div className="input-group">
-                    <label className="label" htmlFor="cd_CPF">CPF / CNPJ</label>
-                    <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} onChange={(e) => {
-                        const Check_CPF = e.target.value
-                        set_cdCPF(Check_CPF)
-                        if(Check_CPF.length < 14){e.target.setCustomValidity("CPF incompleto!")}
-                        else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
-                        else{e.target.setCustomValidity("")}
-                    }} autoComplete="off" name="cd_CPF" id="cd_CPF" className="input" type="text" value={cd_CPF} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_CEP">CEP</label>

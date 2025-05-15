@@ -9,8 +9,11 @@ import libra from "../../gifs/libra.gif"
 export default function Login(){
 
     const navigate = useNavigate();
-    const [Login, setLogin] = useState("")
-    const [Pass, setPass] = useState("")
+    const [Login, set_Login] = useState("ana_paula")
+    const [Pass, set_Pass] = useState("")
+
+    // Variáveis de estado
+    const [LoginBlocked, set_LoginBlocked] = useState(false)
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -20,19 +23,20 @@ export default function Login(){
             const response = await axios.post("http://localhost:5000/submit_login", params)
             
             if(response.data.success){
-                alert("Sucesso")
-                console.log(response.data)
+                // console.log(response.data)
                 navigate("/main", {
                     state: {
                         nome: response.data.user.nm_Colaborador,
-                        codigo: response.data.user.cd_TipoColaborador
+                        tipo: response.data.user.nm_TipoColaborador
                     }
                 })
             }
         }
         catch(error){
             console.error("Erro ao tentar logar:", error)
-            alert(error.response.data.message)
+            set_LoginBlocked(true)
+            set_Login("")
+            set_Pass("")
         }
     }
 
@@ -44,29 +48,30 @@ export default function Login(){
                 <img src={gavel} alt="martelo" />
             </div>
             <h1>Bem-vindo ao Acompanhamento Jurídico</h1>
-            <InputSld>
+            <InputSld $loged={LoginBlocked}>
                 <div className={`input-container ${Login.length > 0 ? "has-text" : ""}`}>
                     <input type="text" id="input-user" onChange={(e) => {
                         const MinimunLenght = e.target
-                        setLogin(MinimunLenght.value)
+                        set_Login(MinimunLenght.value)
                         if(MinimunLenght.value.length < 6){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 6 caracteres.')}
                         else{MinimunLenght.setCustomValidity('')}
-                    }} autoComplete='off' required />
+                    }} autoComplete='off' required value={Login} />
                     <label htmlFor="input-user" className="label">Usuário</label>
                     <div className="underline" />
                 </div>
             </InputSld>
-            <InputSld>
+            <InputSld $loged={LoginBlocked}>
                 <div className={`input-container ${Pass.length > 0 ? "has-text" : ""}`}>
                     <input type="password" id="input-pass" onChange={(e) => {
                         const MinimunLenght = e.target
-                        setPass(MinimunLenght.value)
+                        set_Pass(MinimunLenght.value)
                         // if(MinimunLenght.value.length < 8){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 8 caracteres.')}
                         // else{MinimunLenght.setCustomValidity('')}
-                    }} autoComplete='off' required />
+                    }} autoComplete='off' required value={Pass}/>
                     <label htmlFor="input-pass" className="label">Senha</label>
                     <div className="underline" />
                 </div>
+                <p>Usuário ou senha incorretos</p>
             </InputSld>
             <button className='btn' type='submit'>Entrar</button>
         </Container>

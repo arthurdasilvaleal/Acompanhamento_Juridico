@@ -54,7 +54,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+            const response = await axios.get("http://localhost:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -143,7 +143,7 @@ export default function Consulta(){
     // Buscando Intimações
 
     const CatchIntimacoes = () => {
-        axios.get("http://192.168.100.3:5000/get_card", {params: { id_processo: openCardId}})
+        axios.get("http://localhost:5000/get_card", {params: { id_processo: openCardId}})
             .then(response => {
                 set_Intimacoes(response.data)
                 console.log(response.data)

@@ -21,7 +21,8 @@ def login():
     username = data.get("Login")
     password = data.get("Pass")
 
-    query = """SELECT nm_Colaborador, cd_TipoColaborador FROM Colaborador
+    query = """SELECT nm_Colaborador, nm_TipoColaborador FROM Colaborador C
+            JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
             WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
     
     cursor.execute(query, (username, password))
@@ -31,6 +32,33 @@ def login():
         return jsonify({"success": True, "message": "Login bem-sucedido", "user": user })
     else:
         return jsonify({"success": False, "message": "Usuário ou senha incorretos"}), 401
+
+# Para Cadastro
+@app.route("/post_cadastro", methods=["POST"])
+def post_clientes():
+    data = request.get_json()
+
+    Nome = data.get("nm_Nome")
+    CEP = data.get("cd_cep")
+    CPF = data.get("cd_cpf")
+    Telefone = data.get("cd_Telefone")
+    Endereco = data.get("nm_Logradouro")
+    Cidade = data.get("nm_Cidade")
+    Bairro = data.get("nm_Bairro")
+    Estado = data.get("sg_Estado")
+    Complemento = data.get("ds_Complemento")
+    NumeroEnd = data.get("cd_NumeroEndereco")
+    Email = data.get("ds_Email")
+    Usuario = data.get("ID")
+    Senha = data.get("ds_Senha")
+    TipoColaborador = data.get("cd_TipoColaborador")
+
+    query = """INSERT INTO Colaborador (nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
+            nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
+            cd_Telefone, ds_Email, nm_Usuario, ds_Senha, cd_TipoColaborador)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    
+    cursor.execute(query, (Nome, CPF, Endereco, Bairro, Cidade, Estado, CEP, NumeroEnd, Complemento, Telefone, Email, Usuario, Senha, TipoColaborador))
 
 
 @app.route("/get_clientes", methods=["GET"])

@@ -44,11 +44,15 @@ export const Main_Menu = styled.aside`
 
     .Info{
         padding-top: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     ul{
         list-style-type: none;
-        padding: 4rem 0 0 0;
+        padding: 0;
         margin: 0;
         display: flex;
         flex-direction: column;
@@ -56,7 +60,10 @@ export const Main_Menu = styled.aside`
         width: 100%;
         @media (max-width: 768px) {
             height: 40%;
-            padding-top: 9rem;
+        }
+
+        @media (max-width: 1366px) and (max-height: 600px){
+            padding: 4rem 0 0 0;
         }
     }
 

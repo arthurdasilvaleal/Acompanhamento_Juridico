@@ -219,6 +219,10 @@ export const First_info = styled.div`
         display: flex;
         flex-direction: column;
         gap: 20px;
+        @media (max-width: 1280px) and (max-height: 600px) {
+            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "876px"};
+        }
+        transition: height 0.2s ease;
 
         textarea{
             padding-top: 20px;

@@ -9,7 +9,13 @@ import Logo from '../../Images/logo.png'
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
   const location = useLocation()
-  const {nome, codigo} = location.state || {} // Se location.state, usará um objeto vazio
+  const {nome, tipo} = location.state || {} // Se location.state, usará um objeto vazio
+  const unSex = () => {
+    if(tipo === "Estagiário" || tipo === "Advogado"){
+      return "(a)"
+    }
+    return ""
+  }
 
   // Variáveis de estado
   const [menuOpen, setMenuOpen] = useState(false)
@@ -49,8 +55,8 @@ export default function MainScreen() {
       <Main_Menu ref={menuRef} $isOpen={menuOpen}>
         <img src={Logo} alt="Logo" />
         <div className='Info'>
-          <p>Logado como: <strong>{nome}</strong></p>
-          <p>Código: <strong>{codigo}</strong></p>
+          <p><strong>{nome}</strong></p>
+          <p><strong>{tipo + unSex()}</strong></p>
         </div>
         <ul>
           {Object.keys(contentMap).map((item) => (

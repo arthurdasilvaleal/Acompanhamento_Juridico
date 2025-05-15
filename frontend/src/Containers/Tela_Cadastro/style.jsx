@@ -31,7 +31,7 @@ export const Container = styled.form`
     .btn {
         width: 6.5em;
         height: 2.3em;
-        margin: 0.5em;
+        margin: 1.5em 0.5em 0.5em 0.5em;
         background: black;
         color: white;
         border: none;
@@ -184,6 +184,29 @@ export const Twin_input = styled.div`
       flex-direction: column;
       padding: 0;
       gap: 0;
+    }
+
+    .input-select{
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+
+      label{
+        place-content: center;
+      }
+
+      select{
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        height: 30px;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+      }
+
+      select:hover{
+        border-color: #000;
+        transition: border-color 0.2s ease;
+      }
     }
 `
 

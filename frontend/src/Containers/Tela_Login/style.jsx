@@ -85,11 +85,6 @@ export const Container = styled.form`
         width: 60px;
       }
     }
-
-    p{
-      
-      margin-top: auto;
-    }
 `
 
 export const InputSld = styled.div`
@@ -107,7 +102,7 @@ export const InputSld = styled.div`
     font-size: 20px;
     width: 100%;
     border: none;
-    border-bottom: 2px solid #8b8b8b;
+    border-bottom: ${({ $loged }) => $loged ? "2px solid red" : "2px solid #8b8b8b"};
     padding: 5px 0;
     background-color: transparent;
     outline: none;
@@ -118,7 +113,7 @@ export const InputSld = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    color: #8b8b8b;
+    color: ${({ $loged }) => $loged ? "red" : "#8b8b8b"};
     transition: all 0.3s ease;
     pointer-events: none;
   }
@@ -159,5 +154,10 @@ export const InputSld = styled.div`
 
     .input-container.has-text .underline {
         transform: scaleX(1);
+    }
+
+    p{
+      color: red;
+      opacity: ${({ $loged }) => $loged ? "1" : "0"};
     }
 `
