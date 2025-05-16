@@ -43,7 +43,7 @@ export const Main_Menu = styled.aside`
     }
 
     .Info{
-        padding-top: 4rem;
+        padding-top: 2rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -52,7 +52,7 @@ export const Main_Menu = styled.aside`
 
     ul{
         list-style-type: none;
-        padding: 0;
+        padding: 3rem 0 0 0;
         margin: 0;
         display: flex;
         flex-direction: column;

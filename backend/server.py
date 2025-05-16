@@ -49,18 +49,24 @@ def post_clientes():
     Complemento = data.get("ds_Complemento")
     NumeroEnd = data.get("cd_NumeroEndereco")
     Email = data.get("ds_Email")
-    Usuario = data.get("ID")
+    Usuario = data.get("nm_Usuario")
     Senha = data.get("ds_Senha")
     TipoColaborador = data.get("cd_TipoColaborador")
 
     query = """INSERT INTO Colaborador (nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
             nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
             cd_Telefone, ds_Email, nm_Usuario, ds_Senha, cd_TipoColaborador)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    
-    cursor.execute(query, (Nome, CPF, Endereco, Bairro, Cidade, Estado, CEP, NumeroEnd, Complemento, Telefone, Email, Usuario, Senha, TipoColaborador))
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, SHA2(%s, 256), %s)"""
+    try:
+        cursor.execute(query, (Nome, CPF, Endereco, Bairro, Cidade, Estado, CEP, NumeroEnd, Complemento, Telefone, Email, Usuario, Senha, TipoColaborador))
+        db.commit()
+        return jsonify({"message": "Colaborador cadastrado"}), 201
+    except mysql.connector.Error as err:
+        print("Erro: ", err)
+        return jsonify({"error": str(err)}), 500
 
 
+# Consultar Clientes
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
@@ -123,7 +129,7 @@ def get_processos():
                 JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
                 WHERE P.cd_NumeroProcesso = %s OR P.nm_Autor = %s OR P.nm_Reu = %s"""
         
-        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte,))
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         return jsonify(result)
     
@@ -133,7 +139,7 @@ def get_processos():
         FROM Processo P
         JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
         WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s)"""
-        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte,))
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         return jsonify(result)
     

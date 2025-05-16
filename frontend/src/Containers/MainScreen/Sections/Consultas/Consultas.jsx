@@ -16,10 +16,10 @@ export default function Consulta(){
     const [Intimacoes, set_Intimacoes] = useState([])
 
     // Váriáveis de Estado
-    const [foundProcess, set_foundProcess] = useState(false)
+    const [foundProcess, set_foundProcess] = useState(false) // Achou processo
     const [notFound, set_NotFound] = useState(false)
     const [openCardId, set_OpenCardId] = useState(null)
-    const [CloseForm, set_CloseForm] = useState(true)
+    const [CloseForm, set_CloseForm] = useState(true) // Tampar o formulario
     const [OpenButtons, set_OpenButtons] = useState(true)
 
     // Variável dos formulários de cada card
@@ -77,7 +77,7 @@ export default function Consulta(){
     // Bloqueando a barra de rolagem Y na hora de abrir/fechar o card e achando um processo
     useEffect(() => {
         
-        document.body.style.overflow = "hidden"
+        if(foundProcess || !CloseForm){document.body.style.overflow = "hidden"}
 
         const timeout = setTimeout(() =>{
             document.body.style.overflow = ""

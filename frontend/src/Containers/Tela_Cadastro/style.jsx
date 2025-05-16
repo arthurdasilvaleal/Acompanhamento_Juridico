@@ -198,6 +198,7 @@ export const Twin_input = styled.div`
       select{
         border: 2px solid #ccc;
         border-radius: 8px;
+        width: 350px;
         height: 30px;
         cursor: pointer;
         transition: border-color 0.2s ease;

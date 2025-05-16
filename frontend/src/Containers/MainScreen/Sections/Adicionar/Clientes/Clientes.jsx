@@ -88,11 +88,13 @@ export default function Clientes(){
             <Client_form onSubmit={handleSubmit}>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_CPF">CPF / CNPJ</label>
-                    <InputMask mask="___.___.___-__" replacement={{ _: /\d/ }} onChange={(e) => {
+                    <InputMask mask={cd_CPF.length <= 13 ? "___.___.___-__" : "__.___.___/____-__"} replacement={{ _: /\d/ }} onChange={(e) => {
                         const Check_CPF = e.target.value
                         set_cdCPF(Check_CPF)
                         if(Check_CPF.length < 14){e.target.setCustomValidity("CPF/CNPJ incompleto!")}
-                        else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
+                        else if(!cpf.isValid(Check_CPF) && Check_CPF.length === 14){e.target.setCustomValidity("CPF inválido!")}
+                        else if(Check_CPF.length > 14 && Check_CPF.length < 18){e.target.setCustomValidity("CNPJ incompleto!")}
+                        else if(!cnpj.isValid(Check_CPF) && Check_CPF.length === 18){e.target.setCustomValidity("CNPJ Inválido!")}
                         else{e.target.setCustomValidity("")}
                     }} autoComplete="off" name="cd_CPF" id="cd_CPF" className="input" type="text" value={cd_CPF} required/>
                 </div>

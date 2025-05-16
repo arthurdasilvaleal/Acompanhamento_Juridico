@@ -1,8 +1,9 @@
 import { useState } from "react"
+import axios from "axios"
 import { Link } from 'react-router-dom'
 import { H_align, Container, Inputs_box, Header, Twin_input } from './style.jsx'
 import { InputMask } from "@react-input/mask"
-import { cpf } from 'cpf-cnpj-validator'
+import { cpf, cnpj } from 'cpf-cnpj-validator'
 
 export default function Cadastro(){
     const [nome, set_Nome] = useState("")
@@ -44,13 +45,11 @@ export default function Cadastro(){
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        
-
-        params = {
+        const params = {
             nm_Nome: nome,
-            cd_cep: cep,
-            cd_cpf: CPF,
-            cd_Telefone: telefone,
+            cd_cep: cep.replace(/[^0-9]/g, ""),
+            cd_cpf: CPF.replace(/[^0-9]/g, ""),
+            cd_Telefone: telefone.replace(/[^0-9]/g, ""),
             nm_Logradouro: endereco,
             nm_Cidade: cidade,
             nm_Bairro: bairro,
@@ -82,9 +81,8 @@ export default function Cadastro(){
             set_Retype("")
 
         }catch(error){
-
+            console.error("Erro ao tentar logar:", error)
         }
-
     }
 
     return(
@@ -125,17 +123,20 @@ export default function Cadastro(){
                     </Inputs_box>
                     <Inputs_box>
                         <div className={`input-container ${CPF.length > 0 ? "has-text" : ""}`}>
-                            <InputMask type="text" className="input" mask="___.___.___-__" 
+                            <InputMask type="text" className="input" mask={CPF.length <= 13 ? "___.___.___-__" : "__.___.___/____-__"} 
                             replacement={{ _: /\d/ }} onChange={(e) => {
                                 const Check_CPF = e.target.value
+                                console.log(Check_CPF.length)
                                 set_CPF(Check_CPF)
-                                if(Check_CPF.length < 14){e.target.setCustomValidity("CPF incompleto!")}
-                                else if(!cpf.isValid(Check_CPF)){e.target.setCustomValidity("CPF inválido!")}
+                                if(Check_CPF.length < 14){e.target.setCustomValidity("CPF/CNPJ incompleto!")}
+                                else if(!cpf.isValid(Check_CPF) && Check_CPF.length === 14){e.target.setCustomValidity("CPF inválido!")}
+                                else if(Check_CPF.length > 14 && Check_CPF.length < 18){e.target.setCustomValidity("CNPJ incompleto!")}
+                                else if(!cnpj.isValid(Check_CPF) && Check_CPF.length === 18){e.target.setCustomValidity("CNPJ Inválido!")}
                                 else{e.target.setCustomValidity("")}
                             }}
-                            value={CPF} data-valido={cpf.isValid(CPF) || CPF.length < 14} required />
-                            <label htmlFor="input" className="label" data-valido={cpf.isValid(CPF) || CPF.length < 14}>CPF/CNPJ</label>
-                            <div className="underline" data-valido={cpf.isValid(CPF) || CPF.length < 14}/>
+                            value={CPF} data-valido={(cpf.isValid(CPF) || CPF.length < 14) || (CPF.length === 18 && cnpj.isValid(CPF))} required />
+                            <label htmlFor="input" className="label" data-valido={(cpf.isValid(CPF) || CPF.length < 14) || (CPF.length === 18 && cnpj.isValid(CPF))}>CPF/CNPJ</label>
+                            <div className="underline" data-valido={(cpf.isValid(CPF) || CPF.length < 14) || (CPF.length === 18 && cnpj.isValid(CPF))}/>
                         </div>
                     </Inputs_box>
                 </Twin_input>
@@ -287,7 +288,6 @@ export default function Cadastro(){
                         <label htmlFor="cd_tipoColaborador">Cargo</label>
                         <select name="cd_tipoColaborador" id="cd_tipoColaborador" value={typeWorker} onChange={(e) => {set_typeWorker(e.target.value)}}>
                             <option value="">Selecione</option>
-                            <option value="1">Administrador do Sistema</option>
                             <option value="2">Advogado</option>
                             <option value="3">Estagiário</option>
                             <option value="4">Assistente</option>
