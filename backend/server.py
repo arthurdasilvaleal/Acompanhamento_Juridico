@@ -126,18 +126,21 @@ def get_processos():
         query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
                 P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
                 FROM Processo P
-                JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
                 WHERE P.cd_NumeroProcesso = %s OR P.nm_Autor = %s OR P.nm_Reu = %s"""
         
         cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
+        print(Nome_Parte)
         return jsonify(result)
     
     else:
         query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
         P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
         FROM Processo P
-        JOIN Cliente C ON C.cd_Cliente = P.cd_Cliente
+        JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+        JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
         WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s)"""
         cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
@@ -184,17 +187,21 @@ def post_processo():
 @app.route("/get_card", methods=["GET"])
 def get_intimacao():
 
-    cd_Processo = request.args.get("id_processo")
+    Nome_Parte = request.args.get("parte")
 
     query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
             FROM Intimacao I
             JOIN Processo P ON P.cd_Processo = I.cd_Processo
-            WHERE I.cd_Processo = %s"""
+            JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+            JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+            WHERE C.nm_Cliente = %s"""
     
-    cursor.execute(query, (cd_Processo,))
+    cursor.execute(query, (Nome_Parte,))
     result = cursor.fetchall()
     return jsonify(result)
+    
 
+# Para enviar os dados de Intimações/Tarefas
 @app.route("/post_card", methods=["POST"])
 def post_intimacao():
     data = request.get_json()
@@ -219,3 +226,11 @@ def post_intimacao():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="0.0.0.0")
+
+
+## TODO: REMEMBER:
+
+## METHODS=["POST"] = CREATE / INSERT   }   SQL
+## METHODS=["GET"] = READ / SELECT      }   SQL
+## METHODS=["PUT"] = UPDATE / UPDATE    }   SQL
+## METHODS=["DELETE"] = DELETE / DELETE }   SQL

@@ -46,6 +46,7 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
 
 ```bash
 npm install
+npm i axios
 npm i react-number-format
 npm i cpf-cnpj-validator
 npm i inputmask

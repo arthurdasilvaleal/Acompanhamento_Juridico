@@ -63,6 +63,7 @@ export default function Consulta(){
             if(response.data.length > 0){
                 set_foundProcess(true)
                 set_NotFound(false)
+                CatchIntimacoes()
             }
             else{
                 set_foundProcess(false)
@@ -142,20 +143,20 @@ export default function Consulta(){
 
     // Buscando Intimações
 
-    const CatchIntimacoes = () => {
-        axios.get("http://localhost:5000/get_card", {params: { id_processo: openCardId}})
-            .then(response => {
-                set_Intimacoes(response.data)
-                console.log(response.data)
-            })
-            .catch(error => {
-                console.error("Erro ao buscar intimações:", error)
-            })
+    const CatchIntimacoes = async () => {
+        try{
+            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente }})
+            set_Intimacoes(response.data)
+            console.log(response.data)
+        }catch(error){
+            console.error("Erro ao buscar intimações:", error)
+        }
     }
 
-    useEffect(() =>{
-        if(openCardId !== null){CatchIntimacoes()}
-    }, [openCardId])
+    // Toda vez que abrir o card, a intimação do processo linkado é buscada (DEPRECATED)
+    // useEffect(() =>{
+    //     if(openCardId !== null){CatchIntimacoes()}
+    // }, [openCardId])
 
     return(
         <>
@@ -269,14 +270,16 @@ export default function Consulta(){
                                                 //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
 
                                                 const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento);
-                                                return(
-                                                    <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
-                                                        <h2>Dados da Intimação</h2>
-                                                        <p><strong>Data do recebimento: </strong>{formatted}</p>
-                                                        <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
-                                                        <hr />
-                                                    </div>         
-                                                )
+                                                if(processo.cd_Processo === intimacao.cd_Processo){
+                                                    return(
+                                                        <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
+                                                            <h2>Dados da Intimação</h2>
+                                                            <p><strong>Data do recebimento: </strong>{formatted}</p>
+                                                            <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
+                                                            <hr />
+                                                        </div>         
+                                                    )
+                                                }
                                             })}
                                         </Intimacao_card>
                                     )}
