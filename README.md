@@ -25,6 +25,9 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
   - react-number-format
   - @react-input/mask
   - downshift
+  - react-spinners
+  - animate.css
+
 
 ### Back-end
 - Flask (Python)
@@ -51,6 +54,8 @@ npm i react-number-format
 npm i cpf-cnpj-validator
 npm i inputmask
 npm i downshift
+npm i react-spinners
+
 ```
 
 ### Instalação do Back-end (Python + Flask)

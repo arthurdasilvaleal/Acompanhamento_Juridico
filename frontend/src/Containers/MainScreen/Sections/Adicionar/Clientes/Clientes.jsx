@@ -2,7 +2,7 @@ import { Client_form, Client_button } from "./style"
 import { Division_Line } from "../style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
-import { cpf } from 'cpf-cnpj-validator'
+import { cpf, cnpj } from 'cpf-cnpj-validator'
 import axios from "axios"
 
 export default function Clientes(){

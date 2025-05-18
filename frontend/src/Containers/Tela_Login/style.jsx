@@ -13,20 +13,8 @@ export const Container = styled.form`
     height: 100vh;
     width: 450px;
     backdrop-filter: blur(20px);
-    animation: popLeft;
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
     @media (max-width: 768px) {
       height: 100dvh; // Arruma a altura do dispositivo
-    }
-
-    @keyframes popLeft {
-      from{
-        transform: translateX(-450px);
-      }
-      to{
-        transform: translateX(0);
-      }
     }
 
     h1{

@@ -70,8 +70,7 @@ def post_clientes():
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = """SELECT cd_Cliente, nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, 
-            cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, nm_Estado, cd_CEP
+    query = """SELECT  nm_Cliente
             FROM cliente"""
     cursor.execute(query)
     result = cursor.fetchall()
