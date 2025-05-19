@@ -3,8 +3,7 @@ import Login from './Tela_Login/Index'
 import Cadastro from './Tela_Cadastro'
 import MainScreen from './MainScreen'
 
-import { HashLoader } from 'react-spinners'
-import { LoadingStyle } from './style'
+import Loading from '../components/Loading_Pages/Loading'
 import { useEffect, useState } from 'react'
 
 export default function App() {
@@ -16,16 +15,10 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [])
 
-  
-      
+
   return (
     <>
-      {loading && (
-        <LoadingStyle>
-          <HashLoader color="#CDAF6F" size={50} />
-          {/* <p style={{ color: '#fff', marginTop: '1rem' }}>Carregando sistema...</p> */}
-        </LoadingStyle>
-      )}
+      {loading && (<Loading />)}
       
       <BrowserRouter>
         <Routes>

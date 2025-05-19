@@ -5,10 +5,21 @@ import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import Consulta from './Sections/Consultas/Consultas.jsx'
 import Adicionar from './Sections/Adicionar/Adicionar.jsx'
 import Logo from '../../Images/logo.png'
+import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
   const location = useLocation()
+
+  // Váriáveis de estado
+  const [Loading, set_Loading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() =>{set_Loading(false)}, 1500)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
   const {nome, tipo} = location.state || {} // Se location.state, usará um objeto vazio
   const unSex = () => {
     if(tipo === "Estagiário" || tipo === "Advogado"){
@@ -50,38 +61,42 @@ export default function MainScreen() {
   }
 
   return (
-    <Container $isOpen={menuOpen}>
-      <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
-      <Main_Menu ref={menuRef} $isOpen={menuOpen}>
-        <img src={Logo} alt="Logo" />
-        <div className='Info'>
-          <p><strong>{nome}</strong></p>
-          <p><strong>{tipo + unSex()}</strong></p>
-        </div>
-        <ul>
-          {Object.keys(contentMap).map((item) => (
-            <li key={item} onClick={() => setOption(item)}
-            data-active={option === item}>
-              {item}
-            </li>
-          ))}
-        </ul>
-        <button id="bottone1"><Link to={'/'}><strong>Sair</strong></Link></button>
-      </Main_Menu>
-      <Main_Content $isBlocked={menuOpen}>
-        <Main_Title>
-          <h1>{option}</h1>
-          {/* Adicionando o subtitulo dinamicamente */}
-          {SubTitleObject.SubTitles.map((item) => {
-            if (item.key === option) {
-              return item
-            }
-            return null
-          })}
-          <hr />
-        </Main_Title>
-        {contentMap[option]}
-      </Main_Content>
-    </Container>
+    <>
+    {Loading && (<Loading_page />)}
+    
+      <Container $isOpen={menuOpen}>
+        <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
+        <Main_Menu ref={menuRef} $isOpen={menuOpen}>
+          <img src={Logo} alt="Logo" />
+          <div className='Info'>
+            <p><strong>{nome}</strong></p>
+            <p><strong>{tipo + unSex()}</strong></p>
+          </div>
+          <ul>
+            {Object.keys(contentMap).map((item) => (
+              <li key={item} onClick={() => setOption(item)}
+              data-active={option === item}>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <button id="bottone1"><Link to={'/'}><strong>Sair</strong></Link></button>
+        </Main_Menu>
+        <Main_Content $isBlocked={menuOpen}>
+          <Main_Title>
+            <h1>{option}</h1>
+            {/* Adicionando o subtitulo dinamicamente */}
+            {SubTitleObject.SubTitles.map((item) => {
+              if (item.key === option) {
+                return item
+              }
+              return null
+            })}
+            <hr />
+          </Main_Title>
+          {contentMap[option]}
+        </Main_Content>
+      </Container>
+    </>
   )
 }
