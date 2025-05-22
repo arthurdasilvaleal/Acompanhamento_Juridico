@@ -31,17 +31,22 @@ export default function MainScreen() {
   const buttonRef = useRef(null)
   const [Loading, set_Loading] = useState(true)
   const [Exit, set_Exit] = useState(false)
+  const [Exit_Interacted, set_ExitInteracted] = useState(false)
 
   useEffect(() => {
+
+    if(Exit) return
+
     function handleClickOutside(event) {
       if (menuOpen && menuRef.current && !menuRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
-        setMenuOpen(false);
+        setMenuOpen(false)
       }
     }
   
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen]);
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+    
+  }, [menuOpen, Exit]);
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
@@ -66,11 +71,11 @@ export default function MainScreen() {
 
   return (
     <>
-    {Loading && (<Loading_page />)}
-    
+      {Loading && (<Loading_page />)}
+
       <Container $isOpen={menuOpen}>
         <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
-        <Main_Menu ref={menuRef} $isOpen={menuOpen}>
+        <Main_Menu ref={menuRef} $isOpen={menuOpen} $Exiting={Exit}>
           <img src={Logo} alt="Logo" />
           <div className='Info'>
             <p><strong>{nome}</strong></p>
@@ -84,9 +89,12 @@ export default function MainScreen() {
               </li>
             ))}
           </ul>
-          <button onClick={() => set_Exit(true)} id="bottone1"><strong>Sair</strong></button>
+          <button onClick={() => {
+            set_Exit(true)
+            set_ExitInteracted(true)
+            }} id="bottone1"><strong>Sair</strong></button>
         </Main_Menu>
-        <Main_Content $isBlocked={menuOpen}>
+        <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
           <Main_Title>
             <h1>{option}</h1>
             {/* Adicionando o subtitulo dinamicamente */}
@@ -100,12 +108,12 @@ export default function MainScreen() {
           </Main_Title>
           {contentMap[option]}
         </Main_Content>
-        <Exit_card $Exiting={Exit}>
+        <Exit_card $Exiting={Exit} $Visible={Exit_Interacted}>
           <svg onClick={() => set_Exit(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
           <h2>Você realmente deseja sair?</h2>
-          <button className='btn' onClick={() => {<Link to={'/'}/>}}>Sair</button>
+          <Link to={'/'}><button className='btn'>Sair</button></Link>
         </Exit_card>
       </Container>
     </>

@@ -1,5 +1,5 @@
 import { Container, InputSld } from './style'
-import Loading_screen from '../../components/Loading_login/Loading'
+import Loading_screen from '../../components/Loading_Form/Loading'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'

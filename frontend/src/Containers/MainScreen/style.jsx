@@ -20,6 +20,14 @@ export const Main_Menu = styled.aside`
     transition: transform 0.3s ease-in-out;
     transform: ${({ $isOpen }) => ($isOpen ? "translateX(0)" : "translateX(-100%)")};
 
+    ${({ $Exiting }) =>
+        $Exiting &&
+        `
+        filter: blur(0.8px);
+        pointer-events: none;
+        user-select: none;`
+    };
+
     @media (min-width: 769px) {
         transform: translateX(0);
     }
@@ -148,14 +156,22 @@ export const Main_Content = styled.section`
     transition: filter 0.3s, transform 0.3s;
     transform: ${({ $isBlocked }) => ($isBlocked ? "translateX(10px)" : "translateX(0)")};
     z-index: 0;
-
+    
     ${({ $isBlocked }) =>
         $isBlocked &&
         `
         filter: blur(3px);
         pointer-events: none;
         user-select: none;`
-        };
+    };
+
+    ${({ $Exiting }) =>
+        $Exiting &&
+        `
+        filter: blur(0.8px);
+        pointer-events: none;
+        user-select: none;`
+    };
 
     @media (max-width: 768px) {
         width: 100%;
@@ -230,9 +246,15 @@ export const Exit_card = styled.div`
     top: 50%;
     transform: translate(-50%, -50%);
 
-    animation: ${({ $Exiting }) => ($Exiting ? 'PopIn' : 'PopOut')} 0.3s ease forwards;
-    pointer-events: ${({ $Exiting }) => ($Exiting ? 'auto' : 'none')};
-    user-select: ${({ $Exiting }) => ($Exiting ? 'auto' : 'none')};
+    // Evita da animação de saida "vazar" ao ser renderizado
+    ${({ $Exiting, $Visible }) => {
+        if (!$Visible) return `display: none;`;
+        return `
+            animation: ${$Exiting ? 'PopIn' : 'PopOut'} 0.3s ease forwards;
+            pointer-events: ${$Exiting ? 'auto' : 'none'};
+            user-select: ${$Exiting ? 'auto' : 'none'};
+        `;
+    }}
 
     @keyframes PopIn {
         from {
@@ -271,13 +293,17 @@ export const Exit_card = styled.div`
         cursor: pointer;
     }
 
+
+    a{
+        margin: 0.5em;
+    }
+
     .btn {
         width: 6.5em;
         height: 2.3em;
-        margin: 0.5em;
         background: black;
-        color: white;
         border: none;
+        color: white;
         border-radius: 0.625em;
         font-size: 20px;
         font-weight: bold;
