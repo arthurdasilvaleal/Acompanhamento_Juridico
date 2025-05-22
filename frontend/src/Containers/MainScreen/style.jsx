@@ -84,7 +84,7 @@ export const Main_Menu = styled.aside`
 
     #bottone1 {
         color: #fff;
-        padding: 16px 0;
+        padding: 16px 33px;
         margin-bottom: 30px;
         border-radius: 9px;
         background: #CDAF6F;
@@ -94,11 +94,11 @@ export const Main_Menu = styled.aside`
         cursor: pointer;
         transition: 0.4s;
 
-        a{
+        /* a{
             padding: 16px 33px;
             text-decoration: none;
             color: #fff;
-        }
+        } */
     }
 
     #bottone1:hover {
@@ -210,5 +210,106 @@ export const Main_Title = styled.header`
         border: none;
         box-shadow: 0 0 30px #CDAF6F;
         height: 10px;
+    }
+`
+
+export const Exit_card = styled.div`
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 16px;
+    color: #000;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    animation: ${({ $Exiting }) => ($Exiting ? 'PopIn' : 'PopOut')} 0.3s ease forwards;
+    pointer-events: ${({ $Exiting }) => ($Exiting ? 'auto' : 'none')};
+    user-select: ${({ $Exiting }) => ($Exiting ? 'auto' : 'none')};
+
+    @keyframes PopIn {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -45%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    @keyframes PopOut {
+        from {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, -45%);
+        }
+    }
+
+    @media (min-width: 769px) {
+        width: 350px;
+    }
+
+    h2{
+        width: 280px;
+    }
+
+    svg{
+        width: 30px;
+        color: #CDAF6F;
+        margin-left: auto;
+        cursor: pointer;
+    }
+
+    .btn {
+        width: 6.5em;
+        height: 2.3em;
+        margin: 0.5em;
+        background: black;
+        color: white;
+        border: none;
+        border-radius: 0.625em;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        transition-property: color;
+        transition: 0.3s ease-in-out;
+    }
+
+    button:hover {
+        box-shadow: 7px 5px 56px -2px red;
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    button:after {
+        content: "";
+        background: red;
+        position: absolute;
+        z-index: -1;
+        left: -20%;
+        right: -20%;
+        top: 0;
+        bottom: 0;
+        transform: skewX(-45deg) scale(0, 1);
+        transition: all 0.5s;
+    }
+
+    button:hover:after {
+        transform: skewX(-45deg) scale(1, 1);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
     }
 `

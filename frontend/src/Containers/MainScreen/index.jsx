@@ -1,4 +1,4 @@
-import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton } from './style.jsx'
+import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
@@ -10,9 +10,6 @@ import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
   const location = useLocation()
-
-  // Váriáveis de estado
-  const [Loading, set_Loading] = useState(true)
 
   useEffect(() => {
     const timer = setTimeout(() =>{set_Loading(false)}, 1500)
@@ -32,6 +29,8 @@ export default function MainScreen() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const buttonRef = useRef(null)
+  const [Loading, set_Loading] = useState(true)
+  const [Exit, set_Exit] = useState(false)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -60,6 +59,11 @@ export default function MainScreen() {
     ]
   }
 
+  // Debug de renderizações de componentes
+  // const renderCount = useRef(0)
+  // renderCount.current += 1
+  // console.log("Componente renderizado", renderCount.current, "vezes")
+
   return (
     <>
     {Loading && (<Loading_page />)}
@@ -80,7 +84,7 @@ export default function MainScreen() {
               </li>
             ))}
           </ul>
-          <button id="bottone1"><Link to={'/'}><strong>Sair</strong></Link></button>
+          <button onClick={() => set_Exit(true)} id="bottone1"><strong>Sair</strong></button>
         </Main_Menu>
         <Main_Content $isBlocked={menuOpen}>
           <Main_Title>
@@ -96,6 +100,13 @@ export default function MainScreen() {
           </Main_Title>
           {contentMap[option]}
         </Main_Content>
+        <Exit_card $Exiting={Exit}>
+          <svg onClick={() => set_Exit(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+          <h2>Você realmente deseja sair?</h2>
+          <button className='btn' onClick={() => {<Link to={'/'}/>}}>Sair</button>
+        </Exit_card>
       </Container>
     </>
   )

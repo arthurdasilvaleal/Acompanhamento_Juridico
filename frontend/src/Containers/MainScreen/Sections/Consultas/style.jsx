@@ -345,13 +345,15 @@ export const Consult_cardForm = styled.form`
 export const Intimacao_card = styled.div`
 
     
-    
+    // Separação das Intimações
     & > hr{
+
         margin: 0;
         background-color: #ffffff;
         border: none;
         box-shadow: 0 0 25px #ffffff;
         height: 2px;
+        /* width: 103%; */
     }
 
     .Intimacao-group{
