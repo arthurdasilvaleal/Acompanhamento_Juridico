@@ -52,7 +52,7 @@ export const Process_Form = styled.form`
         flex-direction: column;
     }
 
-    .input-group-select{
+    .input-group-select, .input-group-select-mid{
         display: flex;
         align-items: center;
         gap: 20px;
@@ -69,7 +69,15 @@ export const Process_Form = styled.form`
         .label{
             text-align: end;
         }
-    }    
+    }
+
+    .input-group-select-mid{
+        padding-bottom: ${({ $clientSelect }) => $clientSelect ? '0' : '10px'};;
+        height: ${({ $clientSelect }) => $clientSelect ? '0' : '44px'};
+        opacity: ${({ $clientSelect }) => $clientSelect ? '0' : '1'};
+        pointer-events: ${({ $clientSelect }) => $clientSelect ? 'none' : 'auto'};;
+        transition: 0.2s ease;
+    }
 
     .form-button{
         margin-top: 40px;

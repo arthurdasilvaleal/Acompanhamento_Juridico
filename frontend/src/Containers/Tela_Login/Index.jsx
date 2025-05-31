@@ -1,11 +1,13 @@
 import { Container, InputSld } from './style'
 import Loading_screen from '../../components/Loading_Form/Loading'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import document from "../../gifs/document.gif"
 import gavel from "../../gifs/gavel.gif"
 import libra from "../../gifs/libra.gif"
+
+import LoadingPage from '../../components/Loading_Pages/Loading'
 
 export default function Login(){
 
@@ -16,6 +18,8 @@ export default function Login(){
     // Variáveis de estado
     const [LoginPass, set_LoginPass] = useState(false)
     const [Loading, set_Loading] = useState(false)
+    const [loadingScreen, set_LoadingScreen] = useState(true)
+    
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -26,6 +30,7 @@ export default function Login(){
             const response = await axios.post("http://localhost:5000/submit_login", params)
             
             if(response.data.success){
+                localStorage.setItem("logado", "true")
                 set_Loading(false)
                 navigate("/main", {
                     state: {
@@ -44,8 +49,16 @@ export default function Login(){
         }
     }
 
+    useEffect(() => {
+        const timer = setTimeout(() =>{set_LoadingScreen(false)}, 1500)
+        
+        return () => clearTimeout(timer)
+    }, [])
+
     return(
         <>
+        {loadingScreen && (<LoadingPage />)}
+        
             <Container onSubmit={handleLogin}>
                 <div className='gifs'>
                     <img src={document} alt="processos" />
@@ -81,7 +94,6 @@ export default function Login(){
                 <button className='btn' type='submit'>Entrar</button>
                 {Loading && (<Loading_screen />)}
             </Container>
-            
         </>
     )
 }

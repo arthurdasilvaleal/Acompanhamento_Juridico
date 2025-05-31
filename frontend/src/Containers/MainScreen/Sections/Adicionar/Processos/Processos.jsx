@@ -1,11 +1,14 @@
 import { Process_Form, Process_button } from "./style"
 import { Division_Line } from "../style"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { NumericFormat } from 'react-number-format'
 import axios from "axios"
 
 export default function Processos(){
     const [cd_NumProcesso, set_NumProcesso] = useState("")
+    const [nm_Cliente, set_nmCliente] = useState("")
+    const [ListCliente, set_ListCliente] = useState([])
+    const [opcaoCliente, set_OpacaoCliente] = useState("")
     const [nm_Autor, set_Autor] = useState("")
     const [nm_Reu, set_Reu] = useState("")
     const [nm_Cidade, set_Cidade] = useState("")
@@ -14,6 +17,10 @@ export default function Processos(){
     const [ds_Acao, set_Acao] = useState("")
     const [sg_Tribunal, set_Tribunal] = useState("")
 
+    // variáveis de estado
+    const isSelectable = nm_Cliente === ""
+    const blockCamp = opcaoCliente
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
@@ -21,6 +28,8 @@ export default function Processos(){
 
         const post_processo = {
             cd_NumProcesso,
+            nm_Cliente,
+            opcaoCliente,
             nm_Autor,
             nm_Reu,
             nm_Cidade,
@@ -36,6 +45,8 @@ export default function Processos(){
             alert("Processo adicionado com sucesso!")
 
             set_NumProcesso("")
+            set_nmCliente("")
+            set_OpacaoCliente("")
             set_Autor("")
             set_Reu("")
             set_Cidade("")
@@ -50,11 +61,33 @@ export default function Processos(){
         }
     }
 
+    // Nesta tela, acrescentar um campo para selecionar o cliente;
+    useEffect(() => {
+        axios.get("http://localhost:5000/get_clientes")
+          .then(response => {
+            set_ListCliente(response.data)
+          })
+          .catch(error => {
+            console.error("Erro ao buscar clientes:", error)
+          })
+    }, [])
+
+    useEffect(() => {
+        if (blockCamp === "1") {
+            set_Autor("")
+            set_Reu(nm_Cliente)
+        } else if (blockCamp === "2") {
+            set_Autor(nm_Cliente)
+            set_Reu("")
+        }
+      }, [blockCamp, nm_Cliente])
+      
+
     return(
         <>
             <h1>Adicionar um processo</h1>
             <hr />
-            <Process_Form onSubmit={handleSubmit}>
+            <Process_Form onSubmit={handleSubmit} $clientSelect={isSelectable}>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Processo">Número do Processo</label>
                     <input onChange={(e) => {
@@ -62,16 +95,37 @@ export default function Processos(){
                         set_NumProcesso(ParsedInteger)}} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={cd_NumProcesso} maxLength={25} required/>
                 </div>
                 <div className="input-group">
+                    <label className="label" htmlFor="nm_Cliente">Nome do Cliente</label>
+                    <input onChange={(e) => {
+                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+                        set_nmCliente(ParsedString)}} list="process-client" autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente} required/>
+                    <datalist id="process-client">
+                        {ListCliente.map((nome, index) => (
+                            <option key={index} value={nome.nm_Cliente}></option>
+                        ))}
+                    </datalist>
+                </div>
+                <div className="input-group-select-mid">
+                    <label className="label" htmlFor="opcaoCliente">Selecione a posição desse cliente</label>
+                    <select onChange={(e) => {
+                        set_OpacaoCliente(e.target.value)}} name="opcaoCliente" id="opcaoCliente" className="input-select" value={opcaoCliente} required>
+                        <option value="">Selecione</option>
+                        <option value="1">Réu</option>
+                        <option value="2">Autor</option>
+                        <option value="3">Terceiro</option>
+                    </select>
+                </div>
+                <div className="input-group">
                     <label className="label" htmlFor="nm_Autor">Nome do Autor</label>
                     <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
-                        set_Autor(ParsedString)}} autoComplete="off" name="nm_Autor" id="nm_Autor" className="input" type="text" value={nm_Autor} required/>
+                        set_Autor(ParsedString)}} autoComplete="off" name="nm_Autor" id="nm_Autor" className="input" type="text" value={nm_Autor} disabled={blockCamp === '2'} required/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Reu">Nome do Réu</label>
                     <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
-                        set_Reu(ParsedString)}} autoComplete="off" name="nm_Reu" id="nm_Reu" className="input" type="text" value={nm_Reu} required/>
+                        set_Reu(ParsedString)}} autoComplete="off" name="nm_Reu" id="nm_Reu" className="input" type="text" value={nm_Reu} disabled={blockCamp === '1'} required/>
                 </div>
                 <div className="input-group">
                 <label className="label" htmlFor="nm_Cidade">Cidade</label>

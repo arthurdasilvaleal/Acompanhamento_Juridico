@@ -113,7 +113,7 @@ export default function MainScreen() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
           <h2>Você realmente deseja sair?</h2>
-          <Link to={'/'}><button className='btn'>Sair</button></Link>
+          <Link to={'/'} onClick={() => localStorage.removeItem("logado")}><button className='btn'>Sair</button></Link>
         </Exit_card>
       </Container>
     </>

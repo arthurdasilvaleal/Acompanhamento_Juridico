@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
-from datetime import datetime
 
 app = Flask(__name__)
 CORS(app) # Resolve o erro do navegador bloquear a conexão
@@ -70,8 +69,7 @@ def post_clientes():
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = """SELECT  nm_Cliente
-            FROM cliente"""
+    query = "SELECT nm_Cliente FROM cliente"
     cursor.execute(query)
     result = cursor.fetchall()
     return jsonify(result)
@@ -151,6 +149,8 @@ def post_processo():
     data = request.get_json()
 
     NumProcesso = data.get("cd_NumProcesso")
+    NomeCliente = data.get("nm_Cliente")
+    Posicao = data.get("opcaoCliente")
     Autor = data.get("nm_Autor")
     Reu = data.get("nm_Reu")
     Cidade = data.get("nm_Cidade")
@@ -160,19 +160,17 @@ def post_processo():
     Tribunal = data.get("sg_Tribunal")
 
     # Buscar cliente pelo nome no campo "Autor"
-    query_cliente = "SELECT cd_Cliente FROM cliente WHERE nm_Cliente = %s or nm_Cliente = %s;"
-    cursor.execute(query_cliente, (Autor, Reu,))
+    query_cliente = "SELECT cd_Cliente FROM cliente WHERE nm_Cliente = %s;"
+    cursor.execute(query_cliente, (NomeCliente,))
     resultado = cursor.fetchone()
 
     if not resultado:
-        return jsonify({"error": f"Cliente {Autor} ou {Reu} não encontrado."}), 400
+        return jsonify({"error": "Cliente não encontrado."}), 400
 
     códigoCliente = resultado["cd_Cliente"]
 
-    query_processo = """
-        INSERT INTO processo (cd_NumeroProcesso, nm_Autor, nm_Reu, nm_Cidade, vl_Causa, ds_Juizo, ds_Acao, sg_Tribunal, cd_Cliente)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-    values = (NumProcesso, Autor, Reu, Cidade, Causa, Juizo, Acao, Tribunal, códigoCliente)
+    query_processo = """CALL Proc_Insercao_ProcessoCliente(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    values = (NumProcesso, códigoCliente, Posicao, Autor, Reu, Juizo, Acao, Cidade, Tribunal, Causa)
     try:
         cursor.execute(query_processo, values)
         db.commit()

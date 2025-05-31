@@ -57,7 +57,7 @@ export default function Cadastro(){
             ds_Complemento: complemento,
             cd_NumeroEndereco: NumeroEndereco,
             ds_Email: email,
-            nm_Usuario: ID,
+            nm_Usuario: ID.toLowerCase(),
             ds_Senha: password,
             cd_TipoColaborador: typeWorker
         }
