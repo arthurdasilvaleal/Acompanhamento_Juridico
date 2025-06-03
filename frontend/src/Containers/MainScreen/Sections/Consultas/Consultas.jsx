@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
-import { Intimacao_card } from "./style"
-import { InputMask } from "@react-input/mask"
+import { Intimacao_card, Task_card } from "./style"
 import axios from "axios"
 
 
@@ -282,11 +281,12 @@ export default function Consulta(){
                                                 }
                                             })}
                                         </Intimacao_card>
+
                                     )}
-                                    
                                 </Card>
+
                             </div>
-                        );
+                        )
                     })}
                 </Process_Cards>
             )}

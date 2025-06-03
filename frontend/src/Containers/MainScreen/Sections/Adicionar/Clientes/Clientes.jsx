@@ -3,7 +3,8 @@ import { Division_Line } from "../style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
-import axios from "axios"
+import Modal from '../../../../../components/Modal/Modal'
+import axios from 'axios'
 
 export default function Clientes(){
     const [nm_Cliente, set_nmCliente] = useState("")
@@ -12,24 +13,29 @@ export default function Clientes(){
     const [nm_Logradouro, set_nmLogradouro] = useState("")
     const [nm_Bairro, set_nmBairro] = useState("")
     const [nm_Cidade, set_nmCidade] = useState("")
-    const [nm_Estado, set_nmEstado] = useState("")
+    const [sg_Estado, set_sgEstado] = useState("")
     const [cd_NumeroEndereco, set_cdNumeroEndereco] = useState("")
     const [nm_Complemento, set_nmComplemento] = useState("")
     const [cd_Telefone, set_cdTelefone] = useState("")
     const [ds_Email, set_dsEmail] = useState("")
+
+    // Variáveis de Status
+    const [isModalOpen, setModalOpen] = useState(false)
+    const [ModalStatus, set_ModalStatus] = useState(false)
+    const [formStatusMessage, setFormStatusMessage] = useState("")
+    const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
 
     // Busca dados ao clicar em "Clientes"
     const buscarCep = async (cep) => {
         try{
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
             const data = await response.json()
-            console.log(data)
         
             if(!data.erro){
                 set_nmLogradouro(data.logradouro)
                 set_nmBairro(data.bairro)
                 set_nmCidade(data.localidade)
-                set_nmEstado(data.estado)
+                set_sgEstado(data.uf)
             }
             else {
                 alert("CEP não encontrado!")
@@ -52,16 +58,18 @@ export default function Clientes(){
             nm_Logradouro,
             nm_Bairro,
             nm_Cidade,
-            nm_Estado,
+            sg_Estado,
             cd_NumeroEndereco,
             nm_Complemento,
             ds_Email
         }
 
         try{
-            const response = await axios.post("http:/192.168.100.3:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
-            alert("Cliente adicionado com sucesso!")
+            setFormStatusMessage("Cliente adicionado com sucesso!")
+            setModalOpen(true)
+            set_ModalStatus(true)
 
             // Resetando o formulário
             set_nmCliente("")
@@ -71,13 +79,16 @@ export default function Clientes(){
             set_nmLogradouro("")
             set_nmBairro("")
             set_nmCidade("")
-            set_nmEstado("")
+            set_sgEstado("")
             set_cdNumeroEndereco("")
             set_nmComplemento("")
             set_dsEmail("")
         } catch (error) {
-            console.error("Erro ao adicionar processo:", error)
-            alert(error.response.data.error)
+            console.error("Erro ao cadastrar cliente:", error)
+            setFormStatusMessage("Erro ao Adicionar cliente.")
+            set_fromStatusErrorMessage(error.response.data.error)
+            setModalOpen(true)
+            set_ModalStatus(false)
         }
     }
 
@@ -134,11 +145,36 @@ export default function Clientes(){
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
                         set_nmCidade(ParsedString)}} autoComplete="off" name="nm_Cidade" id="nm_Cidade" className="input" type="text" value={nm_Cidade} required/>
                 </div>
-                <div className="input-group">
-                    <label className="label" htmlFor="nm_Estado">Estado</label>
-                    <input onChange={(e) => {
-                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
-                        set_nmEstado(ParsedString)}} autoComplete="off" name="nm_Estado" id="nm_Estado" className="input" type="text" value={nm_Estado} required/>
+                <div className="input-group-select">
+                    <label className="label" htmlFor="sg_Estado">UF</label>
+                    <select onChange={(e) => set_sgEstado(e.target.value)} name="sg_Estado" id="sg_Estado" className="input-select" value={sg_Estado} required>
+                        <option value="">Selecione</option>
+                        <option value="AC">AC</option>
+                        <option value="AL">AL</option>
+                        <option value="AP">AP</option>
+                        <option value="AM">AM</option>
+                        <option value="BA">BA</option>
+                        <option value="ES">ES</option>
+                        <option value="GO">GO</option>
+                        <option value="DF">DF</option>
+                        <option value="MA">MA</option>
+                        <option value="MT">MT</option>
+                        <option value="MS">MS</option>
+                        <option value="MG">MG</option>
+                        <option value="PA">PA</option>
+                        <option value="PR">PB</option>
+                        <option value="PE">PE</option>
+                        <option value="PI">PI</option>
+                        <option value="RJ">RJ</option>
+                        <option value="RN">RN</option>
+                        <option value="RS">RS</option>
+                        <option value="RO">RO</option>
+                        <option value="RR">RR</option>
+                        <option value="SC">SC</option>
+                        <option value="SP">SP</option>
+                        <option value="SE">SE</option>
+                        <option value="TO">TO</option>
+                    </select>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_NumeroEndereco">Número</label>
@@ -167,6 +203,7 @@ export default function Clientes(){
                 <Client_button type="submit">Adicionar</Client_button>
             </Client_form>
             <Division_Line />
+            <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </>
     )
 }

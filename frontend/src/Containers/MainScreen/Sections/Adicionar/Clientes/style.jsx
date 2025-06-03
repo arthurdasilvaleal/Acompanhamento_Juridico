@@ -56,6 +56,11 @@ export const Client_form = styled.form`
         display: flex;
         align-items: center;
         gap: 20px;
+        padding-bottom: 10px;
+
+        .input-select{
+            width: calc(30vw + 36px);
+        }
 
         option{
             background-color: #00000039;
@@ -65,7 +70,7 @@ export const Client_form = styled.form`
         .label{
             text-align: end;
         }
-    }    
+    }   
 
     .form-button{
         margin-top: 40px;

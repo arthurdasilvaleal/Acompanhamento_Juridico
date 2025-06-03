@@ -329,6 +329,9 @@ export const Consult_cardForm = styled.form`
 
         .input-select{
             width: calc(30vw + 36px);
+            @media (max-width: 768px) {
+                width: auto;
+            }
         }
 
         option{
@@ -343,8 +346,6 @@ export const Consult_cardForm = styled.form`
 `
 
 export const Intimacao_card = styled.div`
-
-    
     // Separação das Intimações
     & > hr{
 
@@ -357,9 +358,12 @@ export const Intimacao_card = styled.div`
     }
 
     .Intimacao-group{
-        
         hr{
             margin: 0;
         }
     }
+`
+
+export const Task_card = styled.div`
+    
 `

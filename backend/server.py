@@ -81,7 +81,7 @@ def post_cliente():
     Logradouro = data.get("nm_Logradouro")
     Bairro = data.get("nm_Bairro")
     Cidade = data.get("nm_Cidade")
-    Estado = data.get("nm_Estado")
+    Estado = data.get("sg_Estado")
     CEP = data.get("cd_CEP")
     Nome = data.get("nm_Cliente")
     CPF = data.get("cd_CPF")
@@ -90,10 +90,16 @@ def post_cliente():
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
 
-    queryCliente = """
-        INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, nm_Estado, cd_CEP)
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
+    if len(CPF) > 11:
+        queryCliente = """
+        INSERT INTO Cliente (nm_Cliente, cd_CNPJ, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, sg_Estado, cd_CEP)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
+    else:
+        queryCliente = """
+            INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email, nm_Logradouro, nm_Bairro, nm_Cidade, sg_Estado, cd_CEP)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
 
     try:
         valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, Logradouro, Bairro, Cidade, Estado, CEP)
