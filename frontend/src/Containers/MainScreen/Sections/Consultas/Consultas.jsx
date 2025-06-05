@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Consult_form, Consult_button, NotFound_Error, InputError } from "./style"
+import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
 import axios from "axios"
@@ -57,14 +57,15 @@ export default function Consulta(){
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
-            console.log(response.data)
-            set_Processos(response.data)
             if(response.data.length > 0){
+                set_Processos(response.data)
                 set_foundProcess(true)
                 set_NotFound(false)
                 CatchIntimacoes()
+                document.body.style.overflow = "visible"
             }
             else{
+                if(processos.length > 0){document.body.style.overflow = "hidden"}
                 set_foundProcess(false)
                 set_NotFound(true)
             }
@@ -74,18 +75,18 @@ export default function Consulta(){
         }
     }
 
-    // Bloqueando a barra de rolagem Y na hora de abrir/fechar o card e achando um processo
-    useEffect(() => {
+    // Bloqueando a barra de rolagem Y na hora de abrir/fechar o card e achando um processo(DEPRECATED)
+    // useEffect(() => {
         
-        if(foundProcess || !CloseForm){document.body.style.overflow = "hidden"}
+    //     if(foundProcess || !CloseForm){document.body.style.overflow = "hidden"}
 
-        const timeout = setTimeout(() =>{
-            document.body.style.overflow = ""
-        }, 1000)
+    //     const timeout = setTimeout(() =>{
+    //         document.body.style.overflow = ""
+    //     }, 1000)
 
-        return () => clearTimeout(timeout) // Por segurança, para evitar bugs
+    //     return () => clearTimeout(timeout) // Por segurança, para evitar bugs
         
-    }, [CloseForm, foundProcess])
+    // }, [CloseForm, foundProcess])
 
     // Enviando os dados dos formularios dos cards
     const PostIntimaçãoSubmit = async (e, id) => {
@@ -186,7 +187,10 @@ export default function Consulta(){
                     </div>
                     {notFound && (<NotFound_Error>Processo não encontrado.</NotFound_Error>)}
                 </div>
-                <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>   
+                <Twin_Button>
+                    <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
+                    <Consult_button className="add-processo-button" type="button" style={{ padding: "0 33px" }}>Adicionar Processo</Consult_button>
+                </Twin_Button>
             </Consult_form>
             {processos.length > 0 && (
                 <Process_Cards $cardOpen={CloseForm}>

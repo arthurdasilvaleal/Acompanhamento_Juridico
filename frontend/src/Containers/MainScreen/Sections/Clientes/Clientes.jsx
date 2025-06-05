@@ -1,9 +1,8 @@
 import { Client_form, Client_button } from "./style"
-import { Division_Line } from "../style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
-import Modal from '../../../../../components/Modal/Modal'
+import Modal from '../../../../components/Modal/Modal'
 import axios from 'axios'
 
 export default function Clientes(){
@@ -65,7 +64,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://localhost:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             setFormStatusMessage("Cliente adicionado com sucesso!")
             setModalOpen(true)
@@ -202,7 +201,7 @@ export default function Clientes(){
                 </div>
                 <Client_button type="submit">Adicionar</Client_button>
             </Client_form>
-            <Division_Line />
+            <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </>
     )

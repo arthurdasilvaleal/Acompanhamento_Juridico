@@ -7,6 +7,7 @@ export const Consult_form = styled.form`
     gap: 40px;
     background-color: #00000070;
     overflow: hidden;
+    /* transform: translateX(-100px); CONTINUAR AMANHÃ */
 
     // Pode quebrar
     height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 148px)`}; //Envio do form
@@ -25,9 +26,6 @@ export const Consult_form = styled.form`
         height: ${({ $Enviado }) => $Enviado ? `240px` : `calc(100vh - 148px)`};
         padding-left: 0;
         padding-right: 0;
-        button{
-            margin-left: 170px;
-        }
     }
 
     .GroupBy{
@@ -97,6 +95,15 @@ export const Consult_button = styled.button`
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: box-shadow 250ms, transform 250ms, background-color 0.8s ease;
+    }
+`
+
+export const Twin_Button = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    @media (max-width: 768px) {
+        margin-left: 170px;
     }
 `
 

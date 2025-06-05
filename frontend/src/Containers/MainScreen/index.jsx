@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import Consulta from './Sections/Consultas/Consultas.jsx'
-import Adicionar from './Sections/Adicionar/Adicionar.jsx'
+import Clientes from './Sections/Clientes/Clientes.jsx'
 import Logo from '../../Images/logo.png'
 import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 
@@ -50,16 +50,16 @@ export default function MainScreen() {
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
-    "Consultas": <Consulta />,
-    "Adicionar": <Adicionar />,
+    "Processos": <Consulta />,
+    "Clientes": <Clientes />,
     "Relatórios": <></>
   }
 
   const SubTitleObject = {
     SubTitles: [
       <p key="Visão Geral">Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
-      <p key="Consultas">Aqui você pode preencher as informações para consulta</p>,
-      <p key="Adicionar">Adicione novos clientes e processos</p>,
+      <p key="Processos">Aqui você pode preencher as informações para consulta processual e adicionar processos</p>,
+      <p key="Clientes">Veja e adicione novos clientes</p>,
       <p key="Relatórios">Visualize relatórios detalhados das suas atividades</p>
     ]
   }

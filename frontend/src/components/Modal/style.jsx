@@ -19,6 +19,7 @@ export const ModalContent = styled.div`
   border-radius: 12px;
   max-width: 400px;
   width: 50%;
+  border: ${({ $SucessBorder }) => $SucessBorder ? "2px solid green" : "2px solid red"};
   text-align: center;
   position: relative;
   color: #000;

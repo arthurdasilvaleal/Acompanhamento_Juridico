@@ -1,7 +1,7 @@
 import { Process_Form, Process_button } from "./style"
-import { Division_Line } from "../style"
 import { useEffect, useState } from "react"
 import { NumericFormat } from 'react-number-format'
+import Modal from '../../../../components/Modal/Modal'
 import axios from "axios"
 
 export default function Processos(){
@@ -20,6 +20,10 @@ export default function Processos(){
     // variáveis de estado
     const isSelectable = nm_Cliente === ""
     const blockCamp = opcaoCliente
+    const [isModalOpen, setModalOpen] = useState(false)
+    const [ModalStatus, set_ModalStatus] = useState(false)
+    const [formStatusMessage, setFormStatusMessage] = useState("")
+    const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -42,7 +46,9 @@ export default function Processos(){
         try{
             const response = await axios.post("http://localhost:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
-            alert("Processo adicionado com sucesso!")
+            setFormStatusMessage("Processo adicionado com sucesso!")
+            setModalOpen(true)
+            set_ModalStatus(true)
 
             set_NumProcesso("")
             set_nmCliente("")
@@ -57,7 +63,10 @@ export default function Processos(){
             
         } catch (error) {
             console.error("Erro ao adicionar processo:", error)
-            alert(error.response.data.error)
+            setFormStatusMessage("Erro ao Adicionar Processo.")
+            set_fromStatusErrorMessage(error.response.data.error)
+            setModalOpen(true)
+            set_ModalStatus(false)
         }
     }
 
@@ -165,7 +174,8 @@ export default function Processos(){
                 </div>
                 <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
-            <Division_Line />
+            <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
+            <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </>
     )
 }

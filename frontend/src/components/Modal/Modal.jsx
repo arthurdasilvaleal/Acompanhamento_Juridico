@@ -5,7 +5,7 @@ export default function Modal({ isOpen, onClose, message, sucess, messageError }
 
   return (
     <ModalOverlay>
-      <ModalContent>
+      <ModalContent $SucessBorder={sucess}>
         <CloseButton onClick={onClose}>×</CloseButton>
         {sucess === true ? (
             <>
@@ -16,7 +16,9 @@ export default function Modal({ isOpen, onClose, message, sucess, messageError }
             <>
                 <h2 style={{ color: 'red' }}>Erro</h2>
                 <p>{message}</p>
-                <p style={{ fontSize: '13px' }}>Detalhes: {messageError}</p>
+                {messageError !== "" && (
+                    <p style={{ fontSize: '13px' }}>Detalhes: {messageError}</p>
+                )}
             </>
         )}
       </ModalContent>
