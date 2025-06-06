@@ -5,15 +5,17 @@ export const Consult_form = styled.form`
     flex-direction: row;
     padding: 20px 30px 0 30px;
     gap: 40px;
-    background-color: #00000070;
+    background-color: #2b2b2b;
     overflow: hidden;
-    /* transform: translateX(-100px); CONTINUAR AMANHÃ */
+    transform: ${({ $processOpen }) => $processOpen ? "translateX(-100%)" : "translateX(0)"};
+    z-index: 2;
+    
 
     // Pode quebrar
     height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 148px)`}; //Envio do form
     max-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 148px)" : "0"}; //Abertura do cartão
     padding-top: ${({ $cardOpen }) => $cardOpen ? "20px" : "0"};
-    transition: padding 0.9s ease, height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1), max-height 0.9s ease;
+    transition: padding 0.9s ease, height 0.9s cubic-bezier(0.3, 0.2, 0.2, 1), max-height 0.9s ease, transform 0.4s ease-in-out;
     
 
     @media (max-width: 1280px) and (max-height: 600px){
@@ -100,10 +102,16 @@ export const Consult_button = styled.button`
 
 export const Twin_Button = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 10px;
     @media (max-width: 768px) {
-        margin-left: 170px;
+        margin-left: 140px;
+        flex-direction: row;
+    }
+    .add-processo-button{
+        opacity: ${({ $disableForProcess }) => $disableForProcess ? "0" : "1"};
+        pointer-events: ${({ $disableForProcess }) => $disableForProcess ? "none" : "all"};
+        transition: all 250ms ease-in-out;
     }
 `
 
@@ -123,6 +131,7 @@ export const Process_Cards = styled.div`
     display: flex;
     flex-direction: column;
     margin: 0;
+    z-index: 2;
     min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 298px)" : "calc(100vh - 128px)"};
     transition: min-height 0.8s ease-out, background-color 150ms ease;
 

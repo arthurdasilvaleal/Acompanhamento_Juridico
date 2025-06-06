@@ -1,5 +1,17 @@
 import styled from "styled-components"
 
+export const FixedBox = styled.div`
+    position: absolute;
+    width: calc(100vw - 200px);
+    top: 130px;
+    opacity: ${({ $Show }) => $Show ? "1" : "0"};
+    z-index: 1;
+    transition: opacity 0.3s ease-out;
+    @media (max-width: 768px) {
+        width: 100vw;
+    }
+`
+
 export const Process_Form = styled.form`
     display: flex;
     flex-direction: column;
@@ -80,7 +92,52 @@ export const Process_Form = styled.form`
     }
 
     .form-button{
-        margin-top: 40px;
+        margin-top: 31px;
+    }
+`
+
+export const Process_back_button = styled.button`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 13px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    padding: 0;
+    border-radius: 20px;
+    border: 1px solid #fff;
+    background-color: transparent;
+    font-family: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease-out, border 0.1s ease, width 0.3s ease-in-out;
+    overflow: hidden;
+    
+    svg{
+        width: 20px;
+        margin-left: 9px;
+    }
+
+    span{
+        position: absolute;
+        opacity: 0;
+        left: 50px;
+        transition: left 0.3s ease-in-out, opacity 0.4s ease;
+    }
+
+    &:hover{
+        width: 80px;
+        background: #CDAF6F;
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
+        border: none;
+        transition: all 400ms;
+        span{
+            left: 33px;
+            transition: left 0.3s ease-in-out, opacity 0.2s ease;
+            opacity: 1;
+        }
     }
 `
 

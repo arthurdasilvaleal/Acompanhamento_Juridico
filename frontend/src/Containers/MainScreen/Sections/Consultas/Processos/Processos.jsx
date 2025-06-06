@@ -1,10 +1,10 @@
-import { Process_Form, Process_button } from "./style"
+import { Process_Form, Process_button, FixedBox, Process_back_button } from "./style"
 import { useEffect, useState } from "react"
 import { NumericFormat } from 'react-number-format'
-import Modal from '../../../../components/Modal/Modal'
+import Modal from '../../../../../components/Modal/Modal'
 import axios from "axios"
 
-export default function Processos(){
+export default function Processos({ ShowWindow, setShowWindow }){
     const [cd_NumProcesso, set_NumProcesso] = useState("")
     const [nm_Cliente, set_nmCliente] = useState("")
     const [ListCliente, set_ListCliente] = useState([])
@@ -72,13 +72,15 @@ export default function Processos(){
 
     // Nesta tela, acrescentar um campo para selecionar o cliente;
     useEffect(() => {
-        axios.get("http://localhost:5000/get_clientes")
-          .then(response => {
-            set_ListCliente(response.data)
-          })
-          .catch(error => {
-            console.error("Erro ao buscar clientes:", error)
-          })
+        setTimeout(() => {
+            axios.get("http://localhost:5000/get_clientes")
+            .then(response => {
+                set_ListCliente(response.data)
+            })
+            .catch(error => {
+                console.error("Erro ao buscar clientes:", error)
+            })
+          }, 300)
     }, [])
 
     useEffect(() => {
@@ -93,7 +95,13 @@ export default function Processos(){
       
 
     return(
-        <>
+        <FixedBox $Show={ShowWindow}>
+            <Process_back_button onClick={() => setShowWindow(false)}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                </svg>
+                <span>Voltar</span>
+            </Process_back_button>
             <h1>Adicionar um processo</h1>
             <hr />
             <Process_Form onSubmit={handleSubmit} $clientSelect={isSelectable}>
@@ -174,8 +182,8 @@ export default function Processos(){
                 </div>
                 <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
-            <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
+            <hr style={{ height: "51px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
-        </>
+        </FixedBox>
     )
 }

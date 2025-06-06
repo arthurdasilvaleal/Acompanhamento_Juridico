@@ -9,8 +9,10 @@ db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="root",
-    database="bd_aj"
+    database="bd_aj",
+    autocommit=True # SE ISSO NÃO FUNCIONAR, ADICIONE O COMANDO ABAIXO EM CADA ROTA!!!!!!!!!!!!
 )
+
 cursor = db.cursor(dictionary=True)
 
 # Para o Login
@@ -198,10 +200,13 @@ def get_intimacao():
             JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
             JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
             WHERE C.nm_Cliente = %s"""
-    
-    cursor.execute(query, (Nome_Parte,))
-    result = cursor.fetchall()
-    return jsonify(result)
+    try:
+        cursor.execute(query, (Nome_Parte,))
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as err:
+        print("Erro nas intimações:", err)
+        return jsonify({"erro ao buscar intimações": str(err)}), 500
     
 
 # Para enviar os dados de Intimações/Tarefas

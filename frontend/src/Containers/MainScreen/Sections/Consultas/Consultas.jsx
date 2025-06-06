@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
+import Processos from "./Processos/Processos"
 import axios from "axios"
 
 
@@ -20,11 +21,12 @@ export default function Consulta(){
     const [openCardId, set_OpenCardId] = useState(null)
     const [CloseForm, set_CloseForm] = useState(true) // Tampar o formulario
     const [OpenButtons, set_OpenButtons] = useState(true)
+    const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
 
     // Variável dos formulários de cada card
     const [formData, setFormData] = useState({})
 
-    // Função para atualizar dados de cada processo
+    // Função para atualizar dados de cada processo separadamente
     const handleChange = (processoId, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -114,6 +116,7 @@ export default function Consulta(){
             }))
 
             CatchIntimacoes()
+            
         }catch(error){
             console.error("Erro ao adicionar Intimação:", error)
             alert("Erro: " + error.response.data.error)
@@ -160,7 +163,8 @@ export default function Consulta(){
 
     return(
         <>
-            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} onSubmit={getProcessSubmit}>
+            <Processos ShowWindow={openAddProcess} setShowWindow={set_openAddProcess}/>
+            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
@@ -187,9 +191,9 @@ export default function Consulta(){
                     </div>
                     {notFound && (<NotFound_Error>Processo não encontrado.</NotFound_Error>)}
                 </div>
-                <Twin_Button>
+                <Twin_Button $disableForProcess={processos.length > 0 && !notFound}>
                     <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
-                    <Consult_button className="add-processo-button" type="button" style={{ padding: "0 33px" }}>Adicionar Processo</Consult_button>
+                    <Consult_button className="add-processo-button" type="button" onClick={() => set_openAddProcess(prev => !prev)} style={{ padding: "0 33px" }}>Adicionar Processo</Consult_button>
                 </Twin_Button>
             </Consult_form>
             {processos.length > 0 && (
