@@ -15,6 +15,7 @@ export const Container = styled.form`
     backdrop-filter: blur(20px);
     @media (max-width: 768px) {
       height: 100dvh; // Arruma a altura do dispositivo
+      width: 100dvw;
     }
 
     h1{

@@ -3,7 +3,7 @@ import styled from "styled-components"
 export const Container = styled.main`
     display: flex;
     flex-direction: row;
-    overflow: ${props => props.$isOpen ? `hidden` : `visible`};
+    overflow: ${props => props.$isOpen ? `hidden` : `visible`}; 
 `
 
 export const Main_Menu = styled.aside`
@@ -152,9 +152,7 @@ export const Main_Content = styled.section`
     width: calc(100% - 200px); //retira a largura do menu do calculo da largura total
     color: #fff;
     position: relative;
-    overflow: hidden;
     transition: filter 0.3s, transform 0.3s;
-    transform: ${({ $isBlocked }) => ($isBlocked ? "translateX(10px)" : "translateX(0)")};
     z-index: 0;
     
     ${({ $isBlocked }) =>
@@ -177,24 +175,8 @@ export const Main_Content = styled.section`
         width: 100%;
         margin-left: 0;
     }
-    
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 300vmax;
-        height: 300vmax;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(163deg, #405357 30%, #634331 100%);
-        animation: girarGradiente 15s linear infinite;
-        z-index: -1;
 
-        @media (max-width: 768px) {
-            width: 400vmax;
-            height: 400vmax;
-        }
-    }
+    
 
     @keyframes girarGradiente {
         from {
@@ -212,6 +194,22 @@ export const Main_Content = styled.section`
 
     hr{
         margin: 16px 10px;
+    }
+`
+/* background: linear-gradient(163deg, #405357 30%, #634331 100%); */
+export const Animated_background = styled.div`
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(270deg, #1f1c2c, #928DAB, #1f1c2c);
+    background-size: 600% 600%;
+    animation: gradientAnimation 15s ease infinite;
+
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 `
 

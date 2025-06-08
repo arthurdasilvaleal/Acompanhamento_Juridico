@@ -104,8 +104,10 @@ export const Twin_Button = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
+    
     @media (max-width: 768px) {
-        margin-left: 140px;
+        margin-left: auto;
+        margin-right: auto;
         flex-direction: row;
     }
     .add-processo-button{
@@ -132,6 +134,7 @@ export const Process_Cards = styled.div`
     flex-direction: column;
     margin: 0;
     z-index: 2;
+    display: ${({ $processOpen }) => $processOpen ? "none" : "flex"};
     min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 298px)" : "calc(100vh - 128px)"};
     transition: min-height 0.8s ease-out, background-color 150ms ease;
 
@@ -266,7 +269,7 @@ export const First_info = styled.div`
 export const Consult_cardForm = styled.form`
     display: flex;
     flex-direction: column;
-    padding: 20px 30px;
+    padding: ${({ $buttonOpen }) => $buttonOpen ? "0" : "20px 30px"};
     gap: 20px;
     background-color: #00000070;
     overflow: hidden;
@@ -275,7 +278,7 @@ export const Consult_cardForm = styled.form`
     transform: ${({ $buttonOpen }) => $buttonOpen ? "translateX(20px)" : "translateX(0)"};
     opacity: ${({ $buttonOpen }) => $buttonOpen ? "0" : "1"};
     pointer-events: ${({ $buttonOpen }) => $buttonOpen ? "none" : ""};
-    transition: transform 0.2s ease, opacity 0.2s ease, height 0.8s ease;
+    transition: transform 0.2s ease, opacity 0.2s ease, height 0.8s ease, padding 0.4s ease;
 
     & > h2{
         text-align: center;

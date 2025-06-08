@@ -9,10 +9,9 @@ db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="root",
-    database="bd_aj",
-    autocommit=True # SE ISSO NÃO FUNCIONAR, ADICIONE O COMANDO ABAIXO EM CADA ROTA!!!!!!!!!!!!
+    database="bd_aj"
 )
-
+# Se o usuário sair da aba muito rápido, causa um erro... fix that
 cursor = db.cursor(dictionary=True)
 
 # Para o Login

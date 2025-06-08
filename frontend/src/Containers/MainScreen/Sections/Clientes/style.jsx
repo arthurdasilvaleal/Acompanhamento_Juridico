@@ -70,16 +70,12 @@ export const Client_form = styled.form`
         .label{
             text-align: end;
         }
-    }   
-
-    .form-button{
-        margin-top: 40px;
     }
 `
 
 export const Client_button = styled.button`
     color: #fff;
-    margin-top: 30px;
+    margin: 16.5px 0;
     padding: 16px 33px;
     border-radius: 9px;
     background: #CDAF6F;

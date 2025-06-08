@@ -201,7 +201,7 @@ export default function Clientes(){
                 </div>
                 <Client_button type="submit">Adicionar</Client_button>
             </Client_form>
-            <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
+            {/* <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/> */}
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </>
     )

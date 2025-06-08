@@ -1,4 +1,4 @@
-import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card } from './style.jsx'
+import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card, Animated_background } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
@@ -64,6 +64,7 @@ export default function MainScreen() {
     ]
   }
 
+
   // Debug de renderizações de componentes
   // const renderCount = useRef(0)
   // renderCount.current += 1
@@ -72,7 +73,6 @@ export default function MainScreen() {
   return (
     <>
       {Loading && (<Loading_page />)}
-
       <Container $isOpen={menuOpen}>
         <Main_ToggleButton ref={buttonRef} $isOpen={menuOpen} onClick={() => setMenuOpen(prev => !prev)} />
         <Main_Menu ref={menuRef} $isOpen={menuOpen} $Exiting={Exit}>
@@ -95,6 +95,9 @@ export default function MainScreen() {
             }} id="bottone1"><strong>Sair</strong></button>
         </Main_Menu>
         <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
+
+            <Animated_background />
+
           <Main_Title>
             <h1>{option}</h1>
             {/* Adicionando o subtitulo dinamicamente */}

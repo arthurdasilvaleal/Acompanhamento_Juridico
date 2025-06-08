@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
-import Processos from "./Processos/Processos"
+import Processos from "./Add_Processos/Processos"
 import axios from "axios"
 
 
@@ -40,7 +40,7 @@ export default function Consulta(){
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://localhost:5000/get_processos?only=id")
+        axios.get("http://192.168.100.3:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -55,7 +55,7 @@ export default function Consulta(){
         e.preventDefault()
 
         try{
-            const response = await axios.get("http://localhost:5000/get_processos", {
+            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -67,7 +67,13 @@ export default function Consulta(){
                 document.body.style.overflow = "visible"
             }
             else{
-                if(processos.length > 0){document.body.style.overflow = "hidden"}
+                if(processos.length > 0){
+                    document.body.style.overflow = "hidden"
+                    window.scrollTo({
+                        top: 20,
+                        behavior: "smooth"
+                    })
+                }
                 set_foundProcess(false)
                 set_NotFound(true)
             }
@@ -75,6 +81,15 @@ export default function Consulta(){
             console.error("Erro ao buscar processo:", error)
             set_NotFound(true)
         }
+    }
+
+    if(openAddProcess){document.body.style.overflow = "visible"}
+    else if(notFound){
+        document.body.style.overflow = "hidden"
+        window.scrollTo({
+            top: 20,
+            behavior: "smooth"
+        })
     }
 
     // Bloqueando a barra de rolagem Y na hora de abrir/fechar o card e achando um processo(DEPRECATED)
@@ -148,7 +163,7 @@ export default function Consulta(){
 
     const CatchIntimacoes = async () => {
         try{
-            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente }})
+            const response = await axios.get("http://192.168.100.3:5000/get_card", {params: { parte: nm_Cliente }})
             set_Intimacoes(response.data)
             console.log(response.data)
         }catch(error){
@@ -197,7 +212,7 @@ export default function Consulta(){
                 </Twin_Button>
             </Consult_form>
             {processos.length > 0 && (
-                <Process_Cards $cardOpen={CloseForm}>
+                <Process_Cards $cardOpen={CloseForm} $processOpen={openAddProcess}>
                     {processos.map((processo) => {
                         const isOpen = openCardId === processo.cd_Processo
                         const formatedPhone = processo.cd_Telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")

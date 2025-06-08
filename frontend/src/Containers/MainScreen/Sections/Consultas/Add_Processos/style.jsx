@@ -2,13 +2,25 @@ import styled from "styled-components"
 
 export const FixedBox = styled.div`
     position: absolute;
-    width: calc(100vw - 200px);
-    top: 130px;
+    width: calc(100vw - 220px);
+    top: 140px;
     opacity: ${({ $Show }) => $Show ? "1" : "0"};
+    
     z-index: 1;
     transition: opacity 0.3s ease-out;
+    
     @media (max-width: 768px) {
-        width: 100vw;
+        width: calc(100vw - 20px);
+        top: 160px;
+
+        h1{
+            font-size: 1.2rem;
+            margin-left: 100px;
+        }
+    }
+    
+    hr{
+        margin-left: 30px;
     }
 `
 
@@ -30,7 +42,7 @@ export const Process_Form = styled.form`
 
         textarea{
             padding: 1rem 1rem;
-            height: 50px;
+            height: 38px;
             resize: none;
         }
     }
@@ -101,7 +113,7 @@ export const Process_back_button = styled.button`
     display: flex;
     align-items: center;
     top: 13px;
-    left: 20px;
+    left: 30px;
     width: 40px;
     height: 40px;
     color: #fff;
@@ -114,10 +126,23 @@ export const Process_back_button = styled.button`
     cursor: pointer;
     transition: background-color 0.3s ease-out, border 0.1s ease, width 0.3s ease-in-out;
     overflow: hidden;
+
+    @media (max-width: 768px) {
+        width: 30px;
+        height: 30px;
+        width: 80px;
+        background: #CDAF6F;
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
+        border: none;
+    }
     
     svg{
         width: 20px;
         margin-left: 9px;
+
+        @media (max-width: 768px) {
+            margin-left: 4px;
+        }
     }
 
     span{
@@ -125,6 +150,10 @@ export const Process_back_button = styled.button`
         opacity: 0;
         left: 50px;
         transition: left 0.3s ease-in-out, opacity 0.4s ease;
+        @media (max-width: 768px) {
+            left: 33px;
+            opacity: 1;
+        }
     }
 
     &:hover{

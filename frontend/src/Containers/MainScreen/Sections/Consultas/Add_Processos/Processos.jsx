@@ -158,7 +158,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="ds_Juizo">Descrição do Juízo</label>
-                    <textarea onChange={(e) => {
+                    <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ,.0-9°ºª\s]/g, "")
                         set_Juizo(ParsedString)}} autoComplete="off" name="ds_Juizo" id="ds_Juizo" className="input" type="text" value={ds_Juizo} maxLength={30} required/>
                 </div>
@@ -182,7 +182,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
                 </div>
                 <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
-            <hr style={{ height: "51px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/>
+            <hr style={{ height: "20px", opacity: "0"}}/>
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </FixedBox>
     )
