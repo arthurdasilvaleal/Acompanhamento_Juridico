@@ -12,6 +12,7 @@ export const H_align = styled.div`
       padding: 20px 0 20px;
       height: auto;
     }
+    backdrop-filter: blur(20px);
 `
 
 export const Container = styled.form`
