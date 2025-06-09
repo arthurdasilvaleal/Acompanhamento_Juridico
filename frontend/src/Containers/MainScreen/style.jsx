@@ -196,15 +196,15 @@ export const Main_Content = styled.section`
         margin: 16px 10px;
     }
 `
-/* background: linear-gradient(163deg, #405357 30%, #634331 100%); */
+
 export const Animated_background = styled.div`
     position: fixed;
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: linear-gradient(270deg, #1f1c2c, #928DAB, #1f1c2c);
+    background: linear-gradient(270deg, #405357, #928DAB, #634331);
     background-size: 600% 600%;
-    animation: gradientAnimation 15s ease infinite;
+    animation: gradientAnimation 30s ease infinite;
 
     @keyframes gradientAnimation {
         0% { background-position: 0% 50%; }

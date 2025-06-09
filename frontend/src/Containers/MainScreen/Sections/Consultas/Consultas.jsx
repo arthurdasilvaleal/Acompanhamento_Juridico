@@ -22,6 +22,7 @@ export default function Consulta(){
     const [CloseForm, set_CloseForm] = useState(true) // Tampar o formulario
     const [OpenButtons, set_OpenButtons] = useState(true)
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
+    const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
 
     // Variável dos formulários de cada card
     const [formData, setFormData] = useState({})
@@ -53,6 +54,7 @@ export default function Consulta(){
     // Pesquisando o processo (por nome e/ou numero)
     const getProcessSubmit = async (e) => {
         e.preventDefault()
+        set_firstContact(false)
 
         try{
             const response = await axios.get("http://192.168.100.3:5000/get_processos", {
@@ -67,13 +69,7 @@ export default function Consulta(){
                 document.body.style.overflow = "visible"
             }
             else{
-                if(processos.length > 0){
-                    document.body.style.overflow = "hidden"
-                    window.scrollTo({
-                        top: 20,
-                        behavior: "smooth"
-                    })
-                }
+                if(processos.length > 0){document.body.style.overflow = "hidden"}
                 set_foundProcess(false)
                 set_NotFound(true)
             }
@@ -83,6 +79,8 @@ export default function Consulta(){
         }
     }
 
+    // Apenas para remover o "buraco" em baixo deixado pelo componente de adicionar processo
+    if(firstContact){document.body.style.overflow = "hidden"}
     if(openAddProcess){document.body.style.overflow = "visible"}
     else if(notFound){
         document.body.style.overflow = "hidden"

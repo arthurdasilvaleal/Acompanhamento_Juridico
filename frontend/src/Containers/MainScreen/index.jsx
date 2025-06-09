@@ -64,6 +64,7 @@ export default function MainScreen() {
     ]
   }
 
+  if(contentMap !== "Processos"){document.body.style.overflow = "visible"}
 
   // Debug de renderizações de componentes
   // const renderCount = useRef(0)
@@ -96,7 +97,7 @@ export default function MainScreen() {
         </Main_Menu>
         <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
 
-            <Animated_background />
+          <Animated_background />
 
           <Main_Title>
             <h1>{option}</h1>
@@ -110,6 +111,7 @@ export default function MainScreen() {
             <hr />
           </Main_Title>
           {contentMap[option]}
+          
         </Main_Content>
         <Exit_card $Exiting={Exit} $Visible={Exit_Interacted}>
           <svg onClick={() => set_Exit(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">

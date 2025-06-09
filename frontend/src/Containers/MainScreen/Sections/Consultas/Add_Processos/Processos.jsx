@@ -44,7 +44,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
         }
         
         try{
-            const response = await axios.post("http://localhost:5000/post_processo", post_processo)
+            const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             setFormStatusMessage("Processo adicionado com sucesso!")
             setModalOpen(true)
@@ -73,7 +73,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
     // Nesta tela, acrescentar um campo para selecionar o cliente;
     useEffect(() => {
         setTimeout(() => {
-            axios.get("http://localhost:5000/get_clientes")
+            axios.get("http://192.168.100.3:5000/get_clientes")
             .then(response => {
                 set_ListCliente(response.data)
             })
@@ -96,7 +96,13 @@ export default function Processos({ ShowWindow, setShowWindow }){
 
     return(
         <FixedBox $Show={ShowWindow}>
-            <Process_back_button onClick={() => setShowWindow(false)}>
+            <Process_back_button onClick={() => {
+                    setShowWindow(false)
+                    window.scrollTo({
+                        top: 20,
+                        behavior: "smooth"
+                    })
+                }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
                 </svg>
@@ -182,7 +188,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
                 </div>
                 <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
-            <hr style={{ height: "20px", opacity: "0"}}/>
+            <hr style={{ height: "15px", opacity: "0"}}/>
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
         </FixedBox>
     )
