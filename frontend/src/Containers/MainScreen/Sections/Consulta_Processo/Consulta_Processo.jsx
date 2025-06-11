@@ -46,7 +46,7 @@ export default function Consulta_Processo(){
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://192.168.100.3:5000/get_processos?only=id")
+        axios.get("http://localhost:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -61,7 +61,7 @@ export default function Consulta_Processo(){
         set_firstContact(false)
 
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+            const response = await axios.get("http://localhost:5000/get_processos", {
                 params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
             })
 
@@ -119,7 +119,7 @@ export default function Consulta_Processo(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
+            const response = await axios.post("http://localhost:5000/post_card?form=intimacao", IntimacaoData)
             console.log("Intimação adicionada com sucesso!", response.data)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
@@ -169,7 +169,7 @@ export default function Consulta_Processo(){
 
     const CatchIntimacoes = async () => {
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_card", {params: { parte: nm_Cliente }})
+            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente }})
             set_Intimacoes(response.data)
             console.log(response.data)
         }catch(error){

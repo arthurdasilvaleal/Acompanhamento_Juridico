@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import Consulta_Processo from './Sections/Consulta_Processo/Consulta_Processo.jsx'
-import Clientes from './Sections/Clientes/Clientes.jsx'
+import Consulta_Cliente from './Sections/Consulta_Cliente/Consulta_Cliente.jsx'
 import Logo from '../../Images/logo.png'
 import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 
@@ -51,7 +51,7 @@ export default function MainScreen() {
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
     "Processos": <Consulta_Processo />,
-    "Clientes": <Clientes />,
+    "Clientes": <Consulta_Cliente />,
     "Relatórios": <></>
   }
 

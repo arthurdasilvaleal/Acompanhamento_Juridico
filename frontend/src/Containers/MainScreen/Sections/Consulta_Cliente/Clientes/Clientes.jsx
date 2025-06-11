@@ -2,7 +2,7 @@ import { Client_form, Client_button } from "./style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
-import Modal from '../../../../components/Modal/Modal'
+import Modal from '../../../../../components/Modal/Modal'
 import axios from 'axios'
 
 export default function Clientes(){
@@ -63,7 +63,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://localhost:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             set_FormStatusMessage("Cliente adicionado com sucesso!")
             set_ModalOpen(true)

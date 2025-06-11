@@ -26,6 +26,7 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
   - @react-input/mask
   - downshift
   - react-spinners
+  - @heroicons/react
 
 
 ### Back-end

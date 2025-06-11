@@ -66,7 +66,7 @@ def post_clientes():
         return jsonify({"error": str(err)}), 500
 
 
-# Consultar Clientes
+# Consultar nome dos clientes
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
@@ -75,6 +75,20 @@ def get_clientes():
     result = cursor.fetchall()
     return jsonify(result)
 
+# Consultar dados de TODOS os clientes
+@app.route("/get_Allclientes", methods=["GET"])
+def get_Allclientes():
+
+    try:
+        query = "SELECT * FROM Cliente"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    
+
+# Cadastrar Clientes
 @app.route("/post_cliente", methods=["POST"])
 def post_cliente():
     data = request.get_json()
