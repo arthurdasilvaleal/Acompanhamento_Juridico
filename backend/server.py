@@ -78,14 +78,11 @@ def get_clientes():
 # Consultar dados de TODOS os clientes
 @app.route("/get_Allclientes", methods=["GET"])
 def get_Allclientes():
-
-    try:
-        query = "SELECT * FROM Cliente"
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return jsonify(result)
-    except mysql.connector.Error as err:
-        return jsonify({"error": str(err)}), 500
+    
+    query = "SELECT * FROM Cliente"
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return jsonify(result)
     
 
 # Cadastrar Clientes
