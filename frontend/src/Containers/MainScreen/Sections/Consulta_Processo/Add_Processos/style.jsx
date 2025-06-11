@@ -139,6 +139,7 @@ export const Process_back_button = styled.button`
     svg{
         width: 20px;
         margin-left: 9px;
+        transition: transform 200ms ease;
 
         @media (max-width: 768px) {
             margin-left: 4px;
@@ -166,6 +167,11 @@ export const Process_back_button = styled.button`
             left: 33px;
             transition: left 0.3s ease-in-out, opacity 0.2s ease;
             opacity: 1;
+        }
+
+        svg{
+            transform: translateX(-3px);
+            transition: transform 200ms ease;
         }
     }
 `

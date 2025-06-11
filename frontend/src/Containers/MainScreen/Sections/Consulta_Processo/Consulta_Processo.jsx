@@ -182,10 +182,14 @@ export default function Consulta_Processo(){
     //     if(openCardId !== null){CatchIntimacoes()}
     // }, [openCardId])
 
-    window.scrollTo({
-        top: 1,
-        behavior: "instant"
-    })
+    // Resolve o erro do buraco ao sair de uma página para outra.
+    useEffect(() =>{
+        window.scrollTo({
+            top: 1,
+            behavior: "instant"
+        })
+    }, [])
+    
 
     return(
         <>
