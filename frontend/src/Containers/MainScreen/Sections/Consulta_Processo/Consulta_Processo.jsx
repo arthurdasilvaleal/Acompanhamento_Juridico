@@ -2,11 +2,12 @@ import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
-import Processos from "./Add_Processos/Processos"
+import Processo from "./Add_Processos/Processo"
+import Modal from "../../../../components/Modal/Modal"
 import axios from "axios"
 
 
-export default function Consulta(){
+export default function Consulta_Processo(){
 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
@@ -24,6 +25,11 @@ export default function Consulta(){
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
     const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
 
+    // Variáveis do Modal
+    const [isModalOpen, set_ModalOpen] = useState(false)
+    const [formStatusMessage, set_FormStatusMessage] = useState("")
+    const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+
     // Variável dos formulários de cada card
     const [formData, setFormData] = useState({})
 
@@ -37,7 +43,6 @@ export default function Consulta(){
             }
         }))
     }
-    
 
     // Pegando os numeros dos processos
     useEffect(() => {
@@ -49,7 +54,6 @@ export default function Consulta(){
             console.error("Erro ao buscar processos:", error)
           })
     }, [])
-
 
     // Pesquisando o processo (por nome e/ou numero)
     const getProcessSubmit = async (e) => {
@@ -85,7 +89,7 @@ export default function Consulta(){
     else if(notFound){
         document.body.style.overflow = "hidden"
         window.scrollTo({
-            top: 20,
+            top: 1,
             behavior: "smooth"
         })
     }
@@ -117,7 +121,9 @@ export default function Consulta(){
         try{
             const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
             console.log("Intimação adicionada com sucesso!", response.data)
-            alert("Intimação adicionada com sucesso!")
+            set_ModalOpen(true)
+            set_FormStatusMessage("Intimação adicionada com sucesso!")
+            set_fromStatusErrorMessage("")
 
             setFormData(prev => ({
                 ...prev,
@@ -132,7 +138,9 @@ export default function Consulta(){
             
         }catch(error){
             console.error("Erro ao adicionar Intimação:", error)
-            alert("Erro: " + error.response.data.error)
+            set_ModalOpen(true)
+            set_FormStatusMessage("Erro ao adicionar Intimação")
+            set_fromStatusErrorMessage(error.response.data.error)
         }
     }
 
@@ -174,9 +182,14 @@ export default function Consulta(){
     //     if(openCardId !== null){CatchIntimacoes()}
     // }, [openCardId])
 
+    window.scrollTo({
+        top: 1,
+        behavior: "instant"
+    })
+
     return(
         <>
-            <Processos ShowWindow={openAddProcess} setShowWindow={set_openAddProcess}/>
+            <Processo ShowWindow={openAddProcess} setShowWindow={set_openAddProcess}/>
             <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
@@ -305,12 +318,12 @@ export default function Consulta(){
 
                                     )}
                                 </Card>
-
                             </div>
                         )
                     })}
                 </Process_Cards>
             )}
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
         </>
     )
 }

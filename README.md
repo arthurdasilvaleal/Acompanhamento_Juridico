@@ -54,6 +54,7 @@ npm i cpf-cnpj-validator
 npm i inputmask
 npm i downshift
 npm i react-spinners
+npm i @heroicons/react
 
 ```
 

@@ -19,9 +19,8 @@ export default function Clientes(){
     const [ds_Email, set_dsEmail] = useState("")
 
     // Variáveis de Status
-    const [isModalOpen, setModalOpen] = useState(false)
-    const [ModalStatus, set_ModalStatus] = useState(false)
-    const [formStatusMessage, setFormStatusMessage] = useState("")
+    const [isModalOpen, set_ModalOpen] = useState(false)
+    const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
 
     // Busca dados ao clicar em "Clientes"
@@ -66,9 +65,9 @@ export default function Clientes(){
         try{
             const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
-            setFormStatusMessage("Cliente adicionado com sucesso!")
-            setModalOpen(true)
-            set_ModalStatus(true)
+            set_FormStatusMessage("Cliente adicionado com sucesso!")
+            set_ModalOpen(true)
+            set_fromStatusErrorMessage("")
 
             // Resetando o formulário
             set_nmCliente("")
@@ -84,10 +83,9 @@ export default function Clientes(){
             set_dsEmail("")
         } catch (error) {
             console.error("Erro ao cadastrar cliente:", error)
-            setFormStatusMessage("Erro ao Adicionar cliente.")
+            set_FormStatusMessage("Erro ao Adicionar cliente.")
             set_fromStatusErrorMessage(error.response.data.error)
-            setModalOpen(true)
-            set_ModalStatus(false)
+            set_ModalOpen(true)
         }
     }
 
@@ -202,7 +200,7 @@ export default function Clientes(){
                 <Client_button type="submit">Adicionar</Client_button>
             </Client_form>
             {/* <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/> */}
-            <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
         </>
     )
 }

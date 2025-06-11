@@ -2,7 +2,7 @@ import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
-import Consulta from './Sections/Consultas/Consultas.jsx'
+import Consulta_Processo from './Sections/Consulta_Processo/Consulta_Processo.jsx'
 import Clientes from './Sections/Clientes/Clientes.jsx'
 import Logo from '../../Images/logo.png'
 import Loading_page from '../../components/Loading_Pages/Loading.jsx'
@@ -17,7 +17,7 @@ export default function MainScreen() {
     return () => clearTimeout(timer)
   }, [])
 
-  const {nome, tipo} = location.state || {} // Se location.state, usará um objeto vazio
+  const {nome, tipo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
   const unSex = () => {
     if(tipo === "Estagiário" || tipo === "Advogado"){
       return "(a)"
@@ -50,7 +50,7 @@ export default function MainScreen() {
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
-    "Processos": <Consulta />,
+    "Processos": <Consulta_Processo />,
     "Clientes": <Clientes />,
     "Relatórios": <></>
   }

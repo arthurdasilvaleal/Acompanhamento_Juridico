@@ -191,7 +191,10 @@ export const Twin_input = styled.div`
       margin-top: 20px;
       display: flex;
       gap: 10px;
-
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
+      
       label{
         place-content: center;
       }
@@ -203,6 +206,10 @@ export const Twin_input = styled.div`
         height: 30px;
         cursor: pointer;
         transition: border-color 0.2s ease;
+
+        @media (max-width: 768px) {
+          width: 70vw;
+        }
       }
 
       select:hover{
@@ -299,4 +306,15 @@ export const Inputs_box = styled.div`
     .input-container.has-text .underline {
         transform: scaleX(1);
     }
+`
+
+export const ShowPass_button = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 `

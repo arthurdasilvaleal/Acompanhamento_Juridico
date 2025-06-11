@@ -4,7 +4,7 @@ import { NumericFormat } from 'react-number-format'
 import Modal from '../../../../../components/Modal/Modal'
 import axios from "axios"
 
-export default function Processos({ ShowWindow, setShowWindow }){
+export default function Processo({ ShowWindow, setShowWindow }){
     const [cd_NumProcesso, set_NumProcesso] = useState("")
     const [nm_Cliente, set_nmCliente] = useState("")
     const [ListCliente, set_ListCliente] = useState([])
@@ -20,9 +20,8 @@ export default function Processos({ ShowWindow, setShowWindow }){
     // variáveis de estado
     const isSelectable = nm_Cliente === ""
     const blockCamp = opcaoCliente
-    const [isModalOpen, setModalOpen] = useState(false)
-    const [ModalStatus, set_ModalStatus] = useState(false)
-    const [formStatusMessage, setFormStatusMessage] = useState("")
+    const [isModalOpen, set_ModalOpen] = useState(false)
+    const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
 
     const handleSubmit = async (e) => {
@@ -46,9 +45,9 @@ export default function Processos({ ShowWindow, setShowWindow }){
         try{
             const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
-            setFormStatusMessage("Processo adicionado com sucesso!")
-            setModalOpen(true)
-            set_ModalStatus(true)
+            set_FormStatusMessage("Processo adicionado com sucesso!")
+            set_ModalOpen(true)
+            set_fromStatusErrorMessage("")
 
             set_NumProcesso("")
             set_nmCliente("")
@@ -63,10 +62,9 @@ export default function Processos({ ShowWindow, setShowWindow }){
             
         } catch (error) {
             console.error("Erro ao adicionar processo:", error)
-            setFormStatusMessage("Erro ao Adicionar Processo.")
+            set_FormStatusMessage("Erro ao Adicionar Processo.")
             set_fromStatusErrorMessage(error.response.data.error)
-            setModalOpen(true)
-            set_ModalStatus(false)
+            set_ModalOpen(true)
         }
     }
 
@@ -99,7 +97,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
             <Process_back_button onClick={() => {
                     setShowWindow(false)
                     window.scrollTo({
-                        top: 20,
+                        top: 1,
                         behavior: "smooth"
                     })
                 }}>
@@ -189,7 +187,7 @@ export default function Processos({ ShowWindow, setShowWindow }){
                 <Process_button className='form-button' type="submit">Enviar</Process_button>
             </Process_Form>
             <hr style={{ height: "15px", opacity: "0"}}/>
-            <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage}/>
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
         </FixedBox>
     )
 }

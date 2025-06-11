@@ -1,10 +1,11 @@
 import { useState } from "react"
 import axios from "axios"
 import { Link } from 'react-router-dom'
-import { H_align, Container, Inputs_box, Header, Twin_input } from './style.jsx'
+import { H_align, Container, Inputs_box, Header, Twin_input, ShowPass_button } from './style.jsx'
 import { InputMask } from "@react-input/mask"
 import { cpf } from 'cpf-cnpj-validator'
 import Modal from "../../components/Modal/Modal.jsx"
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 
 export default function Cadastro(){
     const [nome, set_Nome] = useState("")
@@ -25,10 +26,10 @@ export default function Cadastro(){
 
     // Variáveis de estado
     const PassEqual = password === retype || retype === "";
-    const [isModalOpen, setModalOpen] = useState(false)
-    const [ModalStatus, set_ModalStatus] = useState(false)
-    const [formStatusMessage, setFormStatusMessage] = useState("")
+    const [isModalOpen, set_ModalOpen] = useState(false)
+    const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [showPass, set_showPass] = useState(false)
     
     // Buscar dados do CEP ao completar o CEP
     const buscarCep = async (cep) => {
@@ -71,9 +72,9 @@ export default function Cadastro(){
         try{
             const response = await axios.post("http://localhost:5000/post_cadastro", params)
             console.log(response.data)
-            setFormStatusMessage("Colaborador adicionado com sucesso!")
-            setModalOpen(true)
-            set_ModalStatus(true)
+            set_FormStatusMessage("Colaborador adicionado com sucesso!")
+            set_ModalOpen(true)
+            set_fromStatusErrorMessage("")
 
             set_Nome("")
             set_Cep("")
@@ -92,9 +93,8 @@ export default function Cadastro(){
 
         }catch(error){
             console.error("Erro ao cadastrar:", error)
-            setFormStatusMessage("Erro ao adicionar colaborador")
-            setModalOpen(true)
-            set_ModalStatus(false)
+            set_FormStatusMessage("Erro ao adicionar colaborador")
+            set_ModalOpen(true)
             if(error.message === "Network Error"){set_fromStatusErrorMessage("Erro de network")}
             else{set_fromStatusErrorMessage(error.response.data.error)}
         }
@@ -107,7 +107,7 @@ export default function Cadastro(){
                     <Header>
                         <Link to={"/"}>
                             <div className="styled-wrapper">
-                                <button className="button">
+                                <button type="button" className="button">
                                     <div className="button-box">
                                         <span className="button-elem">
                                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="arrow-icon">
@@ -255,7 +255,7 @@ export default function Cadastro(){
                     <Twin_input>
                         <Inputs_box>
                             <div className={`input-container ${password.length > 0 ? "has-text" : ""}`}>
-                                <input type="password" className="input" id="first-pass" required 
+                                <input type={showPass ? 'text' : 'password'} className="input" id="first-pass" required 
                                     onChange={(e) => {
                                         const Catch_Pass = e.target
                                         set_Password(Catch_Pass.value)
@@ -278,19 +278,29 @@ export default function Cadastro(){
                                         else{Catch_Pass.setCustomValidity("")}
                                         {/*TODO: Otimizar essa parte(retirar os IFs)*/}
                                     }} maxLength={26} value={password}/>
+                                    {password !== "" && (
+                                        <ShowPass_button type="button" onClick={() => set_showPass(prev => !prev)} aria-label={showPass ? 'Ocultar senha' : 'Mostrar senha'}>
+                                            {showPass ? (<EyeSlashIcon style={{ width: '20px', height: '20px' }}/>) : (<EyeIcon style={{ width: '20px', height: '20px' }}/>)}
+                                        </ShowPass_button>
+                                    )}
                                 <label htmlFor="input" className="label">Criar senha</label>
                                 <div className="underline" />
                             </div>
                         </Inputs_box>
                         <Inputs_box>
                             <div className="input-container">
-                                <input type="password" className="input" id="second-pass" required 
+                                <input type={showPass ? 'text' : 'password'} className="input" id="second-pass" required 
                                     onChange={(e) => {
                                         const Catch_Retype = e.target
                                         set_Retype(Catch_Retype.value)
                                         if(Catch_Retype.value !== password){Catch_Retype.setCustomValidity("As senhas precisam ser iguais!")}
                                         else{Catch_Retype.setCustomValidity("")}
                                     }} value={retype} data-valido={PassEqual} pattern={password}/>
+                                    {retype !== "" && (
+                                        <ShowPass_button type="button" onClick={() => set_showPass(prev => !prev)} aria-label={showPass ? 'Ocultar senha' : 'Mostrar senha'}>
+                                            {showPass ? (<EyeSlashIcon style={{ width: '20px', height: '20px' }}/>) : (<EyeIcon style={{ width: '20px', height: '20px' }}/>)}
+                                        </ShowPass_button>
+                                    )}
                                 <label htmlFor="input" className="label" data-valido={PassEqual}>Redigite a senha</label>
                                 <div className="underline" data-valido={PassEqual}/>
                             </div>
@@ -310,7 +320,7 @@ export default function Cadastro(){
                     <button type="submit" className='btn'>Cadastrar</button>
                 </Container>
             </H_align>
-            <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} message={formStatusMessage} sucess={ModalStatus} messageError={fromStatusErrorMessage} />
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage} />
         </>
     )
 }
