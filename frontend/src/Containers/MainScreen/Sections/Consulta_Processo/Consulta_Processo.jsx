@@ -5,6 +5,7 @@ import { Intimacao_card, Task_card } from "./style"
 import Processo from "./Add_Processos/Processo"
 import Modal from "../../../../components/Modal/Modal"
 import axios from "axios"
+import { PlusCircleIcon } from "@heroicons/react/24/outline"
 
 
 export default function Consulta_Processo({ CodigoColaborador }){
@@ -290,10 +291,13 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                             <hr />
                                             {Intimacoes.map((intimacao) => {
 
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
                                                 function formatDateWithoutTimezone(dateStr) {
-                                                    const date = new Date(dateStr)
-                                                    return date.toLocaleDateString("pt-BR")
+                                                    const date = new Date(dateStr);
+                                                    const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+                                                    return localDate.toLocaleDateString("pt-BR");
                                                 }
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
                                                 const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento)
 
                                                 if(processo.cd_Processo === intimacao.cd_Processo){
@@ -302,8 +306,11 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                             <h2>Dados da Intimação</h2>
                                                             <p><strong>Data do recebimento: </strong>{formatted}</p>
                                                             <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
+                                                            <Consult_button style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
+                                                                <PlusCircleIcon style={{ width: "25px"}} />
+                                                            </Consult_button>
                                                             <hr />
-                                                        </div>         
+                                                        </div>     
                                                     )
                                                 }
                                             })}

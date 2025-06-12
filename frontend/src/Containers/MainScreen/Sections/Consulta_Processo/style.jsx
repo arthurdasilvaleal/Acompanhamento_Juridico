@@ -378,7 +378,7 @@ export const Intimacao_card = styled.div`
 
     .Intimacao-group{
         hr{
-            margin: 0;
+            margin: 10px 0 0 0;
         }
     }
 `
