@@ -78,7 +78,7 @@ export default function Processo({ ShowWindow, setShowWindow }){
             .catch(error => {
                 console.error("Erro ao buscar clientes:", error)
             })
-          }, 300)
+          }, 1000)
     }, [])
 
     useEffect(() => {

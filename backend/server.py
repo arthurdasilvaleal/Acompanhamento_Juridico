@@ -21,7 +21,7 @@ def login():
     username = data.get("Login")
     password = data.get("Pass")
 
-    query = """SELECT nm_Colaborador, nm_TipoColaborador FROM Colaborador C
+    query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador FROM Colaborador C
             JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
             WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
     
@@ -71,9 +71,12 @@ def post_clientes():
 def get_clientes():
 
     query = "SELECT nm_Cliente FROM cliente"
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify(result)
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        return jsonify(Err)
 
 # Consultar dados de TODOS os clientes
 @app.route("/get_Allclientes", methods=["GET"])
@@ -129,10 +132,13 @@ def get_processos():
 
     if only_numeros:
         query = """SELECT cd_NumeroProcesso FROM Processo"""
-        cursor.execute(query)
-        result = cursor.fetchall()
-        numeros = [row["cd_NumeroProcesso"] for row in result]
-        return jsonify(numeros)
+        try:
+            cursor.execute(query)
+            result = cursor.fetchall()
+            numeros = [row["cd_NumeroProcesso"] for row in result]
+            return jsonify(numeros)
+        except mysql.connector.Error as Err:
+            return jsonify(Err)
     
     Num_Processo = request.args.get("id_processo")
     Nome_Parte = request.args.get("parte")
@@ -231,11 +237,12 @@ def post_intimacao():
         dataRecebimento = data.get("dataRecebimento")
         descrição = data.get("descricaoIntimacao")
         codigoProcesso = data.get("codigoProcesso")
+        codigoColaborador = data.get("idColaborador")
 
-        query = "INSERT INTO Intimacao (cd_Processo, dt_Recebimento, ds_Intimacao) VALUES (%s, %s, %s)"
+        query = "INSERT INTO Intimacao (cd_Processo, dt_Recebimento, ds_Intimacao, cd_Colaborador) VALUES (%s, %s, %s, %s)"
 
         try:
-            cursor.execute(query, (codigoProcesso, dataRecebimento, descrição,))
+            cursor.execute(query, (codigoProcesso, dataRecebimento, descrição, codigoColaborador,))
             db.commit()
             return jsonify({"message": "Intimação inserida com sucesso!"}), 201
         except mysql.connector.Error as err:

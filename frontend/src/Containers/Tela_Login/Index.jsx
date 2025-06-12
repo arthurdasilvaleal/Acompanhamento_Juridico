@@ -35,10 +35,11 @@ export default function Login(){
                 navigate("/main", {
                     state: {
                         nome: response.data.user.nm_Colaborador,
-                        tipo: response.data.user.nm_TipoColaborador
+                        tipo: response.data.user.nm_TipoColaborador,
+                        codigo: response.data.user.cd_Colaborador
                     }
                 })
-            }
+            } 
         }
         catch(error){
             console.error("Erro ao tentar logar:", error)

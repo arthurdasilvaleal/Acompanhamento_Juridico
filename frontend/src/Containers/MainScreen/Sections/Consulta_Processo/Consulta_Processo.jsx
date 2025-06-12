@@ -7,7 +7,7 @@ import Modal from "../../../../components/Modal/Modal"
 import axios from "axios"
 
 
-export default function Consulta_Processo(){
+export default function Consulta_Processo({ CodigoColaborador }){
 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
@@ -110,17 +110,17 @@ export default function Consulta_Processo(){
     // Enviando os dados dos formularios dos cards
     const PostIntimaçãoSubmit = async (e, id) => {
         e.preventDefault()
-        
-        console.log(formData[id].dt_Recebimento + "\n" + formData[id].ds_Intimacao)
+
+        const data = new Date().toISOString().slice(0, 10) // Extrai os primeiros 10 caracters convertidos
         const IntimacaoData = {
-            dataRecebimento: formData[id].dt_Recebimento,
+            dataRecebimento: data,
             descricaoIntimacao: formData[id].ds_Intimacao,
-            codigoProcesso: id
+            codigoProcesso: id,
+            idColaborador: CodigoColaborador
         }
 
         try{
             const response = await axios.post("http://localhost:5000/post_card?form=intimacao", IntimacaoData)
-            console.log("Intimação adicionada com sucesso!", response.data)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_fromStatusErrorMessage("")
@@ -129,7 +129,6 @@ export default function Consulta_Processo(){
                 ...prev,
                 [IntimacaoData.codigoProcesso]: {
                     ...prev[IntimacaoData.codigoProcesso],
-                    dt_Recebimento: '',
                     ds_Intimacao: ''
                 }
             }))
@@ -140,7 +139,7 @@ export default function Consulta_Processo(){
             console.error("Erro ao adicionar Intimação:", error)
             set_ModalOpen(true)
             set_FormStatusMessage("Erro ao adicionar Intimação")
-            set_fromStatusErrorMessage(error.response.data.error)
+            set_fromStatusErrorMessage(error.response.data.erro)
         }
     }
 
@@ -171,7 +170,6 @@ export default function Consulta_Processo(){
         try{
             const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente }})
             set_Intimacoes(response.data)
-            console.log(response.data)
         }catch(error){
             console.error("Erro ao buscar intimações:", error)
         }
@@ -257,12 +255,6 @@ export default function Consulta_Processo(){
                                                 <h2>Adicionar Intimação</h2>
                                                 <hr />
                                                 <div className="input-group">
-                                                    <label className="label" htmlFor="dt_Recebimento">Data do Recebimento</label>
-                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Recebimento', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Recebimento || ''} autoComplete="off"
-                                                    name="dt_Recebimento" id="dt_Recebimento" className="input" type="date" required/>
-                                                </div>
-                                                <div className="input-group">
                                                     <label className="label" htmlFor="ds_Intimacao">Descrição</label>
                                                     <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
                                                     value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
@@ -297,16 +289,13 @@ export default function Consulta_Processo(){
                                         <Intimacao_card>
                                             <hr />
                                             {Intimacoes.map((intimacao) => {
-                                                
-                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
-                                                function formatDateWithoutTimezone(dateStr) {
-                                                    const date = new Date(dateStr);
-                                                    const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-                                                    return localDate.toLocaleDateString("pt-BR");
-                                                }
-                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
 
-                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento);
+                                                function formatDateWithoutTimezone(dateStr) {
+                                                    const date = new Date(dateStr)
+                                                    return date.toLocaleDateString("pt-BR")
+                                                }
+                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento)
+
                                                 if(processo.cd_Processo === intimacao.cd_Processo){
                                                     return(
                                                         <div className="Intimacao-group" key={intimacao.cd_Intimacao}>

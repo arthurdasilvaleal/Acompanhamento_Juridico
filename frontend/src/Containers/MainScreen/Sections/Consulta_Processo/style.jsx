@@ -249,7 +249,7 @@ export const First_info = styled.div`
         }
 
         .firstForm{
-            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(325px + 126px)"};
+            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(340px)"};
         }
 
         #ds_Intimacao{

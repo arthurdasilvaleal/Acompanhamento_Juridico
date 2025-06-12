@@ -17,7 +17,7 @@ export default function MainScreen() {
     return () => clearTimeout(timer)
   }, [])
 
-  const {nome, tipo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
+  const {nome, tipo, codigo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
   const unSex = () => {
     if(tipo === "Estagiário" || tipo === "Advogado"){
       return "(a)"
@@ -50,7 +50,7 @@ export default function MainScreen() {
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
-    "Processos": <Consulta_Processo />,
+    "Processos": <Consulta_Processo CodigoColaborador={codigo}/>,
     "Clientes": <Consulta_Cliente />,
     "Relatórios": <></>
   }
