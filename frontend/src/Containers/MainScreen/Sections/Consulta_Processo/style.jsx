@@ -186,7 +186,7 @@ export const Card_Title = styled.h2`
 `
 
 export const Card = styled.div`
-    max-height: ${({ $cardOpen }) => $cardOpen ? "2000px" : "0"};
+    max-height: ${({ $cardOpen }) => $cardOpen ? "20000px" : "0"};
     opacity: ${({ $cardOpen }) => $cardOpen ? "1" : "0"};
     transform: ${({ $cardOpen }) => $cardOpen ? "translateY(0)" : "translateY(-30px)"};
     padding: ${({ $cardOpen }) => $cardOpen ? "20px" : "0"};
@@ -376,16 +376,20 @@ export const Intimacao_card = styled.div`
 export const Consult_TaskForm = styled.div`
     display: flex;
     flex-direction: column;
-    padding: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "20px 30px"};
+    padding: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "20px 30px"};
     gap: 20px;
     background-color: #00000070;
     overflow: hidden;
     border-radius: 16px;
     margin: auto;
-    height: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "334px"}; 
-    opacity: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "1"};
-    pointer-events: ${({ $addTaskOpen }) => $addTaskOpen ? "none" : ""};
+    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "334px"}; 
+    opacity: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "1"};
+    pointer-events: ${({ $addTaskOpen }) => !$addTaskOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
+
+    @media (max-width: 768px) {
+        width: 70dvw;
+    }
 
     & > h2{
         text-align: center;

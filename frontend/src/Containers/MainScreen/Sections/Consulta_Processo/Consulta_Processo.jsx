@@ -292,7 +292,6 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                                 <Consult_button onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
                                                                     <PlusCircleIcon style={{ width: "25px"}} />
                                                                 </Consult_button>
-                                                                <Consult_button onClick={() => console.log(openFormIdTask)}>Cons</Consult_button>
                                                                 <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, processo.cd_Processo)}>
                                                                     <h2>Adicionar Tarefa</h2>
                                                                     <hr />
