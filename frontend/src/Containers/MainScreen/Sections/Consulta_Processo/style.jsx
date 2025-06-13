@@ -226,35 +226,11 @@ export const Card = styled.div`
 
 export const First_info = styled.div`
     display: flex;
-    flex-direction: row;
     justify-content: space-around;
     gap: 10px;
 
     @media (max-width: 768px){
         flex-direction: column;
-    }
-
-    .Forms{
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        @media (max-width: 1280px) and (max-height: 600px) {
-            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "876px"};
-        }
-        transition: height 0.2s ease;
-
-        textarea{
-            padding-top: 20px;
-            resize: none;
-        }
-
-        .firstForm{
-            height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(340px)"};
-        }
-
-        #ds_Intimacao{
-            height: 126px;
-        }
     }
     
     button{
@@ -266,7 +242,7 @@ export const First_info = styled.div`
     }
 `
 
-export const Consult_cardForm = styled.form`
+export const Consult_IntForm = styled.form`
     display: flex;
     flex-direction: column;
     padding: ${({ $buttonOpen }) => $buttonOpen ? "0" : "20px 30px"};
@@ -274,11 +250,142 @@ export const Consult_cardForm = styled.form`
     background-color: #00000070;
     overflow: hidden;
     border-radius: 16px;
-    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "325px"};
+    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "334px"};
     transform: ${({ $buttonOpen }) => $buttonOpen ? "translateX(20px)" : "translateX(0)"};
     opacity: ${({ $buttonOpen }) => $buttonOpen ? "0" : "1"};
     pointer-events: ${({ $buttonOpen }) => $buttonOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.8s ease, padding 0.4s ease;
+
+    & > h2{
+        text-align: center;
+        text-transform: uppercase;
+        margin: 10px 0;
+    }
+
+    & > hr{
+        margin: 0;
+        background-color: #CDAF6F;
+        border: none;
+        box-shadow: 0 0 30px #CDAF6F;
+        height: 2px;
+    }
+
+    .GroupBy{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 105px;
+    }
+
+    .input-group{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input, .input-select {
+        height: 44px;
+        width: 30vw;
+        background-color: #00000039;
+        color: #fff;
+        border: 2px solid transparent;
+        border-radius: .5rem;
+        padding: 0 1rem;
+        font-size: 1rem;
+        transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+        @media (max-width: 768px){
+            width: auto;
+        }
+    }
+
+    .label {
+        font-size: .9rem;
+        place-content: center;
+        font-weight: bold;
+        width: 150px;
+        color: #CDAF6F;
+        transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    .input:hover, .input:focus, .input-group:hover .input, .input-select:hover, .input-select:focus {
+        outline: none;
+        border-color: #fff;
+    }
+    
+    .input-group-select{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .input-select{
+            width: calc(30vw + 36px);
+            @media (max-width: 768px) {
+                width: auto;
+            }
+        }
+
+        option{
+            background-color: #00000039;
+            color: #000;
+        }
+    }
+
+    .formInt{
+        height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "calc(340px)"};
+    }
+
+    #ds_Intimacao{
+        height: 126px;
+        padding-top: 20px;
+        resize: none;
+    }
+
+    button{
+        margin: auto;
+    }   
+`
+
+export const Intimacao_card = styled.div`
+    // Separação das Intimações
+    & > hr{
+
+        margin: 0;
+        background-color: #ffffff;
+        border: none;
+        box-shadow: 0 0 25px #ffffff;
+        height: 2px;
+    }
+
+    .Intimacao-group{
+        hr{
+            margin: 10px 0 0 0;
+        }
+
+        .addTask{
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            @media (max-width: 768px) {
+                flex-direction: column;
+                align-items: center;
+            }
+        } 
+    }
+`
+
+export const Consult_TaskForm = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "20px 30px"};
+    gap: 20px;
+    background-color: #00000070;
+    overflow: hidden;
+    border-radius: 16px;
+    margin: auto;
+    height: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "334px"}; 
+    opacity: ${({ $addTaskOpen }) => $addTaskOpen ? "0" : "1"};
+    pointer-events: ${({ $addTaskOpen }) => $addTaskOpen ? "none" : ""};
+    transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
 
     & > h2{
         text-align: center;
@@ -361,25 +468,6 @@ export const Consult_cardForm = styled.form`
 
     button{
         margin: auto;
-    }
-`
-
-export const Intimacao_card = styled.div`
-    // Separação das Intimações
-    & > hr{
-
-        margin: 0;
-        background-color: #ffffff;
-        border: none;
-        box-shadow: 0 0 25px #ffffff;
-        height: 2px;
-        /* width: 103%; */
-    }
-
-    .Intimacao-group{
-        hr{
-            margin: 10px 0 0 0;
-        }
     }
 `
 

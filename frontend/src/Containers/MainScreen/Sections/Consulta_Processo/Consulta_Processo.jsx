@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
-import { Process_Cards, Card, Card_Title, First_info, Consult_cardForm } from "./style"
+import { Process_Cards, Card, Card_Title, First_info, Consult_IntForm, Consult_TaskForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
 import Processo from "./Add_Processos/Processo"
 import Modal from "../../../../components/Modal/Modal"
@@ -20,11 +20,12 @@ export default function Consulta_Processo({ CodigoColaborador }){
     // Váriáveis de Estado
     const [foundProcess, set_foundProcess] = useState(false) // Achou processo
     const [notFound, set_NotFound] = useState(false)
-    const [openCardId, set_OpenCardId] = useState(null)
+    const [openCardId, set_OpenCardId] = useState(null) // Abre o card da intimação
     const [CloseForm, set_CloseForm] = useState(true) // Tampar o formulario
-    const [OpenButtons, set_OpenButtons] = useState(true)
+    const [OpenAddInt, set_OpenAddInt] = useState(true)
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
     const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
+    const [openFormIdTask, set_openFormIdTask] = useState(null) // Abre o formulário de addTarefa de cada card 
 
     // Variáveis do Modal
     const [isModalOpen, set_ModalOpen] = useState(false)
@@ -32,11 +33,11 @@ export default function Consulta_Processo({ CodigoColaborador }){
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
 
     // Variável dos formulários de cada card
-    const [formData, setFormData] = useState({})
+    const [formData, set_FormData] = useState({})
 
     // Função para atualizar dados de cada processo separadamente
     const handleChange = (processoId, field, value) => {
-        setFormData(prev => ({
+        set_FormData(prev => ({
             ...prev,
             [processoId]: {
                 ...prev[processoId],
@@ -126,7 +127,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_fromStatusErrorMessage("")
 
-            setFormData(prev => ({
+            set_FormData(prev => ({
                 ...prev,
                 [IntimacaoData.codigoProcesso]: {
                     ...prev[IntimacaoData.codigoProcesso],
@@ -230,6 +231,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                     {processos.map((processo) => {
                         const isOpen = openCardId === processo.cd_Processo
                         const formatedPhone = processo.cd_Telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+
                         return (
                             <div key={processo.cd_Processo} className="OneCard">
                                 <hr />
@@ -240,7 +242,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                 </Card_Title>
 
                                 <Card $cardOpen={isOpen}>
-                                    <First_info $buttonOpen={OpenButtons}>
+                                    <First_info $buttonOpen={OpenAddInt}>
                                         <div className="Core-data">
                                             <div className="Client-info">
                                                 <h2>Dados do Cliente</h2>
@@ -249,42 +251,21 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                 <p><strong>Telefone: </strong>{formatedPhone}</p>
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                                             </div>
-                                            <Consult_button onClick={() => set_OpenButtons(prev => !prev)}>Adicionar</Consult_button>
+                                            <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
-                                        <div className="Forms">
-                                            <Consult_cardForm className="firstForm" $buttonOpen={OpenButtons} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
-                                                <h2>Adicionar Intimação</h2>
-                                                <hr />
-                                                <div className="input-group">
-                                                    <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                    <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
-                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
-                                                </div>
-                                                <Consult_button>Enviar</Consult_button>
-                                            </Consult_cardForm>
-                                            <Consult_cardForm $buttonOpen={OpenButtons} onSubmit={(e) => PostTaskSubmit(e, processo.cd_Processo)}>
-                                                <h2>Adicionar Tarefa</h2>
-                                                <hr />
-                                                <div className="input-group">
-                                                    <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                    <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off"
-                                                    name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
-                                                </div>
-                                                <div className="input-group-select">
-                                                    <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
-                                                    <select onChange={(e) => handleChange(processo.cd_Processo, 'nm_StatusTarefa', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
-                                                        <option value="">Selecione</option>
-                                                        <option value="Aguardando">Aguardando</option>
-                                                        <option value="Em andamento">Em andamento</option>
-                                                        <option value="Concluído">Concluído</option>
-                                                    </select>
-                                                </div>
-                                                <Consult_button>Enviar</Consult_button>
-                                            </Consult_cardForm>
-                                        </div>
+                                        
+                                        <Consult_IntForm className="formInt" $buttonOpen={OpenAddInt} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
+                                            <h2>Adicionar Intimação</h2>
+                                            <hr />
+                                            <div className="input-group">
+                                                <label className="label" htmlFor="ds_Intimacao">Descrição</label>
+                                                <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
+                                                value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
+                                                autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
+                                            </div>
+                                            <Consult_button>Enviar</Consult_button>
+                                        </Consult_IntForm>
+                                        
                                     </First_info>
                                     {Intimacoes.length > 0 && (
                                         <Intimacao_card>
@@ -301,14 +282,39 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                 const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento)
 
                                                 if(processo.cd_Processo === intimacao.cd_Processo){
+                                                    const formTaskisOpen = openFormIdTask === intimacao.cd_Intimacao
                                                     return(
                                                         <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
-                                                            <h2>Dados da Intimação</h2>
+                                                            <h2>Dados da Intimação {intimacao.cd_Intimacao}</h2>
                                                             <p><strong>Data do recebimento: </strong>{formatted}</p>
                                                             <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
-                                                            <Consult_button style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
-                                                                <PlusCircleIcon style={{ width: "25px"}} />
-                                                            </Consult_button>
+                                                            <div className="addTask">
+                                                                <Consult_button onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
+                                                                    <PlusCircleIcon style={{ width: "25px"}} />
+                                                                </Consult_button>
+                                                                <Consult_button onClick={() => console.log(openFormIdTask)}>Cons</Consult_button>
+                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, processo.cd_Processo)}>
+                                                                    <h2>Adicionar Tarefa</h2>
+                                                                    <hr />
+                                                                    <div className="input-group">
+                                                                        <label className="label" htmlFor="dt_Prazo">Prazo</label>
+                                                                        <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
+                                                                        value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off"
+                                                                        name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
+                                                                    </div>
+                                                                    <div className="input-group-select">
+                                                                        <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
+                                                                        <select onChange={(e) => handleChange(processo.cd_Processo, 'nm_StatusTarefa', e.target.value)}
+                                                                        value={formData[processo.cd_Processo]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
+                                                                            <option value="">Selecione</option>
+                                                                            <option value="Aguardando">Aguardando</option>
+                                                                            <option value="Em andamento">Em andamento</option>
+                                                                            <option value="Concluído">Concluído</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <Consult_button>Enviar</Consult_button>
+                                                                </Consult_TaskForm>
+                                                            </div>
                                                             <hr />
                                                         </div>     
                                                     )
