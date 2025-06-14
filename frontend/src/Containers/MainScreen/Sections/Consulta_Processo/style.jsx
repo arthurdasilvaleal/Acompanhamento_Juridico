@@ -390,7 +390,7 @@ export const Consult_TaskForm = styled.form`
     overflow: hidden;
     border-radius: 16px;
     margin: auto;
-    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : ""}; 
+    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "522px"}; 
     opacity: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "1"};
     pointer-events: ${({ $addTaskOpen }) => !$addTaskOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;

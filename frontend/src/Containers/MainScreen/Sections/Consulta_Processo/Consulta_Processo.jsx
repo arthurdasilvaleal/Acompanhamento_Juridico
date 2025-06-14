@@ -34,13 +34,25 @@ export default function Consulta_Processo({ CodigoColaborador }){
 
     // Variável dos formulários de cada card
     const [formData, set_FormData] = useState({})
+    const [taskFormData, set_taskFormData] = useState({})
 
-    // Função para atualizar dados de cada processo separadamente
-    const handleChange = (processoId, field, value) => {
+    // Função que separa cada formulario de intimação de cada processo
+    const handleCardChange = (processoId, field, value) => {
         set_FormData(prev => ({
             ...prev,
             [processoId]: {
                 ...prev[processoId],
+                [field]: value
+            }
+        }))
+    }
+
+    // Função que separa cada formulário de tarefa
+    const handleTaskChange = (intimacaoId, field, value) => {
+        set_taskFormData(prev => ({
+            ...prev,
+            [intimacaoId]: {
+                ...prev[intimacaoId],
                 [field]: value
             }
         }))
@@ -62,26 +74,33 @@ export default function Consulta_Processo({ CodigoColaborador }){
         e.preventDefault()
         set_firstContact(false)
 
-        try{
-            const response = await axios.get("http://localhost:5000/get_processos", {
-                params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
-            })
+        if(foundProcess){
+            set_foundProcess(false)
+            document.body.style.overflow = "hidden"
+        }else{
 
-            if(response.data.length > 0){
-                set_Processos(response.data)
-                set_foundProcess(true)
-                set_NotFound(false)
-                CatchIntimacoes()
-                document.body.style.overflow = "visible"
-            }
-            else{
-                if(processos.length > 0){document.body.style.overflow = "hidden"}
-                set_foundProcess(false)
+            try{
+                const response = await axios.get("http://localhost:5000/get_processos", {
+                    params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
+                })
+
+                if(response.data.length > 0){
+                    console.log(response.data)
+                    set_Processos(response.data)
+                    set_foundProcess(true)
+                    set_NotFound(false)
+                    CatchIntimacoes()
+                    document.body.style.overflow = "visible"
+                }
+                else{
+                    if(processos.length > 0){document.body.style.overflow = "hidden"}
+                    set_foundProcess(false)
+                    set_NotFound(true)
+                }
+            }catch(error){
+                console.error("Erro ao buscar processo:", error)
                 set_NotFound(true)
             }
-        }catch(error){
-            console.error("Erro ao buscar processo:", error)
-            set_NotFound(true)
         }
     }
 
@@ -110,12 +129,22 @@ export default function Consulta_Processo({ CodigoColaborador }){
     // }, [CloseForm, foundProcess])
 
     // Enviando os dados dos formularios dos cards
+
+    function getTodayDate(){
+        const DateNow = new Date()
+        const data = DateNow.toISOString().slice(0, 10) // Extrai os primeiros 10 caracters convertidos
+        const hora = DateNow.getHours().toString().padStart(2, '0')
+        const minutos = DateNow.getMinutes().toString().padStart(2, '0')
+        const segundos = DateNow.getSeconds().toString().padStart(2, '0')
+        const FormatedDateTime = `${data} ${hora}:${minutos}:${segundos}`
+        return FormatedDateTime
+    }
+
     const PostIntimaçãoSubmit = async (e, id) => {
         e.preventDefault()
 
-        const data = new Date().toISOString().slice(0, 10) // Extrai os primeiros 10 caracters convertidos
         const IntimacaoData = {
-            dataRecebimento: data,
+            dataRecebimento: getTodayDate(),
             descricaoIntimacao: formData[id].ds_Intimacao,
             codigoProcesso: id,
             idColaborador: CodigoColaborador
@@ -141,22 +170,22 @@ export default function Consulta_Processo({ CodigoColaborador }){
             console.error("Erro ao adicionar Intimação:", error)
             set_ModalOpen(true)
             set_FormStatusMessage("Erro ao adicionar Intimação")
-            set_fromStatusErrorMessage(error.response.data.erro)
+            set_fromStatusErrorMessage(error.response.data.Erro)
         }
     }
 
     const PostTaskSubmit = async (e, id) => {
         e.preventDefault()
 
-        const dataR = new Date()
-        console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa + "\n" + formData[id].ds_Tarefa + "\n" + dataR + "\n" + "Colaborador: "+ CodigoColaborador)
+        console.log(taskFormData[id].dt_Prazo + "\n" + taskFormData[id].nm_StatusTarefa + "\n" + taskFormData[id].ds_Tarefa + "\n" + getTodayDate() + "\n" + "Colaborador: " + CodigoColaborador)
         
+
         const taskData ={
             idIntimacao: id,
-            dataPrazo: formData[id].dt_Prazo,
-            StatusTarefa: formData[id].nm_StatusTarefa,
-            DescricaoTarefa: formData[id].ds_Tarefa,
-            DataRecebimento: dataR,
+            dataPrazo: taskFormData[id].dt_Prazo,
+            StatusTarefa: taskFormData[id].nm_StatusTarefa,
+            DescricaoTarefa: taskFormData[id].ds_Tarefa,
+            DataRecebimento: getTodayDate(),
             idColaborador: CodigoColaborador
             
         }
@@ -167,10 +196,10 @@ export default function Consulta_Processo({ CodigoColaborador }){
             set_FormStatusMessage("Tarefa adicionada com sucesso!")
             set_fromStatusErrorMessage("")
 
-            set_FormData(prev => ({
+            set_taskFormData(prev => ({
                 ...prev,
-                [IntimacaoData.codigoProcesso]: {
-                    ...prev[IntimacaoData.codigoProcesso],
+                [taskData.idIntimacao]: {
+                    ...prev[taskData.idIntimacao],
                     nm_StatusTarefa: '',
                     dt_Prazo: '',
                     ds_Tarefa: ''
@@ -180,17 +209,15 @@ export default function Consulta_Processo({ CodigoColaborador }){
         }catch(error){
             console.error("Erro ao adicionar Tarefa:", error)
             set_ModalOpen(true)
-            set_FormStatusMessage("Erro ao adicionar Intimação")
+            set_FormStatusMessage("Erro ao adicionar Tarefa")
             set_fromStatusErrorMessage(error.response.data.error)
         } 
-        // NÃO ESTA PRONTO (CÓDIGO DA INTIMAÇÃO REQUERIDO)
     }
 
     // Buscando Intimações
-
     const CatchIntimacoes = async () => {
         try{
-            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente }})
+            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Intimacoes(response.data)
         }catch(error){
             console.error("Erro ao buscar intimações:", error)
@@ -241,8 +268,10 @@ export default function Consulta_Processo({ CodigoColaborador }){
                     </div>
                     {notFound && (<NotFound_Error>Processo não encontrado.</NotFound_Error>)}
                 </div>
-                <Twin_Button $disableForProcess={processos.length > 0 && !notFound}>
-                    <Consult_button className="form-button" type="submit">Pesquisar</Consult_button>
+                <Twin_Button $disableForProcess={processos.length > 0 && !notFound && foundProcess}>
+                    <Consult_button className="form-button" type="submit">
+                        {!foundProcess ? (<>Pesquisar</>) : (<>Voltar</>)}
+                        </Consult_button>
                     <Consult_button className="add-processo-button" type="button" onClick={() => set_openAddProcess(prev => !prev)} style={{ padding: "0 33px" }}>Adicionar Processo</Consult_button>
                 </Twin_Button>
             </Consult_form>
@@ -251,6 +280,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                     {processos.map((processo) => {
                         const isOpen = openCardId === processo.cd_Processo
                         const formatedPhone = processo.cd_Telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+                        const formatedMoney = processo.vl_Causa.replace(".", ",")
 
                         return (
                             <div key={processo.cd_Processo} className="OneCard">
@@ -270,6 +300,9 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                 <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
                                                 <p><strong>Telefone: </strong>{formatedPhone}</p>
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                                <p><strong>Autor: </strong>{processo.nm_Autor}</p>
+                                                <p><strong>Cidade: </strong>{processo.nm_Cidade}</p>
+                                                <p><strong>Valor da causa:</strong> R${formatedMoney}</p>
                                             </div>
                                             <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar</Consult_button>
                                         </div>
@@ -279,7 +312,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                             <hr />
                                             <div className="input-group">
                                                 <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
+                                                <textarea onChange={(e) => handleCardChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
                                                 value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
                                                 autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
                                             </div>
@@ -291,12 +324,18 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                         <Intimacao_card>
                                             <hr />
                                             {Intimacoes.map((intimacao) => {
-
+                                                
                                                 //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
                                                 function formatDateWithoutTimezone(dateStr) {
-                                                    const date = new Date(dateStr);
-                                                    const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-                                                    return localDate.toLocaleDateString("pt-BR");
+                                                    const date = new Date(dateStr)
+                                                    const dia = String(date.getUTCDate()).padStart(2, '0')
+                                                    const mes = String(date.getUTCMonth() + 1).padStart(2, '0')
+                                                    const ano = date.getUTCFullYear()
+                                                    const hora = String(date.getUTCHours()).padStart(2, '0')
+                                                    const minuto = String(date.getUTCMinutes()).padStart(2, '0')
+                                                    const segundo = String(date.getUTCSeconds()).padStart(2, '0')
+
+                                                    return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`
                                                 }
                                                 //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
                                                 const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento)
@@ -317,24 +356,24 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                                     <hr />
                                                                     <div className="input-group">
                                                                         <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                                        <input onChange={(e) => handleChange(processo.cd_Processo, 'dt_Prazo', e.target.value)}
-                                                                        value={formData[processo.cd_Processo]?.dt_Prazo || ''} autoComplete="off"
+                                                                        <input onChange={(e) => {handleTaskChange(intimacao.cd_Intimacao, 'dt_Prazo', e.target.value); console.log(e.target.value)}}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.dt_Prazo || ''} autoComplete="off"
                                                                         name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
                                                                     </div>
                                                                     <div className="input-group-select">
                                                                         <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
-                                                                        <select onChange={(e) => handleChange(processo.cd_Processo, 'nm_StatusTarefa', e.target.value)}
-                                                                        value={formData[processo.cd_Processo]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
+                                                                        <select onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'nm_StatusTarefa', e.target.value)}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
                                                                             <option value="">Selecione</option>
-                                                                            <option value="Aguardando">Aguardando</option>
-                                                                            <option value="Em andamento">Em andamento</option>
-                                                                            <option value="Concluído">Concluído</option>
+                                                                            <option value="1">Aguardando</option>
+                                                                            <option value="2">Em andamento</option>
+                                                                            <option value="3">Concluído</option>
                                                                         </select>
                                                                     </div>
                                                                     <div className="input-group">
                                                                         <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
-                                                                        <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Tarefa', e.target.value)}
-                                                                        value={formData[processo.cd_Processo]?.ds_Tarefa || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
+                                                                        <textarea onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'ds_Tarefa', e.target.value)}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.ds_Tarefa || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
                                                                         autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" className="input" type="text" maxLength={200} required/>
                                                                     </div>
                                                                     <Consult_button>Enviar</Consult_button>

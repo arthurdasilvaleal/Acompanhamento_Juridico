@@ -209,15 +209,36 @@ def post_processo():
 def get_intimacao():
 
     Nome_Parte = request.args.get("parte")
+    Numero_Processo = request.args.get("numeroProcesso")
 
-    query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
-            FROM Intimacao I
-            JOIN Processo P ON P.cd_Processo = I.cd_Processo
-            JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
-            JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
-            WHERE C.nm_Cliente = %s"""
+    if Nome_Parte == "":
+        query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
+        FROM Intimacao I
+        JOIN Processo P ON I.cd_Processo = P.cd_Processo
+        WHERE P.cd_NumeroProcesso = %s"""
+        values = (Numero_Processo,)
+    elif Nome_Parte != "" and Numero_Processo != "":
+        query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
+                FROM Intimacao I
+                JOIN Processo P ON P.cd_Processo = I.cd_Processo
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                WHERE P.cd_NumeroProcesso = %s AND (
+                P.nm_Autor = %s OR
+                P.nm_Reu = %s OR
+                C.nm_Cliente = %s)"""
+        values = (Numero_Processo, Nome_Parte, Nome_Parte, Nome_Parte) 
+    else:
+        query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
+                FROM Intimacao I
+                JOIN Processo P ON P.cd_Processo = I.cd_Processo
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                WHERE C.nm_Cliente = %s"""
+        values = (Nome_Parte, )
+
     try:
-        cursor.execute(query, (Nome_Parte,))
+        cursor.execute(query, (values))
         result = cursor.fetchall()
         return jsonify(result)
     except mysql.connector.Error as err:
@@ -256,10 +277,9 @@ def post_intimacao():
         idColaborador = data.get("idColaborador")
         StatusTarefa = data.get("StatusTarefa")
         DescricaoTarefa = data.get("DescricaoTarefa")
-        # Tipo ta tarefa
 
-        query = """INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, nm_TipoTarefa, ds_Tarefa) 
-                VALUES (%s, %s, %s, %s, %s, null, %s)"""
+        query = """INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, ds_Tarefa) 
+                VALUES (%s, %s, %s, %s, %s, %s)"""
         
         try:
             cursor.execute(query, (idIntimacao, DataRecebimento, dataPrazo, idColaborador, StatusTarefa, DescricaoTarefa,))
