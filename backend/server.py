@@ -247,8 +247,28 @@ def post_intimacao():
             return jsonify({"message": "Intimação inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
             print("Erro:", err)
-            return jsonify({"erro": str(err)}), 500
+            return jsonify({"Erro": str(err)}), 500
+    
+    if tarefa:
+        idIntimacao = data.get("idIntimacao")
+        DataRecebimento = data.get("DataRecebimento")
+        dataPrazo = data.get("dataPrazo")
+        idColaborador = data.get("idColaborador")
+        StatusTarefa = data.get("StatusTarefa")
+        DescricaoTarefa = data.get("DescricaoTarefa")
+        # Tipo ta tarefa
 
+        query = """INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, nm_TipoTarefa, ds_Tarefa) 
+                VALUES (%s, %s, %s, %s, %s, null, %s)"""
+        
+        try:
+            cursor.execute(query, (idIntimacao, DataRecebimento, dataPrazo, idColaborador, StatusTarefa, DescricaoTarefa,))
+            db.commit()
+            return jsonify({"message": "Tarefa inserida com sucesso!"}), 201
+        except mysql.connector.Error as err:
+            print("Erro:", err)
+            return jsonify({"error": str(err)}), 500
+            
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="0.0.0.0")
 

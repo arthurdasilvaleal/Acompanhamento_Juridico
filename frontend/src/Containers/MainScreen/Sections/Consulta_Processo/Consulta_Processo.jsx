@@ -148,21 +148,41 @@ export default function Consulta_Processo({ CodigoColaborador }){
     const PostTaskSubmit = async (e, id) => {
         e.preventDefault()
 
-        // console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa)
-        // const taskData ={
-        //     dataPrazo: formData[id].dt_Prazo,
-        //     StatusTarefa: formData[id].nm_StatusTarefa,
+        const dataR = new Date()
+        console.log(formData[id].dt_Prazo + "\n" + formData[id].nm_StatusTarefa + "\n" + formData[id].ds_Tarefa + "\n" + dataR + "\n" + "Colaborador: "+ CodigoColaborador)
+        
+        const taskData ={
+            idIntimacao: id,
+            dataPrazo: formData[id].dt_Prazo,
+            StatusTarefa: formData[id].nm_StatusTarefa,
+            DescricaoTarefa: formData[id].ds_Tarefa,
+            DataRecebimento: dataR,
+            idColaborador: CodigoColaborador
             
-        // }
-        // try{
-        //     const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
-        //     console.log("Tarefa adicionada com sucesso!", response.data)
-        //     alert("Tarefa adicionada com sucesso!")
+        }
+        try{
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
+            console.log("Tarefa adicionada com sucesso!", response.data)
+            set_ModalOpen(true)
+            set_FormStatusMessage("Tarefa adicionada com sucesso!")
+            set_fromStatusErrorMessage("")
 
-        // }catch(error){
-        //     console.error("Erro ao adicionar Tarefa:", error)
-        //     alert("Erro: " + error.response.data.error)
-        // } 
+            set_FormData(prev => ({
+                ...prev,
+                [IntimacaoData.codigoProcesso]: {
+                    ...prev[IntimacaoData.codigoProcesso],
+                    nm_StatusTarefa: '',
+                    dt_Prazo: '',
+                    ds_Tarefa: ''
+                }
+            }))
+
+        }catch(error){
+            console.error("Erro ao adicionar Tarefa:", error)
+            set_ModalOpen(true)
+            set_FormStatusMessage("Erro ao adicionar Intimação")
+            set_fromStatusErrorMessage(error.response.data.error)
+        } 
         // NÃO ESTA PRONTO (CÓDIGO DA INTIMAÇÃO REQUERIDO)
     }
 
@@ -289,10 +309,10 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                             <p><strong>Data do recebimento: </strong>{formatted}</p>
                                                             <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
                                                             <div className="addTask">
-                                                                <Consult_button onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
-                                                                    <PlusCircleIcon style={{ width: "25px"}} />
+                                                                <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
+                                                                    <PlusCircleIcon style={{ width: "25px" }} />
                                                                 </Consult_button>
-                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, processo.cd_Processo)}>
+                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
                                                                     <h2>Adicionar Tarefa</h2>
                                                                     <hr />
                                                                     <div className="input-group">
@@ -310,6 +330,12 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                                             <option value="Em andamento">Em andamento</option>
                                                                             <option value="Concluído">Concluído</option>
                                                                         </select>
+                                                                    </div>
+                                                                    <div className="input-group">
+                                                                        <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
+                                                                        <textarea onChange={(e) => handleChange(processo.cd_Processo, 'ds_Tarefa', e.target.value)}
+                                                                        value={formData[processo.cd_Processo]?.ds_Tarefa || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
+                                                                        autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" className="input" type="text" maxLength={200} required/>
                                                                     </div>
                                                                     <Consult_button>Enviar</Consult_button>
                                                                 </Consult_TaskForm>

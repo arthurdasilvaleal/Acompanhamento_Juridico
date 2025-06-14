@@ -91,13 +91,21 @@ export const Consult_button = styled.button`
     &:hover{
         box-shadow: 7px 5px 56px -2px #CDAF6F;
         transition: box-shadow 250ms, background-color 0.8s ease;
+        svg{
+            transition: transform 0.2s ease;
+            transform: rotate(180deg);
+        }
     }
 
     &:active{
         transform: scale(0.97);
         box-shadow: 7px 5px 56px -10px #CDAF6F;
         transition: box-shadow 250ms, transform 250ms, background-color 0.8s ease;
+
     }
+
+    
+    background-color: ${({ $buttonTaskOpen }) => $buttonTaskOpen ? "#eca305" : "#CDAF6F"};
 `
 
 export const Twin_Button = styled.div`
@@ -373,7 +381,7 @@ export const Intimacao_card = styled.div`
     }
 `
 
-export const Consult_TaskForm = styled.div`
+export const Consult_TaskForm = styled.form`
     display: flex;
     flex-direction: column;
     padding: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "20px 30px"};
@@ -382,7 +390,7 @@ export const Consult_TaskForm = styled.div`
     overflow: hidden;
     border-radius: 16px;
     margin: auto;
-    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "334px"}; 
+    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : ""}; 
     opacity: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "1"};
     pointer-events: ${({ $addTaskOpen }) => !$addTaskOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
@@ -416,6 +424,12 @@ export const Consult_TaskForm = styled.div`
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        textarea{
+            resize: none;
+            padding: 20px;
+            height: 100px;
+        }
 
         input[type="date"]::-webkit-calendar-picker-indicator{
             filter: invert(1); /* inverte a cor — útil em temas escuros */
