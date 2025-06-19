@@ -1,9 +1,10 @@
 import { ModalOverlay, ModalContent, CloseButton } from './style'
+import ReactDOM from 'react-dom'
 
 export default function Modal({ isOpen, onClose, message, messageError }) {
   if (!isOpen) return null
-  return (
-    
+
+  return ReactDOM.createPortal(
     <ModalOverlay>
       <ModalContent $SucessBorder={messageError === ""}>
         <CloseButton onClick={onClose}>×</CloseButton>
@@ -20,7 +21,7 @@ export default function Modal({ isOpen, onClose, message, messageError }) {
             </>
         )}
       </ModalContent>
-    </ModalOverlay>
+    </ModalOverlay>, document.body
   )
 }
 

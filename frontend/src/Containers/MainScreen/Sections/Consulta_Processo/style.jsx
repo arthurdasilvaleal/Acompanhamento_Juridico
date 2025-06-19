@@ -258,11 +258,13 @@ export const Consult_IntForm = styled.form`
     background-color: #00000070;
     overflow: hidden;
     border-radius: 16px;
-    height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "334px"};
     transform: ${({ $buttonOpen }) => $buttonOpen ? "translateX(20px)" : "translateX(0)"};
     opacity: ${({ $buttonOpen }) => $buttonOpen ? "0" : "1"};
     pointer-events: ${({ $buttonOpen }) => $buttonOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.8s ease, padding 0.4s ease;
+    @media (max-width: 768px) {
+        height: ${({ $buttonOpen }) => $buttonOpen ? "0" : "360px"};
+    }
 
     & > h2{
         text-align: center;

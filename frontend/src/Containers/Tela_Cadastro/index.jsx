@@ -70,7 +70,7 @@ export default function Cadastro(){
             cd_TipoColaborador: typeWorker
         }
         try{
-            const response = await axios.post("http://localhost:5000/post_cadastro", params)
+            const response = await axios.post("http://192.168.100.3:5000/post_cadastro", params)
             console.log(response.data)
             set_FormStatusMessage("Colaborador adicionado com sucesso!")
             set_ModalOpen(true)

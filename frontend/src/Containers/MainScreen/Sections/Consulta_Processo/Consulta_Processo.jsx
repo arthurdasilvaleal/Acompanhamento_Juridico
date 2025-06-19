@@ -4,6 +4,7 @@ import { Process_Cards, Card, Card_Title, First_info, Consult_IntForm, Consult_T
 import { Intimacao_card, Task_card } from "./style"
 import Processo from "./Add_Processos/Processo"
 import Modal from "../../../../components/Modal/Modal"
+import Loading_Form from "../../../../components/Loading_Form/Loading"
 import axios from "axios"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
 
@@ -25,7 +26,8 @@ export default function Consulta_Processo({ CodigoColaborador }){
     const [OpenAddInt, set_OpenAddInt] = useState(true)
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
     const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
-    const [openFormIdTask, set_openFormIdTask] = useState(null) // Abre o formulário de addTarefa de cada card 
+    const [openFormIdTask, set_openFormIdTask] = useState(null) // Abre o formulário de addTarefa de cada card
+    const [Loading, set_Loading] = useState(false)
 
     // Variáveis do Modal
     const [isModalOpen, set_ModalOpen] = useState(false)
@@ -60,7 +62,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://localhost:5000/get_processos?only=id")
+        axios.get("http://192.168.100.3:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -73,14 +75,16 @@ export default function Consulta_Processo({ CodigoColaborador }){
     const getProcessSubmit = async (e) => {
         e.preventDefault()
         set_firstContact(false)
+        set_Loading(true)
 
         if(foundProcess){
             set_foundProcess(false)
+            set_Loading(false)
             document.body.style.overflow = "hidden"
         }else{
 
             try{
-                const response = await axios.get("http://localhost:5000/get_processos", {
+                const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                     params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                 })
 
@@ -97,9 +101,11 @@ export default function Consulta_Processo({ CodigoColaborador }){
                     set_foundProcess(false)
                     set_NotFound(true)
                 }
+                set_Loading(false)
             }catch(error){
                 console.error("Erro ao buscar processo:", error)
                 set_NotFound(true)
+                set_Loading(false)
             }
         }
     }
@@ -114,6 +120,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
             behavior: "smooth"
         })
     }
+    // else{document.body.style.overflow = "hidden"}
 
     // Bloqueando a barra de rolagem Y na hora de abrir/fechar o card e achando um processo(DEPRECATED)
     // useEffect(() => {
@@ -128,8 +135,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
         
     // }, [CloseForm, foundProcess])
 
-    // Enviando os dados dos formularios dos cards
-
+    // Função para pegar a data e hora da postagem
     function getTodayDate(){
         const DateNow = new Date()
         const data = DateNow.toISOString().slice(0, 10) // Extrai os primeiros 10 caracters convertidos
@@ -140,6 +146,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
         return FormatedDateTime
     }
 
+    // Enviando os dados dos formularios dos cards
     const PostIntimaçãoSubmit = async (e, id) => {
         e.preventDefault()
 
@@ -151,7 +158,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
         }
 
         try{
-            const response = await axios.post("http://localhost:5000/post_card?form=intimacao", IntimacaoData)
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_fromStatusErrorMessage("")
@@ -217,7 +224,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
     // Buscando Intimações
     const CatchIntimacoes = async () => {
         try{
-            const response = await axios.get("http://localhost:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            const response = await axios.get("http://192.168.100.3:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Intimacoes(response.data)
         }catch(error){
             console.error("Erro ao buscar intimações:", error)
@@ -241,6 +248,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
     return(
         <>
             <Processo ShowWindow={openAddProcess} setShowWindow={set_openAddProcess}/>
+            {Loading && (<Loading_Form />)}
             <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">

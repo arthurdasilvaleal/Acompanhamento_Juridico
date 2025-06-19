@@ -2,6 +2,7 @@ import { Process_Form, Process_button, FixedBox, Process_back_button } from "./s
 import { useEffect, useState } from "react"
 import { NumericFormat } from 'react-number-format'
 import Modal from '../../../../../components/Modal/Modal'
+import Loading_Form from "../../../../../components/Loading_Form/Loading"
 import axios from "axios"
 
 export default function Processo({ ShowWindow, setShowWindow }){
@@ -23,10 +24,12 @@ export default function Processo({ ShowWindow, setShowWindow }){
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [Loading, set_Loading] = useState(false)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        set_Loading(true)
         const parsedValueCause = vl_Causa.replace(/[^0-9,]/g, "").replace(",", ".")
 
         const post_processo = {
@@ -43,11 +46,12 @@ export default function Processo({ ShowWindow, setShowWindow }){
         }
         
         try{
-            const response = await axios.post("http://localhost:5000/post_processo", post_processo)
+            const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             set_FormStatusMessage("Processo adicionado com sucesso!")
             set_ModalOpen(true)
             set_fromStatusErrorMessage("")
+            set_Loading(false)
 
             set_NumProcesso("")
             set_nmCliente("")
@@ -65,13 +69,14 @@ export default function Processo({ ShowWindow, setShowWindow }){
             set_FormStatusMessage("Erro ao Adicionar Processo.")
             set_fromStatusErrorMessage(error.response.data.error)
             set_ModalOpen(true)
+            set_Loading(false)
         }
     }
 
     // Nesta tela, acrescentar um campo para selecionar o cliente;
     useEffect(() => {
         setTimeout(() => {
-            axios.get("http://localhost:5000/get_clientes")
+            axios.get("http://192.168.100.3:5000/get_clientes")
             .then(response => {
                 set_ListCliente(response.data)
             })
@@ -94,12 +99,14 @@ export default function Processo({ ShowWindow, setShowWindow }){
 
     return(
         <FixedBox $Show={ShowWindow}>
+            {Loading && (<Loading_Form />)}
             <Process_back_button onClick={() => {
                     setShowWindow(false)
                     window.scrollTo({
                         top: 1,
                         behavior: "smooth"
                     })
+                    document.body.style.overflow = "hidden"
                 }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />

@@ -9,7 +9,7 @@ db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="root",
-    database="bd_aj"
+    database="BD_AJ"
 )
 # Se o usuário sair da aba muito rápido, causa um erro... fix that
 cursor = db.cursor(dictionary=True)
@@ -70,7 +70,7 @@ def post_clientes():
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = "SELECT nm_Cliente FROM cliente"
+    query = "SELECT nm_Cliente FROM Cliente"
     try:
         cursor.execute(query)
         result = cursor.fetchall()
@@ -184,7 +184,7 @@ def post_processo():
     Tribunal = data.get("sg_Tribunal")
 
     # Buscar cliente pelo nome no campo "Autor"
-    query_cliente = "SELECT cd_Cliente FROM cliente WHERE nm_Cliente = %s;"
+    query_cliente = "SELECT cd_Cliente FROM Cliente WHERE nm_Cliente = %s;"
     cursor.execute(query_cliente, (NomeCliente,))
     resultado = cursor.fetchone()
 
