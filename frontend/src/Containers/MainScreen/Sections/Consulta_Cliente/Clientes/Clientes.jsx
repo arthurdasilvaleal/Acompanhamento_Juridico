@@ -63,7 +63,7 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://10.107.200.12:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             set_FormStatusMessage("Cliente adicionado com sucesso!")
             set_ModalOpen(true)

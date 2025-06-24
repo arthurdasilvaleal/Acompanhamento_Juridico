@@ -46,7 +46,7 @@ export default function Processo({ ShowWindow, setShowWindow }){
         }
         
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
+            const response = await axios.post("http://10.107.200.12:5000/post_processo", post_processo)
             console.log("Processo adicionado com sucesso:", response.data)
             set_FormStatusMessage("Processo adicionado com sucesso!")
             set_ModalOpen(true)
@@ -76,7 +76,7 @@ export default function Processo({ ShowWindow, setShowWindow }){
     // Nesta tela, acrescentar um campo para selecionar o cliente;
     useEffect(() => {
         setTimeout(() => {
-            axios.get("http://192.168.100.3:5000/get_clientes")
+            axios.get("http://10.107.200.12:5000/get_clientes")
             .then(response => {
                 set_ListCliente(response.data)
             })
