@@ -1,5 +1,29 @@
 import styled from "styled-components"
 
+export const FixedBox = styled.div`
+    position: absolute;
+    width: calc(100vw - 220px);
+    top: 220px;
+    opacity: ${({ $show }) => $show ? "1" : "0"};
+    
+    z-index: 1;
+    transition: opacity 0.3s ease-out;
+    
+    @media (max-width: 768px) {
+        width: calc(100vw - 20px);
+        top: 240px;
+
+        h1{
+            font-size: 1.2rem;
+            margin-left: 100px;
+        }
+    }
+    
+    hr{
+        margin-left: 30px;
+    }
+`
+
 export const Client_form = styled.form`
     display: flex;
     flex-direction: column;

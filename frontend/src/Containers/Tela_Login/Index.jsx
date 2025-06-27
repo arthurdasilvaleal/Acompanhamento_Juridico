@@ -27,7 +27,7 @@ export default function Login(){
         const params = {Login, Pass}
         try{
             set_Loading(true)
-            const response = await axios.post("http://10.107.200.12:5000/submit_login", params)
+            const response = await axios.post("http://192.168.100.3:5000/submit_login", params)
             
             if(response.data.success){
                 localStorage.setItem("logado", "true")

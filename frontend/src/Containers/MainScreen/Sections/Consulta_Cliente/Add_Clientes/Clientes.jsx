@@ -1,11 +1,12 @@
-import { Client_form, Client_button } from "./style"
+import { Client_form, Client_button, FixedBox } from "./style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
 import Modal from '../../../../../components/Modal/Modal'
+import Loading_form from "../../../../../components/Loading_Form/Loading"
 import axios from 'axios'
 
-export default function Clientes(){
+export default function Clientes({ showWindow }){
     const [nm_Cliente, set_nmCliente] = useState("")
     const [cd_CPF, set_cdCPF] = useState("")
     const [cd_CEP, set_cdCEP] = useState("")
@@ -18,7 +19,10 @@ export default function Clientes(){
     const [cd_Telefone, set_cdTelefone] = useState("")
     const [ds_Email, set_dsEmail] = useState("")
 
-    // Variáveis de Status
+    // Variáveis de status
+    const [Loading, set_Loading] = useState(false)
+
+    // Variáveis do modal
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
@@ -44,6 +48,8 @@ export default function Clientes(){
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        set_Loading(true)
+
         const cleaned_CEP = cd_CEP.replace(/\D/g, "")
         const cleaned_Telefone = cd_Telefone.replace(/\D/g, "")
         const cleaned_CPF = cd_CPF.replace(/\D/g, "")
@@ -63,11 +69,12 @@ export default function Clientes(){
         }
 
         try{
-            const response = await axios.post("http://10.107.200.12:5000/post_cliente", post_cliente)
+            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
             console.log("Cliente adicionado com sucesso:", response.data)
             set_FormStatusMessage("Cliente adicionado com sucesso!")
             set_ModalOpen(true)
             set_fromStatusErrorMessage("")
+            set_Loading(false)
 
             // Resetando o formulário
             set_nmCliente("")
@@ -86,11 +93,13 @@ export default function Clientes(){
             set_FormStatusMessage("Erro ao Adicionar cliente.")
             set_fromStatusErrorMessage(error.response.data.error)
             set_ModalOpen(true)
+            set_Loading(false)
         }
     }
 
     return(
-        <>
+        <FixedBox $show={showWindow}>
+            {Loading && (<Loading_form />)}
             <h1>Adicionar um Cliente</h1>
             <hr />
             <Client_form onSubmit={handleSubmit}>
@@ -201,6 +210,6 @@ export default function Clientes(){
             </Client_form>
             {/* <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/> */}
             <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
-        </>
+        </FixedBox>
     )
 }
