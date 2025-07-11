@@ -1,0 +1,4 @@
+Melhorar Lógica
+
+Theilon é um cliente, porém sem processos, logo da um "erro" ao tentar achar processos
+pq o sistema não acha processos no nome dele, logo, "processo não encontrado"

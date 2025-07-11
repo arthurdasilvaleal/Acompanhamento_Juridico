@@ -27,6 +27,8 @@ Este é um sistema web para gerenciamento de processos jurídicos, intimações 
   - downshift
   - react-spinners
   - @heroicons/react
+  - tsparticles
+  - framer-motion
 
 
 ### Back-end
@@ -56,7 +58,8 @@ npm i inputmask
 npm i downshift
 npm i react-spinners
 npm i @heroicons/react
-
+npm i @tsparticles/react
+npm i framer-motion
 ```
 
 ### Instalação do Back-end (Python + Flask)
@@ -80,7 +83,7 @@ py ./server.py
 
 ## 📬 Contato
 Caso tenha dúvidas ou sugestões, entre em contato:<br>
-**Arthur - Desenvolvedor Web Front-end**<br>
+**Arthur - Desenvolvedor Web**<br>
 **https://github.com/arthurdasilvaleal**<br>
 **https://www.linkedin.com/in/arthurdasilvaleal/**
 

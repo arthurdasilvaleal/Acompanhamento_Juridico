@@ -3,16 +3,14 @@ import styled from "styled-components"
 export const FixedBox = styled.div`
     position: absolute;
     width: calc(100vw - 220px);
-    top: 220px;
+    top: 140px;
     opacity: ${({ $show }) => $show ? "1" : "0"};
-    
+    transform: ${({ $show }) => $show ? "translateX(0)" : "translateX(-100%)"};
     z-index: 1;
-    transition: opacity 0.3s ease-out;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     
     @media (max-width: 768px) {
         width: calc(100vw - 20px);
-        top: 240px;
-
         h1{
             font-size: 1.2rem;
             margin-left: 100px;
@@ -93,6 +91,74 @@ export const Client_form = styled.form`
 
         .label{
             text-align: end;
+        }
+    }
+`
+
+export const Client_back_button = styled.button`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 13px;
+    left: 30px;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    padding: 0;
+    border-radius: 20px;
+    border: 1px solid #fff;
+    background-color: transparent;
+    font-family: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease-out, border 0.1s ease, width 0.3s ease-in-out;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+        width: 30px;
+        height: 30px;
+        width: 80px;
+        background: #CDAF6F;
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
+        border: none;
+    }
+    
+    svg{
+        width: 20px;
+        margin-left: 9px;
+        transition: transform 200ms ease;
+
+        @media (max-width: 768px) {
+            margin-left: 4px;
+        }
+    }
+
+    span{
+        position: absolute;
+        opacity: 0;
+        left: 50px;
+        transition: left 0.3s ease-in-out, opacity 0.4s ease;
+        @media (max-width: 768px) {
+            left: 33px;
+            opacity: 1;
+        }
+    }
+
+    &:hover{
+        width: 80px;
+        background: #CDAF6F;
+        box-shadow: 7px 5px 56px -2px #CDAF6F;
+        border: none;
+        transition: all 400ms;
+        span{
+            left: 33px;
+            transition: left 0.3s ease-in-out, opacity 0.2s ease;
+            opacity: 1;
+        }
+
+        svg{
+            transform: translateX(-3px);
+            transition: transform 200ms ease;
         }
     }
 `

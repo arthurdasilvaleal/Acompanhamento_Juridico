@@ -75,7 +75,7 @@ export default function Processo({ ShowWindow, setShowWindow }){
 
     // Nesta tela, acrescentar um campo para selecionar o cliente;
     useEffect(() => {
-        setTimeout(() => {
+        if(ShowWindow){
             axios.get("http://192.168.100.3:5000/get_clientes")
             .then(response => {
                 set_ListCliente(response.data)
@@ -83,8 +83,8 @@ export default function Processo({ ShowWindow, setShowWindow }){
             .catch(error => {
                 console.error("Erro ao buscar clientes:", error)
             })
-          }, 1000)
-    }, [])
+        }
+    }, [ShowWindow])
 
     useEffect(() => {
         if (blockCamp === "1") {

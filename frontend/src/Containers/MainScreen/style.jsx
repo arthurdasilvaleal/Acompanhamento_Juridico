@@ -199,6 +199,7 @@ export const Main_Content = styled.section`
 
 export const Animated_background = styled.div`
     position: fixed;
+    min-height: 950px;
     width: 100%;
     height: 100%;
     z-index: -1;
@@ -217,6 +218,7 @@ export const Main_Title = styled.header`
     text-align: center;
     padding: 1rem 0 0 0;
     background-color: #343434;
+    z-index: 1; // Bloquear o TsParticles
     
     hr{
         margin: 0;

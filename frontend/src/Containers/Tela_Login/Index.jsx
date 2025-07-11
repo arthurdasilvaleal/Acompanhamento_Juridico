@@ -6,7 +6,6 @@ import axios from 'axios'
 import document from "../../gifs/document.gif"
 import gavel from "../../gifs/gavel.gif"
 import libra from "../../gifs/libra.gif"
-
 import LoadingPage from '../../components/Loading_Pages/Loading'
 
 export default function Login(){
@@ -20,7 +19,6 @@ export default function Login(){
     const [Loading, set_Loading] = useState(false)
     const [loadingScreen, set_LoadingScreen] = useState(true)
     
-
     const handleLogin = async (e) => {
         e.preventDefault()
 
@@ -55,6 +53,15 @@ export default function Login(){
         
         return () => clearTimeout(timer)
     }, [])
+
+    // useEffect(() => {
+    //     document.body.style.backgroundImage = "url('../../Images/bg.png')"
+
+    //     return () => {
+    //         document.body.style.backgroundImage = ""
+    //     }
+    // }, [])
+
 
     return(
         <>

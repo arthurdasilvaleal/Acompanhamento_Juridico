@@ -22,7 +22,7 @@ export const Consult_form = styled.form`
         height: ${({ $Enviado }) => $Enviado ? `150px` : `calc(100vh - 149px)`};
     }
 
-    @media (max-width: 768px){
+    @media (max-width: 930px){
         display: flex;
         flex-direction: column;
         height: ${({ $Enviado }) => $Enviado ? `240px` : `calc(100vh - 148px)`};
@@ -71,6 +71,15 @@ export const Consult_form = styled.form`
         outline: none;
         border-color: #fff;
     }
+
+    ul{
+        list-style: "none";
+        padding: 0;
+        margin: 0;
+        position: absolute;
+        right: 330px;
+        top: 50px;
+    }
 `
 
 export const Consult_button = styled.button`
@@ -113,7 +122,7 @@ export const Twin_Button = styled.div`
     flex-direction: column;
     gap: 10px;
     
-    @media (max-width: 768px) {
+    @media (max-width: 930px) {
         margin-left: auto;
         margin-right: auto;
         flex-direction: row;
@@ -227,6 +236,12 @@ export const Card = styled.div`
 
         .Client-info > *{
             margin: 10px 0 0 0;
+        }
+
+        .DsAcao{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
     }
 

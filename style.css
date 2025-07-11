@@ -2,7 +2,7 @@
 body{
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
-    background-image: url("/frontend/src/Images/bg.png");
+    background-image: url('/frontend/src/Images/bg.png');
     background-repeat: no-repeat;
     background-size: cover;
 }

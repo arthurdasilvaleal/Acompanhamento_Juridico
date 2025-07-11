@@ -82,12 +82,46 @@ def get_clientes():
 @app.route("/get_Allclientes", methods=["GET"])
 def get_Allclientes():
     
-    query = "SELECT * FROM Cliente"
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return jsonify(result)
-    
+    query = """SELECT
+                c.cd_Cliente,
+                c.nm_Cliente,
+                c.cd_CPF,
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado, 
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email,
+                GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' @ ') AS 'cd_numProcessos'
+            FROM Cliente c
+            INNER JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+            INNER JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+            GROUP BY
+                c.cd_cliente,
+                c.nm_Cliente, 
+                c.cd_CPF, 
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado,
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email"""
 
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 500
+    
+    
 # Cadastrar Clientes
 @app.route("/post_cliente", methods=["POST"])
 def post_cliente():
@@ -125,6 +159,8 @@ def post_cliente():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
+
+# Pegar os numeros dos processos bem como todos os dados do processo ou parte buscados
 @app.route("/get_processos", methods=["GET"])
 def get_processos():
 
@@ -166,8 +202,8 @@ def get_processos():
         cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         return jsonify(result)
-    
 
+# Cadastrar um processo
 @app.route("/post_processo", methods=["POST"])
 def post_processo():
     data = request.get_json()
@@ -204,7 +240,7 @@ def post_processo():
         return jsonify({"error": str(err)}), 500
     
 
-# Para os Cards da consulta
+# Para os Cards da consulta de processos
 @app.route("/get_card", methods=["GET"])
 def get_intimacao():
 

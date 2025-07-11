@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_IntForm, Consult_TaskForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
@@ -6,6 +6,7 @@ import Processo from "./Add_Processos/Processo"
 import Modal from "../../../../components/Modal/Modal"
 import Loading_Form from "../../../../components/Loading_Form/Loading"
 import axios from "axios"
+import { useCombobox } from "downshift"
 import { PlusCircleIcon } from "@heroicons/react/24/outline"
 
 
@@ -255,16 +256,16 @@ export default function Consulta_Processo({ CodigoColaborador }){
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
                         <div>
                             <InputError onChange={(e) => {
-                                const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
-                                set_cdNumeroEndereco(ParsedInteger)}}
-                            autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
-                            list="processes-number" $found_data={notFound} />
-                        </div>
+                                    const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
+                                    set_cdNumeroEndereco(ParsedInteger)}}
+                                autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
+                                list="processes-number" $found_data={notFound} />
+                            </div>
                         <datalist id="processes-number">
                             {cd_ListNumeroProcesso.map((numero, index) => (
                                 <option key={index} value={numero}></option>
                             ))}
-                        </datalist> 
+                        </datalist>
                     </div>
                     <div className="input-group">
                         <label className="label" htmlFor="nm_Cliente">Nome da parte</label>
@@ -274,7 +275,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                             autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente}
                             $found_data={notFound} />
                     </div>
-                    {notFound && (<NotFound_Error>Processo não encontrado.</NotFound_Error>)}
+                    {notFound && (<NotFound_Error>Nenhum processo encontrado.</NotFound_Error>)}
                 </div>
                 <Twin_Button $disableForProcess={processos.length > 0 && !notFound && foundProcess}>
                     <Consult_button className="form-button" type="submit">
@@ -308,9 +309,19 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                 <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
                                                 <p><strong>Telefone: </strong>{formatedPhone}</p>
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
-                                                <p><strong>Autor: </strong>{processo.nm_Autor}</p>
+                                                <hr />
+                                                <h2>dados do Processo</h2>
+                                                <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
+                                                <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
+                                                <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
+                                                <p><strong>Descrição: </strong>{processo.ds_Juizo}</p>
                                                 <p><strong>Cidade: </strong>{processo.nm_Cidade}</p>
                                                 <p><strong>Valor da causa:</strong> R${formatedMoney}</p>
+                                                <br />
+                                                <div className="DsAcao">
+                                                    <h4 style={{ margin: "0 0 5px 0" }}><strong>Descrição da ação</strong></h4>
+                                                    <p style={{ margin: "0", textAlign: "center" }}>{processo.ds_Acao}</p>
+                                                </div>
                                             </div>
                                             <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar</Consult_button>
                                         </div>

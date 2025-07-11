@@ -1,4 +1,4 @@
-import { Client_form, Client_button, FixedBox } from "./style"
+import { Client_form, Client_button, FixedBox, Client_back_button } from "./style"
 import { useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
@@ -6,7 +6,7 @@ import Modal from '../../../../../components/Modal/Modal'
 import Loading_form from "../../../../../components/Loading_Form/Loading"
 import axios from 'axios'
 
-export default function Clientes({ showWindow }){
+export default function Clientes({ showWindow, setShowWindow, setaddedCliente }){
     const [nm_Cliente, set_nmCliente] = useState("")
     const [cd_CPF, set_cdCPF] = useState("")
     const [cd_CEP, set_cdCEP] = useState("")
@@ -88,6 +88,9 @@ export default function Clientes({ showWindow }){
             set_cdNumeroEndereco("")
             set_nmComplemento("")
             set_dsEmail("")
+
+            setaddedCliente(true)
+
         } catch (error) {
             console.error("Erro ao cadastrar cliente:", error)
             set_FormStatusMessage("Erro ao Adicionar cliente.")
@@ -100,6 +103,19 @@ export default function Clientes({ showWindow }){
     return(
         <FixedBox $show={showWindow}>
             {Loading && (<Loading_form />)}
+            <Client_back_button onClick={() => {
+                    setShowWindow(false)
+                    window.scrollTo({
+                        top: 1,
+                        behavior: "smooth"
+                    })
+                    document.body.style.overflow = "visible"
+                }}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+                </svg>
+                <span>Voltar</span>
+            </Client_back_button>
             <h1>Adicionar um Cliente</h1>
             <hr />
             <Client_form onSubmit={handleSubmit}>
@@ -190,7 +206,7 @@ export default function Clientes({ showWindow }){
                     <label className="label" htmlFor="nm_Complemento">Complemento</label>
                     <input onChange={(e) => {
                         const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ0-9\s]/g, "")
-                        set_nmComplemento(ParsedString)}} autoComplete="off" name="nm_Complemento" id="nm_Complemento" className="input" type="text" value={nm_Complemento} maxLength={20} required/>
+                        set_nmComplemento(ParsedString)}} autoComplete="off" name="nm_Complemento" id="nm_Complemento" className="input" type="text" value={nm_Complemento} maxLength={20}/>
                 </div>
                 <div className="input-group">
                     <label className="label" htmlFor="cd_Telefone">Telefone</label>
