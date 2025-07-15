@@ -360,7 +360,7 @@ export const Consult_IntForm = styled.form`
     }
 
     #ds_Intimacao{
-        height: 126px;
+        height: 172px;
         padding-top: 20px;
         resize: none;
     }

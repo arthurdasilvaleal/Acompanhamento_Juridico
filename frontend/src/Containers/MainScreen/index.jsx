@@ -59,7 +59,7 @@ export default function MainScreen() {
     SubTitles: [
       <p key="Visão Geral">Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
       <p key="Processos">Aqui você pode preencher as informações para consulta processual e adicionar processos</p>,
-      <p key="Clientes">Confira os dados detalhados e adicione novos clientes</p>,
+      <p key="Clientes">Confira os dados detalhados, adicione e edite novos clientes</p>,
       <p key="Relatórios">Visualize relatórios detalhados das suas atividades</p>
     ]
   }

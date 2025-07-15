@@ -310,7 +310,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                 <p><strong>Telefone: </strong>{formatedPhone}</p>
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                                                 <hr />
-                                                <h2>dados do Processo</h2>
+                                                <h2>DADOS DO PROCESSO</h2>
                                                 <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
                                                 <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
                                                 <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>

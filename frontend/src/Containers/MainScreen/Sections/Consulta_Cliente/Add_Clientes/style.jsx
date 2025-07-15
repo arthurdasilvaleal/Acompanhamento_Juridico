@@ -4,8 +4,8 @@ export const FixedBox = styled.div`
     position: absolute;
     width: calc(100vw - 220px);
     top: 140px;
-    opacity: ${({ $show }) => $show ? "1" : "0"};
-    transform: ${({ $show }) => $show ? "translateX(0)" : "translateX(-100%)"};
+    opacity: ${({ $show, $showEdit }) => ($show || $showEdit) ? "1" : "0"};
+    transform: ${({ $show, $showEdit }) => ($show || $showEdit) ? "translateX(0)" : "translateX(-100%)"};
     z-index: 1;
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     

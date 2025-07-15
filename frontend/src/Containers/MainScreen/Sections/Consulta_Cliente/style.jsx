@@ -1,8 +1,8 @@
 import styled from "styled-components"
 
 export const ShowClientes = styled.div`
-    opacity: ${({ $addClientes }) => $addClientes ? "0" : "1"};
-    pointer-events: ${({ $addClientes }) => $addClientes ? "none" : "all"};
+    opacity: ${({ $addClientes, $editClientes }) => ($editClientes || $addClientes) ? "0" : "1"};
+    pointer-events: ${({ $addClientes, $editClientes }) => ($editClientes || $addClientes) ? "none" : "all"};
     transition: all 0.2s ease-in-out;
 `
 
@@ -153,7 +153,7 @@ export const Card_Cliente = styled.div`
 
     max-height: ${({ $detailed, $fullDetailed }) => {
         if($detailed && !$fullDetailed){return "260px"}
-        else if($detailed && $fullDetailed){return "400px"}
+        else if($detailed && $fullDetailed){return "600px"}
         else{return "120px"}}
     };
 

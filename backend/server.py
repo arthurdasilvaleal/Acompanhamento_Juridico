@@ -95,10 +95,11 @@ def get_Allclientes():
                 c.cd_CEP,
                 c.cd_Telefone,
                 c.ds_Email,
+                c.ds_ComplementoEndereco,
                 GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' @ ') AS 'cd_numProcessos'
             FROM Cliente c
-            INNER JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
-            INNER JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+            LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+            LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
             GROUP BY
                 c.cd_cliente,
                 c.nm_Cliente, 
@@ -111,6 +112,7 @@ def get_Allclientes():
                 c.sg_Estado,
                 c.cd_CEP,
                 c.cd_Telefone,
+                c.ds_ComplementoEndereco,
                 c.ds_Email"""
 
     try:
@@ -154,11 +156,52 @@ def post_cliente():
         valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, Logradouro, Bairro, Cidade, Estado, CEP)
         cursor.execute(queryCliente, valuesCliente)
         db.commit()
-        return jsonify({"message": "Cliente inserido com sucesso!"}), 201
+        return jsonify({"message": "Cliente alterado com sucesso!"}), 201
     except mysql.connector.Error as err:
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
+# Editar um cliente
+@app.route("/put_cliente", methods=["PUT"])
+def put_cliente():
+    data = request.get_json()
+
+    Codigo = data.get("cd_Cliente")
+    Logradouro = data.get("nm_Logradouro")
+    Bairro = data.get("nm_Bairro")
+    Cidade = data.get("nm_Cidade")
+    Estado = data.get("sg_Estado")
+    CEP = data.get("cd_CEP")
+    Nome = data.get("nm_Cliente")
+    CPF = data.get("cd_CPF")
+    Numero = data.get("cd_NumeroEndereco")
+    Complemento = data.get("nm_Complemento")
+    Telefone = data.get("cd_Telefone")
+    Email = data.get("ds_Email")
+
+    if len(CPF) > 11:
+        query = """UPDATE Cliente
+                SET nm_Logradouro = %s, nm_Bairro = %s, nm_Cidade = %s, sg_Estado = %s, cd_CEP = %s,
+                nm_Cliente = %s, cd_CNPJ = %s, cd_NumeroEndereco = %s, ds_ComplementoEndereco = %s, cd_Telefone = %s,
+                ds_Email = %s
+                WHERE cd_Cliente = %s"""
+    else:
+        query = """UPDATE Cliente
+                SET nm_Logradouro = %s, nm_Bairro = %s, nm_Cidade = %s, sg_Estado = %s, cd_CEP = %s,
+                nm_Cliente = %s, cd_CPF = %s, cd_NumeroEndereco = %s, ds_ComplementoEndereco = %s, cd_Telefone = %s,
+                ds_Email = %s
+                WHERE cd_Cliente = %s"""
+    
+    try:
+        valuesCliente = (Logradouro, Bairro, Cidade, Estado, CEP, Nome, CPF, Numero, Complemento, Telefone, Email, Codigo)
+        cursor.execute(query, valuesCliente)
+        db.commit()
+        return jsonify({"message": "Cliente editado com sucesso!"}), 201
+    except mysql.connector.Error as err:
+        print("Erro:", err)
+        return jsonify({"error": str(err)}), 500
+    
+    
 
 # Pegar os numeros dos processos bem como todos os dados do processo ou parte buscados
 @app.route("/get_processos", methods=["GET"])

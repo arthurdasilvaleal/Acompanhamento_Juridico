@@ -1,12 +1,12 @@
 import { Client_form, Client_button, FixedBox, Client_back_button } from "./style"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { InputMask } from "@react-input/mask"
 import { cpf, cnpj } from 'cpf-cnpj-validator'
 import Modal from '../../../../../components/Modal/Modal'
 import Loading_form from "../../../../../components/Loading_Form/Loading"
 import axios from 'axios'
 
-export default function Clientes({ showWindow, setShowWindow, setaddedCliente }){
+export default function Clientes({ showWindow, setShowWindow, setaddedCliente, showEditwindow, setShowEditwindow, editInfo }){
     const [nm_Cliente, set_nmCliente] = useState("")
     const [cd_CPF, set_cdCPF] = useState("")
     const [cd_CEP, set_cdCEP] = useState("")
@@ -68,15 +68,96 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente })
             ds_Email
         }
 
-        try{
-            const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
-            console.log("Cliente adicionado com sucesso:", response.data)
-            set_FormStatusMessage("Cliente adicionado com sucesso!")
-            set_ModalOpen(true)
-            set_fromStatusErrorMessage("")
-            set_Loading(false)
+        if(showWindow){
+            try{
+                const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+                console.log("Cliente adicionado com sucesso:", response.data)
+                set_FormStatusMessage("Cliente adicionado com sucesso!")
+                set_ModalOpen(true)
+                set_fromStatusErrorMessage("")
+                set_Loading(false)
 
-            // Resetando o formulário
+                // Resetando o formulário
+                set_nmCliente("")
+                set_cdCPF("")
+                set_cdTelefone("")
+                set_cdCEP("")
+                set_nmLogradouro("")
+                set_nmBairro("")
+                set_nmCidade("")
+                set_sgEstado("")
+                set_cdNumeroEndereco("")
+                set_nmComplemento("")
+                set_dsEmail("")
+
+                setaddedCliente(true)
+
+            } catch (error) {
+                console.error("Erro ao cadastrar cliente:", error)
+                set_FormStatusMessage("Erro ao Adicionar cliente.")
+                set_fromStatusErrorMessage(error.response.data.error)
+                set_ModalOpen(true)
+                set_Loading(false)
+            }
+        }
+        else if(showEditwindow){
+            
+            const put_cliente = {
+                cd_Cliente: editInfo.cdCliente,
+                nm_Cliente,
+                cd_CPF: cleaned_CPF,
+                cd_Telefone: cleaned_Telefone,
+                cd_CEP: cleaned_CEP,
+                nm_Logradouro,
+                nm_Bairro,
+                nm_Cidade,
+                sg_Estado,
+                cd_NumeroEndereco,
+                nm_Complemento,
+                ds_Email
+            }
+
+            try{
+                const response = await axios.put("http://192.168.100.3:5000/put_cliente", put_cliente)
+                console.log("Cliente editado com sucesso:", response.data)
+                set_FormStatusMessage("Cliente editado com sucesso!")
+                set_ModalOpen(true)
+                set_fromStatusErrorMessage("")
+                set_Loading(false)
+
+                setShowEditwindow(false)
+                setaddedCliente(true)
+
+            }catch (error){
+                console.error("Erro ao editar cliente:", error)
+                set_FormStatusMessage("Erro ao editar cliente.")
+                set_fromStatusErrorMessage(error.response.data.error)
+                set_ModalOpen(true)
+                set_Loading(false)
+            }
+        }
+
+    }
+    
+
+    useEffect(() => {
+        if(showEditwindow){
+            set_nmCliente(editInfo.nmCliente)
+            set_cdCPF(() => editInfo.cdCPF == null 
+                ? editInfo.cdCNPJ.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5") 
+                : editInfo.cdCPF.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")) // Caso CPF seja null
+            set_cdTelefone(editInfo.cdTelefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3"))
+            set_cdCEP(editInfo.cdCEP.replace(/(\d{5})(\d{3})/, "$1-$2"))
+            set_nmLogradouro(editInfo.nmLogradouro)
+            set_nmBairro(editInfo.nmBairro)
+            set_nmCidade(editInfo.nmCidade)
+            set_sgEstado(editInfo.sgEstado)
+            set_cdNumeroEndereco(editInfo.cdNumeroEndereco)
+            set_nmComplemento(() => (editInfo.nmComplemento == null || editInfo.nmComplemento == undefined) ? "" : editInfo.nmComplemento) // Caso complemento esteja vazio
+            set_dsEmail(editInfo.dsEmail)
+        }
+        else if(showWindow){
+            // Resetando o formulário para quando o cliente sair de uma edição
             set_nmCliente("")
             set_cdCPF("")
             set_cdTelefone("")
@@ -88,35 +169,27 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente })
             set_cdNumeroEndereco("")
             set_nmComplemento("")
             set_dsEmail("")
-
-            setaddedCliente(true)
-
-        } catch (error) {
-            console.error("Erro ao cadastrar cliente:", error)
-            set_FormStatusMessage("Erro ao Adicionar cliente.")
-            set_fromStatusErrorMessage(error.response.data.error)
-            set_ModalOpen(true)
-            set_Loading(false)
         }
-    }
+    }, [showWindow, showEditwindow])
 
     return(
-        <FixedBox $show={showWindow}>
-            {Loading && (<Loading_form />)}
+        <FixedBox $show={showWindow} $showEdit={showEditwindow}>
+            {Loading && (<Loading_form setDOM={true}/>)}
             <Client_back_button onClick={() => {
                     setShowWindow(false)
+                    setShowEditwindow(false)
                     window.scrollTo({
                         top: 1,
                         behavior: "smooth"
                     })
-                    document.body.style.overflow = "visible"
+                    // document.body.style.overflow = "visible"
                 }}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
                 </svg>
                 <span>Voltar</span>
             </Client_back_button>
-            <h1>Adicionar um Cliente</h1>
+            <h1>{!showEditwindow ? "Adicionar um Cliente" : "Editar um Cliente"}</h1>
             <hr />
             <Client_form onSubmit={handleSubmit}>
                 <div className="input-group">
@@ -222,7 +295,7 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente })
                     <label className="label" htmlFor="ds_Email">E-mail</label>
                     <input onChange={(e) => set_dsEmail(e.target.value)} autoComplete="off" name="ds_Email" id="ds_Email" className="input" type="email" value={ds_Email} required/>
                 </div>
-                <Client_button type="submit">Adicionar</Client_button>
+                <Client_button type="submit">{!showEditwindow ? "Adicionar" : "Enviar"}</Client_button>
             </Client_form>
             {/* <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/> */}
             <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>

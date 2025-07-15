@@ -125,7 +125,7 @@ export const Main_ToggleButton = styled.button`
     left: 10px;
     width: 50px;
     height: 30px;
-    z-index: 1000;
+    z-index: 999;
     background: none;
     border: none;
     cursor: pointer;

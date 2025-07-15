@@ -5,6 +5,7 @@ import { H_align, Container, Inputs_box, Header, Twin_input, ShowPass_button } f
 import { InputMask } from "@react-input/mask"
 import { cpf } from 'cpf-cnpj-validator'
 import Modal from "../../components/Modal/Modal.jsx"
+import BackGround from "../../components/Background/Background.jsx"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 
 export default function Cadastro(){
@@ -102,7 +103,9 @@ export default function Cadastro(){
 
     return(
         <>
+            <BackGround />
             <H_align>
+                
                 <Container onSubmit={handleSubmit}>
                     <Header>
                         <Link to={"/"}>

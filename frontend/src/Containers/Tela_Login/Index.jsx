@@ -6,7 +6,8 @@ import axios from 'axios'
 import document from "../../gifs/document.gif"
 import gavel from "../../gifs/gavel.gif"
 import libra from "../../gifs/libra.gif"
-import LoadingPage from '../../components/Loading_Pages/Loading'
+import LoadingPage from "../../components/Loading_Pages/Loading"
+import Background from "../../components/Background/Background"
 
 export default function Login(){
 
@@ -54,19 +55,10 @@ export default function Login(){
         return () => clearTimeout(timer)
     }, [])
 
-    // useEffect(() => {
-    //     document.body.style.backgroundImage = "url('../../Images/bg.png')"
-
-    //     return () => {
-    //         document.body.style.backgroundImage = ""
-    //     }
-    // }, [])
-
-
     return(
         <>
-        {loadingScreen && (<LoadingPage />)}
-        
+            {loadingScreen && (<LoadingPage />)}
+            <Background />
             <Container onSubmit={handleLogin}>
                 <div className='gifs'>
                     <img src={document} alt="processos" />

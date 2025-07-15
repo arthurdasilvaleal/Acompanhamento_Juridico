@@ -16,11 +16,13 @@ export default function Consulta_Cliente(){
 
     // Variáveis de Estado
     const [firstRender, set_firstRender] = useState(false)
-    const [addCliente, set_addCliente] = useState(false)
+    const [addCliente, set_addCliente] = useState(false) // Abre o form para inserir um novo cliente
     const [Loading_clientes, setLoading_clientes] = useState(false)
     const [cardOpen, set_cardOpen] = useState(null)
     const [cardVeryDetailed, set_cardVeryDetailed] = useState(null)
-    const [addedCliente, set_addedCliente] = useState(false)
+    const [addedCliente, set_addedCliente] = useState(false) // Puxa os clientes após uma inserção
+    const [editCliente, set_editCliente] = useState(false) // abre o form para alterar o cliente
+    const [ClienteInfo, set_clienteInfo] = useState([])
 
     // Função para chamar todos os clientes
     const getAllClientes = async () => {
@@ -28,7 +30,7 @@ export default function Consulta_Cliente(){
 
         try{
             const response = await axios.get("http://192.168.100.3:5000//get_Allclientes")
-            console.log(response.data)
+            // console.log(response.data)
             set_allClientes(response.data)
 
             setLoading_clientes(false)
@@ -45,8 +47,10 @@ export default function Consulta_Cliente(){
             getAllClientes()
         }
 
-        if(addedCliente)
+        if(addedCliente){
             getAllClientes()
+            set_addedCliente(false)
+        }
     }, [firstRender, addedCliente])
 
 
@@ -57,9 +61,19 @@ export default function Consulta_Cliente(){
         return 0 // Mantem a ordem
     })
 
+    // Mandando os parametros para o componente "Clientes.jsx"
+    const clienteWindowProps ={
+        showWindow: addCliente, 
+        setShowWindow: set_addCliente, 
+        setaddedCliente: set_addedCliente, 
+        showEditwindow: editCliente, 
+        setShowEditwindow: set_editCliente,
+        editInfo: ClienteInfo
+    }
+
     return(
         <>
-            <ShowClientes $addClientes={addCliente}>
+            <ShowClientes $addClientes={addCliente} $editClientes={editCliente}>
                 {Loading_clientes && (<Loading setDOM={true} />)}
                 <Search_box>
                     <label htmlFor="input" id="desktopLabel">Nome do cliente</label>
@@ -93,8 +107,8 @@ export default function Consulta_Cliente(){
                             }
 
                             // Alguns endereços não possuem complementos, removendo o espaço em branco
-                            const ComplementoEndereco = () =>{
-                                if(cliente.ds_ComplementoEndereco == null)
+                            const ComplementoEndereco = () => {
+                                if(cliente.ds_ComplementoEndereco === null)
                                     return null
                                 return(
                                     <p>{cliente.ds_ComplementoEndereco}</p>
@@ -126,13 +140,35 @@ export default function Consulta_Cliente(){
                                             {ComplementoEndereco()}
                                             <p>{cliente.nm_Cidade}, {cliente.sg_Estado}</p>
                                             <br />
-                                            <h6 onClick={(e) => {
-                                                e.stopPropagation() // Evita que o Pai escute o evento
-                                                set_cardVeryDetailed(veryDetailed ? null : cliente.cd_Cliente)
-                                                }}>{veryDetailed ? "voltar" : "ver mais detalhes"}
-                                            </h6>
+                                            <div>
+                                                <h6 onClick={(e) => {
+                                                    e.stopPropagation() // Evita que o Pai escute o evento
+                                                    set_cardVeryDetailed(veryDetailed ? null : cliente.cd_Cliente)
+                                                    }}>{veryDetailed ? "voltar" : "ver mais detalhes"}
+                                                </h6>
+                                                <h6 onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    set_clienteInfo({
+                                                        cdCliente: cliente.cd_Cliente,
+                                                        nmCliente: cliente.nm_Cliente,
+                                                        cdCPF: cliente.cd_CPF,
+                                                        cdCNPJ: cliente.cd_CNPJ,
+                                                        cdTelefone: cliente.cd_Telefone,
+                                                        cdCEP: cliente.cd_CEP,
+                                                        nmLogradouro: cliente.nm_Logradouro,
+                                                        nmBairro: cliente.nm_Bairro,
+                                                        nmCidade: cliente.nm_Cidade,
+                                                        sgEstado: cliente.sg_Estado,
+                                                        cdNumeroEndereco: cliente.cd_NumeroEndereco,
+                                                        nmComplemento: cliente.ds_ComplementoEndereco,
+                                                        dsEmail: cliente.ds_Email
+                                                    })
+                                                    console.log(ClienteInfo)
+                                                    set_editCliente(prev => !prev)
+                                                }}>Editar</h6>
+                                            </div>
                                             {/* Quando o usuário clicar em "ver mais detalhes" */}
-                                            {veryDetailed && (
+                                            {veryDetailed && cliente.cd_numProcessos != null && (
                                                 <>
                                                     <hr style={{ height: "3px", backgroundColor: "#CDAF6F", border: "none", boxShadow: "0 0 30px #CDAF6F" }}/>
                                                     <h4><strong>Processos</strong></h4>
@@ -151,7 +187,7 @@ export default function Consulta_Cliente(){
                     </AnimatePresence>
                 </Grid_Box>
             </ShowClientes>
-            <Clientes showWindow={addCliente} setShowWindow={set_addCliente} setaddedCliente={set_addedCliente} />
+            <Clientes {...clienteWindowProps}/>
         </>
     )
 }
