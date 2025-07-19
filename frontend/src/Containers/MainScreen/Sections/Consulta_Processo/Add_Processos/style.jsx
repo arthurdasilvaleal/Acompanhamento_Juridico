@@ -4,7 +4,7 @@ export const FixedBox = styled.div`
     position: absolute;
     width: calc(100vw - 220px);
     top: 140px;
-    opacity: ${({ $Show }) => $Show ? "1" : "0"};
+    opacity: ${({ $Show, $ShowEdit }) => $Show || $ShowEdit ? "1" : "0"};
     
     z-index: 1;
     transition: opacity 0.3s ease-out;
@@ -80,6 +80,7 @@ export const Process_Form = styled.form`
         display: flex;
         align-items: center;
         gap: 20px;
+        padding-bottom: 10px;
 
         .input-select{
             width: calc(30vw + 36px);
@@ -104,7 +105,7 @@ export const Process_Form = styled.form`
     }
 
     .form-button{
-        margin-top: 31px;
+        margin-top: 21px;
     }
 `
 

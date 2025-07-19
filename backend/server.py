@@ -70,7 +70,7 @@ def post_clientes():
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    query = "SELECT nm_Cliente FROM Cliente"
+    query = "SELECT cd_Cliente, nm_Cliente FROM Cliente"
     try:
         cursor.execute(query)
         result = cursor.fetchall()
@@ -180,20 +180,12 @@ def put_cliente():
     Email = data.get("ds_Email")
 
     if len(CPF) > 11:
-        query = """UPDATE Cliente
-                SET nm_Logradouro = %s, nm_Bairro = %s, nm_Cidade = %s, sg_Estado = %s, cd_CEP = %s,
-                nm_Cliente = %s, cd_CNPJ = %s, cd_NumeroEndereco = %s, ds_ComplementoEndereco = %s, cd_Telefone = %s,
-                ds_Email = %s
-                WHERE cd_Cliente = %s"""
+        query = """CALL SP_Update_Cliente(%s, %s, null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     else:
-        query = """UPDATE Cliente
-                SET nm_Logradouro = %s, nm_Bairro = %s, nm_Cidade = %s, sg_Estado = %s, cd_CEP = %s,
-                nm_Cliente = %s, cd_CPF = %s, cd_NumeroEndereco = %s, ds_ComplementoEndereco = %s, cd_Telefone = %s,
-                ds_Email = %s
-                WHERE cd_Cliente = %s"""
+        query = """CALL SP_Update_Cliente(%s, %s, %s, null, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     
     try:
-        valuesCliente = (Logradouro, Bairro, Cidade, Estado, CEP, Nome, CPF, Numero, Complemento, Telefone, Email, Codigo)
+        valuesCliente = (Codigo, Nome, CPF, Logradouro, Bairro, Cidade, Estado, CEP, Numero, Complemento, Telefone, Email)
         cursor.execute(query, valuesCliente)
         db.commit()
         return jsonify({"message": "Cliente editado com sucesso!"}), 201
@@ -223,7 +215,7 @@ def get_processos():
     Nome_Parte = request.args.get("parte")
 
     if Nome_Parte == "" or Num_Processo == "":
-        query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+        query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
                 P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
                 FROM Processo P
                 JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
@@ -236,7 +228,7 @@ def get_processos():
         return jsonify(result)
     
     else:
-        query = """SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+        query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
         P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
         FROM Processo P
         JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
@@ -282,6 +274,38 @@ def post_processo():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
     
+#Para editar um processo
+@app.route("/put_processo", methods=["PUT"])
+def put_processo():
+
+    data = request.get_json()
+
+    Codigo = data.get("cd_Processo")
+    NumProcesso = data.get("cd_NumProcesso")
+    CodClienteNovo = data.get("cd_ClienteNovo")
+    CodClienteAntigo = data.get("cd_ClienteAntigo")
+    Posicao = data.get("opcaoCliente")
+    Autor = data.get("nm_Autor")
+    Reu = data.get("nm_Reu")
+    Cidade = data.get("nm_Cidade")
+    Causa = data.get("vl_Causa")
+    Juizo = data.get("ds_Juizo")
+    Acao = data.get("ds_Acao")
+    Tribunal = data.get("sg_Tribunal")
+    Fase = data.get("cd_FaseProcesso")
+
+    query = """CALL SP_Update_Processo(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    
+    values = (Codigo, CodClienteAntigo, CodClienteNovo, Posicao, NumProcesso, Autor, Reu, Juizo, Acao, Cidade, Tribunal, Causa, Fase)
+    
+    try:
+        cursor.execute(query, values)
+        db.commit()
+        return jsonify({"message": "Processo editado com sucesso!"}), 201
+    except mysql.connector.Error as err:
+        print("Erro:", err)
+        return jsonify({"error": str(err)}), 500
+
 
 # Para os Cards da consulta de processos
 @app.route("/get_card", methods=["GET"])

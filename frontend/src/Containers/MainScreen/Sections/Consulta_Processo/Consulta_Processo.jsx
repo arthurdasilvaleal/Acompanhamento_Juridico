@@ -7,10 +7,11 @@ import Modal from "../../../../components/Modal/Modal"
 import Loading_Form from "../../../../components/Loading_Form/Loading"
 import axios from "axios"
 import { useCombobox } from "downshift"
-import { PlusCircleIcon } from "@heroicons/react/24/outline"
+import { PencilSquareIcon } from "@heroicons/react/20/solid"
+import { PlusIcon } from "@heroicons/react/24/outline"
 
 
-export default function Consulta_Processo({ CodigoColaborador }){
+export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }){
 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
@@ -28,7 +29,11 @@ export default function Consulta_Processo({ CodigoColaborador }){
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
     const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
     const [openFormIdTask, set_openFormIdTask] = useState(null) // Abre o formulário de addTarefa de cada card
-    const [Loading, set_Loading] = useState(false)
+    const [Loading, set_Loading] = useState(false) // Loading da busca de processos
+    const [OpenEditProcess, set_OpenEditProcess] = useState(false) // Abre a janela para edição de um processo
+    const [PropEditProcess, set_PropEditProcess] = useState([]) // Props para edição de processo
+    const [addedProcess, set_addedProcess] = useState(false) // Para quando um processo for adicionado, o sistema pega o numero do processo para mostrar
+    const [editProcess, set_editProcess] = useState(false) // Para quando um processo for editado, apos os dados forem validados, eles voltam atualizados
 
     // Variáveis do Modal
     const [isModalOpen, set_ModalOpen] = useState(false)
@@ -69,8 +74,10 @@ export default function Consulta_Processo({ CodigoColaborador }){
           })
           .catch(error => {
             console.error("Erro ao buscar processos:", error)
-          })
-    }, [])
+          }
+        ) 
+        if(addedProcess) set_addedProcess(false)
+    }, [ , addedProcess])
 
     // Pesquisando o processo (por nome e/ou numero)
     const getProcessSubmit = async (e) => {
@@ -244,13 +251,42 @@ export default function Consulta_Processo({ CodigoColaborador }){
             behavior: "instant"
         })
     }, [])
+
+    // Recupera os dados após uma edição
+    useEffect(() => {
+        if(editProcess){
+            (async () => {
+                try{
+                    const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                        params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
+                    })
+                    console.log(response.data)
+                    set_Processos(response.data)
+                } catch (error) {
+                    console.log("Erro ao atualizar o processo: ", error)
+                }
+            })()
+        }
+        set_editProcess(false)
+    }, [editProcess])
+
+    // Props da tela de adicionar processos
+    const ProcessProps = {
+        ShowWindow: openAddProcess, 
+        setShowWindow: set_openAddProcess,
+        ShowEditWindow: OpenEditProcess,
+        setShowEditWindow: set_OpenEditProcess,
+        editInfo: PropEditProcess,
+        setAddedProcess: set_addedProcess,
+        setEditedProcess: set_editProcess
+    }
     
 
     return(
         <>
-            <Processo ShowWindow={openAddProcess} setShowWindow={set_openAddProcess}/>
+            <Processo {...ProcessProps}/>
             {Loading && (<Loading_Form />)}
-            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} onSubmit={getProcessSubmit}>
+            <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} $editOpen={OpenEditProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
@@ -285,7 +321,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                 </Twin_Button>
             </Consult_form>
             {processos.length > 0 && (
-                <Process_Cards $cardOpen={CloseForm} $processOpen={openAddProcess}>
+                <Process_Cards $cardOpen={CloseForm} $processOpen={openAddProcess} $editOpen={OpenEditProcess}>
                     {processos.map((processo) => {
                         const isOpen = openCardId === processo.cd_Processo
                         const formatedPhone = processo.cd_Telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
@@ -298,6 +334,26 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                     set_OpenCardId(isOpen ? null : processo.cd_Processo)
                                     set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
                                     }}>Processo Nº {processo.cd_NumeroProcesso}
+                                    {/* Caso o colaborador for estágiario, não pode editar os processos */}
+                                    {TipoColaborador != "Estagiário" && (
+                                        <PencilSquareIcon onClick={(e) => {
+                                            e.stopPropagation()
+                                            set_OpenEditProcess(true)
+                                            set_PropEditProcess({
+                                                cdNumeroProcesso: processo.cd_NumeroProcesso,
+                                                cdProcesso: processo.cd_Processo,
+                                                dsAcao: processo.ds_Acao,
+                                                dsJuizo: processo.ds_Juizo,
+                                                nmAutor: processo.nm_Autor,
+                                                nmCidade: processo.nm_Cidade,
+                                                nmCliente: processo.nm_Cliente,
+                                                cdCliente: processo.cd_Cliente,
+                                                nmReu: processo.nm_Reu,
+                                                sgTribunal: processo.sg_Tribunal,
+                                                vlCausa: processo.vl_Causa
+                                            })
+                                        }}/>
+                                    )}
                                 </Card_Title>
 
                                 <Card $cardOpen={isOpen}>
@@ -368,7 +424,7 @@ export default function Consulta_Processo({ CodigoColaborador }){
                                                             <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
                                                             <div className="addTask">
                                                                 <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
-                                                                    <PlusCircleIcon style={{ width: "25px" }} />
+                                                                    <PlusIcon style={{ width: "25px" }} />
                                                                 </Consult_button>
                                                                 <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
                                                                     <h2>Adicionar Tarefa</h2>

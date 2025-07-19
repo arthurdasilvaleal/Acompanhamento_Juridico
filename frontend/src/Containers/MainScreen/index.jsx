@@ -50,7 +50,7 @@ export default function MainScreen() {
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
-    "Processos": <Consulta_Processo CodigoColaborador={codigo}/>,
+    "Processos": <Consulta_Processo CodigoColaborador={codigo} TipoColaborador={tipo}/>,
     "Clientes": <Consulta_Cliente />,
     "Relatórios": <></>
   }
@@ -58,7 +58,7 @@ export default function MainScreen() {
   const SubTitleObject = {
     SubTitles: [
       <p key="Visão Geral">Seja bem-vindo ao sistema de gestão de processos judiciais!</p>,
-      <p key="Processos">Aqui você pode preencher as informações para consulta processual e adicionar processos</p>,
+      <p key="Processos">Aqui você pode adicionar processos, intimações e tarefas, bem como editar processos</p>,
       <p key="Clientes">Confira os dados detalhados, adicione e edite novos clientes</p>,
       <p key="Relatórios">Visualize relatórios detalhados das suas atividades</p>
     ]

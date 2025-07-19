@@ -163,7 +163,11 @@ export default function Consulta_Cliente(){
                                                         nmComplemento: cliente.ds_ComplementoEndereco,
                                                         dsEmail: cliente.ds_Email
                                                     })
-                                                    console.log(ClienteInfo)
+                                                    // console.log(ClienteInfo)
+                                                    window.scrollTo({
+                                                        top: 1,
+                                                        behavior: "smooth"
+                                                    })
                                                     set_editCliente(prev => !prev)
                                                 }}>Editar</h6>
                                             </div>

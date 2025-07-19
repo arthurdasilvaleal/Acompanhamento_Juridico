@@ -7,7 +7,7 @@ export const Consult_form = styled.form`
     gap: 40px;
     background-color: #2b2b2b;
     overflow: hidden;
-    transform: ${({ $processOpen }) => $processOpen ? "translateX(-100%)" : "translateX(0)"};
+    transform: ${({ $processOpen, $editOpen }) => $processOpen || $editOpen ? "translateX(-100%)" : "translateX(0)"};
     z-index: 2;
     
 
@@ -139,7 +139,7 @@ export const NotFound_Error = styled.p`
     color: red;
     transition: opacity 0.5s ease;
     margin: 0 0 0 170px;
-    width: 190px;
+    /* width: 190px; */
 `
 
 export const InputError = styled.input`
@@ -151,9 +151,10 @@ export const Process_Cards = styled.div`
     flex-direction: column;
     margin: 0;
     z-index: 2;
+    transform: ${({ $editOpen }) => $editOpen ? "translateX(-100%)" : "translateX(0)"};
     display: ${({ $processOpen }) => $processOpen ? "none" : "flex"};
     min-height: ${({ $cardOpen }) => $cardOpen ? "calc(100vh - 298px)" : "calc(100vh - 128px)"};
-    transition: min-height 0.8s ease-out, background-color 150ms ease;
+    transition: min-height 0.8s ease-out, background-color 150ms ease, transform 0.4s ease-in-out;
 
     @media (max-width: 768px) {
         transition: min-height 830ms;
@@ -198,8 +199,25 @@ export const Process_Cards = styled.div`
 `
 
 export const Card_Title = styled.h2`
+    position: relative;
     font-size: ${({ $cardOpen }) => $cardOpen ? "1.6em" : "1.5em"};
     background-color: ${({ $cardOpen }) => $cardOpen ? "#000" : "none"};
+
+    svg{
+        position: relative;
+        width: 28px;
+        height: 28px;
+        margin-left: 50px;
+        margin-bottom: 5px;
+        color: #CDAF6F;
+        transition: height 0.2s ease, width 0.2s ease;
+    }
+
+    svg:hover{
+        width: 34px;
+        height: 34px;
+        transition: all 0.2s ease;
+    }
 `
 
 export const Card = styled.div`
