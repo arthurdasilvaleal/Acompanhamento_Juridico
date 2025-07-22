@@ -193,7 +193,21 @@ def put_cliente():
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
     
+# Para deletar um cliente
+@app.route("/delete_cliente", methods=["DELETE"])
+def delete_cliente():    
     
+    # query = ""
+
+    # try:
+    #     cursor.execute(query)
+    #     db.commit()
+    #     return jsonify({"message": "Cliente removido com sucesso!"}), 201
+    # except mysql.connector.Error as err:
+    #     print("Erro:", err)
+    #     return jsonify({"error": str(err)}), 500
+
+    print("not yet :)")
 
 # Pegar os numeros dos processos bem como todos os dados do processo ou parte buscados
 @app.route("/get_processos", methods=["GET"])
@@ -216,13 +230,13 @@ def get_processos():
 
     if Nome_Parte == "" or Num_Processo == "":
         query = """SELECT C.cd_Cliente, C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
-                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal, P.cd_FaseProcesso
                 FROM Processo P
                 JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
                 JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
-                WHERE P.cd_NumeroProcesso = %s OR P.nm_Autor = %s OR P.nm_Reu = %s"""
+                WHERE P.cd_NumeroProcesso = %s OR P.nm_Autor = %s OR P.nm_Reu = %s OR C.nm_Cliente = %s"""
         
-        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         print(Nome_Parte)
         return jsonify(result)
@@ -233,8 +247,8 @@ def get_processos():
         FROM Processo P
         JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
         JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
-        WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s)"""
-        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte))
+        WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s OR C.nm_Cliente = %s)"""
+        cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         return jsonify(result)
 
@@ -301,11 +315,26 @@ def put_processo():
     try:
         cursor.execute(query, values)
         db.commit()
-        return jsonify({"message": "Processo editado com sucesso!"}), 201
+        return jsonify({"message": "Processo editado com sucesso!", "Valores": values}), 201
     except mysql.connector.Error as err:
         print("Erro:", err)
         return jsonify({"error": str(err)}), 500
 
+# Para deletar um processo
+@app.route("/delete_processo", methods=["DELETE"])
+def delete_processo():
+
+    # query = ""
+
+    # try:
+    #     cursor.execute(query)
+    #     db.commit()
+    #     return jsonify({"message": "Processo deletado com sucesso!"}), 201
+    # except mysql.connector.Error as err:
+    #     print("Erro:", err)
+    #     return jsonify({"error": str(err)}), 500
+
+    return print("not yet :)")
 
 # Para os Cards da consulta de processos
 @app.route("/get_card", methods=["GET"])

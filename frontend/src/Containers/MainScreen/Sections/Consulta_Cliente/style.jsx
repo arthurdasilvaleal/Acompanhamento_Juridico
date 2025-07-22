@@ -196,6 +196,10 @@ export const Card_Cliente = styled.div`
         z-index: -1;
     }
 
+    .Delete::before{
+        background-color: #cd6f6f;
+    }
+
     h6:hover::before{
         width: 100%;
         height: 200px;

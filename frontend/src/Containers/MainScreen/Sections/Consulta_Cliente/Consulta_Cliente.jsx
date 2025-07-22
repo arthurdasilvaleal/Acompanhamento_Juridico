@@ -2,12 +2,13 @@ import { Grid_Box, Search_box, Consult_button, Card_Cliente, ShowClientes } from
 import { useState, useEffect } from "react"
 import { UserPlusIcon } from "@heroicons/react/20/solid"
 import { motion, AnimatePresence } from "framer-motion"
+import Modal from "../../../../components/Modal/Modal"
 import Clientes from "./Add_Clientes/Clientes"
 import Loading from "../../../../components/Loading_Form/Loading"
 import Particles from "../../../../components/Particles/ParticlesBackground"
 import axios from "axios"
 
-export default function Consulta_Cliente(){
+export default function Consulta_Cliente({ TipoColaborador }){
 
     // Clientes adicionados
     const [allClientes, set_allClientes] = useState([]) 
@@ -23,6 +24,13 @@ export default function Consulta_Cliente(){
     const [addedCliente, set_addedCliente] = useState(false) // Puxa os clientes após uma inserção
     const [editCliente, set_editCliente] = useState(false) // abre o form para alterar o cliente
     const [ClienteInfo, set_clienteInfo] = useState([])
+
+    // Variáveis do modal
+    const [isModalOpen, set_ModalOpen] = useState(false)
+    const [formStatusMessage, set_FormStatusMessage] = useState("")
+    const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [deleteDialog, set_deleteDialog] = useState(false) // Caso tenha função de deletar
+    const [deleteConfirm, set_deleteConfirm] = useState(false)
 
     // Função para chamar todos os clientes
     const getAllClientes = async () => {
@@ -61,14 +69,39 @@ export default function Consulta_Cliente(){
         return 0 // Mantem a ordem
     })
 
+    // Deletando os Clientes
+    useEffect(() => {
+        if(deleteConfirm){
+            (async () => {
+                if(deleteConfirm){console.log("Deletou")}
+                else{console.log("não deletou")}
+                // const Delete_Cliente = {
+
+                // }
+
+                // const "response = await axios.delete("http://192.168.100.3:5000//delete_cliente")
+            })()
+        }
+        set_deleteConfirm(false)
+    }, [deleteConfirm])
+
     // Mandando os parametros para o componente "Clientes.jsx"
-    const clienteWindowProps ={
+    const clienteWindowProps = {
         showWindow: addCliente, 
         setShowWindow: set_addCliente, 
         setaddedCliente: set_addedCliente, 
         showEditwindow: editCliente, 
         setShowEditwindow: set_editCliente,
         editInfo: ClienteInfo
+    }
+
+    const clienteModalProps = {
+        isOpen: isModalOpen, 
+        onClose: () => set_ModalOpen(false),
+        message: formStatusMessage, 
+        messageError: fromStatusErrorMessage, 
+        DeleteConfirmation: deleteDialog, 
+        setConfirmation: set_deleteConfirm
     }
 
     return(
@@ -170,6 +203,14 @@ export default function Consulta_Cliente(){
                                                     })
                                                     set_editCliente(prev => !prev)
                                                 }}>Editar</h6>
+                                                {TipoColaborador != "Estagiário" && (
+                                                    <h6 className="Delete" onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        set_ModalOpen(true)
+                                                        set_deleteDialog(true)
+                                                        set_FormStatusMessage("cliente " + cliente.nm_Cliente)
+                                                    }}>Deletar</h6>
+                                                )}
                                             </div>
                                             {/* Quando o usuário clicar em "ver mais detalhes" */}
                                             {veryDetailed && cliente.cd_numProcessos != null && (
@@ -192,6 +233,7 @@ export default function Consulta_Cliente(){
                 </Grid_Box>
             </ShowClientes>
             <Clientes {...clienteWindowProps}/>
+            <Modal {...clienteModalProps}/>
         </>
     )
 }

@@ -22,7 +22,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
 
     // Váriáveis de Estado
     const [foundProcess, set_foundProcess] = useState(false) // Achou processo
-    const [notFound, set_NotFound] = useState(false)
+    const [notFound, set_NotFound] = useState(false) // Caso não ache um processo
     const [openCardId, set_OpenCardId] = useState(null) // Abre o card da intimação
     const [CloseForm, set_CloseForm] = useState(true) // Tampar o formulario
     const [OpenAddInt, set_OpenAddInt] = useState(true)
@@ -39,6 +39,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [deleteDialog, set_deleteDialog] = useState(false) // Caso tenha função de deletar
+    const [deleteConfirm, set_deleteConfirm] = useState(false)
 
     // Variável dos formulários de cada card
     const [formData, set_FormData] = useState({})
@@ -252,7 +254,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         })
     }, [])
 
-    // Recupera os dados após uma edição
+    // Recupera os dados após uma edição e, caso não houver processos, reseta o estado do formulario
     useEffect(() => {
         if(editProcess){
             (async () => {
@@ -260,8 +262,11 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                     const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                         params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                     })
-                    console.log(response.data)
                     set_Processos(response.data)
+                    if(response.data.length === 0){
+                        set_foundProcess(false)
+                        set_CloseForm(true)
+                    }
                 } catch (error) {
                     console.log("Erro ao atualizar o processo: ", error)
                 }
@@ -269,6 +274,26 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }
         set_editProcess(false)
     }, [editProcess])
+
+    // ON PROCESS -------------------------------------------------
+
+    // Para deletar um processo
+    useEffect(() => {
+            if(deleteConfirm){
+                (async () => {
+                    if(deleteConfirm){console.log("Deletou")}
+                    else{console.log("não deletou")}
+                    // const Delete_Process = {
+    
+                    // }
+    
+                    // const "response = await axios.delete("http://192.168.100.3:5000//delete_processo")
+                })()
+            }
+            set_deleteConfirm(false)
+        }, [deleteConfirm])
+
+    // ON PROCESS -------------------------------------------------
 
     // Props da tela de adicionar processos
     const ProcessProps = {
@@ -281,11 +306,20 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         setEditedProcess: set_editProcess
     }
     
+    // Props do modal
+    const clienteModalProps = {
+        isOpen: isModalOpen, 
+        onClose: () => set_ModalOpen(false),
+        message: formStatusMessage, 
+        messageError: fromStatusErrorMessage, 
+        DeleteConfirmation: deleteDialog, 
+        setConfirmation: set_deleteConfirm
+    }
 
     return(
         <>
             <Processo {...ProcessProps}/>
-            {Loading && (<Loading_Form />)}
+            {Loading && (<Loading_Form setDOM={true}/>)}
             <Consult_form $cardOpen={CloseForm} $Enviado={foundProcess} $processOpen={openAddProcess} $editOpen={OpenEditProcess} onSubmit={getProcessSubmit}>
                 <div className="GroupBy">
                     <div className="input-group">
@@ -336,23 +370,34 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                     }}>Processo Nº {processo.cd_NumeroProcesso}
                                     {/* Caso o colaborador for estágiario, não pode editar os processos */}
                                     {TipoColaborador != "Estagiário" && (
-                                        <PencilSquareIcon onClick={(e) => {
-                                            e.stopPropagation()
-                                            set_OpenEditProcess(true)
-                                            set_PropEditProcess({
-                                                cdNumeroProcesso: processo.cd_NumeroProcesso,
-                                                cdProcesso: processo.cd_Processo,
-                                                dsAcao: processo.ds_Acao,
-                                                dsJuizo: processo.ds_Juizo,
-                                                nmAutor: processo.nm_Autor,
-                                                nmCidade: processo.nm_Cidade,
-                                                nmCliente: processo.nm_Cliente,
-                                                cdCliente: processo.cd_Cliente,
-                                                nmReu: processo.nm_Reu,
-                                                sgTribunal: processo.sg_Tribunal,
-                                                vlCausa: processo.vl_Causa
-                                            })
-                                        }}/>
+                                        <>
+                                            <PencilSquareIcon onClick={(e) => {
+                                                e.stopPropagation()
+                                                set_OpenEditProcess(true)
+                                                set_PropEditProcess({
+                                                    cdNumeroProcesso: processo.cd_NumeroProcesso,
+                                                    cdProcesso: processo.cd_Processo,
+                                                    dsAcao: processo.ds_Acao,
+                                                    dsJuizo: processo.ds_Juizo,
+                                                    nmAutor: processo.nm_Autor,
+                                                    nmCidade: processo.nm_Cidade,
+                                                    nmCliente: processo.nm_Cliente,
+                                                    cdCliente: processo.cd_Cliente,
+                                                    nmReu: processo.nm_Reu,
+                                                    sgTribunal: processo.sg_Tribunal,
+                                                    vlCausa: processo.vl_Causa.replace("." , ","),
+                                                    cdFaseProcesso: processo.cd_FaseProcesso 
+                                                })
+                                            }}/>
+                                            <svg onClick={(e) => {
+                                                e.stopPropagation()
+                                                set_ModalOpen(true)
+                                                set_deleteDialog(true)
+                                                set_FormStatusMessage("Processo " + processo.cd_NumeroProcesso)
+                                            }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13.5H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                                            </svg>
+                                        </>
                                     )}
                                 </Card_Title>
 
@@ -367,6 +412,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                                                 <hr />
                                                 <h2>DADOS DO PROCESSO</h2>
+                                                <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 
+                                                    1 ? "Conhecimento" : 2 ? "Recursal" : 3 ? "Execução" : "Finalizado"}</p>
                                                 <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
                                                 <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
                                                 <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
@@ -468,7 +515,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                     })}
                 </Process_Cards>
             )}
-            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
+            <Modal {...clienteModalProps}/>
         </>
     )
 }

@@ -51,7 +51,7 @@ export default function MainScreen() {
   const contentMap = {
     "Visão Geral": <VisaoGeral />,
     "Processos": <Consulta_Processo CodigoColaborador={codigo} TipoColaborador={tipo}/>,
-    "Clientes": <Consulta_Cliente />,
+    "Clientes": <Consulta_Cliente TipoColaborador={tipo}/>,
     "Relatórios": <></>
   }
 

@@ -26,6 +26,7 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente, s
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [deleteMessage, set_deleteMessage] = useState(false)
 
     // Busca dados ao clicar em "Clientes"
     const buscarCep = async (cep) => {
@@ -298,7 +299,7 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente, s
                 <Client_button type="submit">{!showEditwindow ? "Adicionar" : "Enviar"}</Client_button>
             </Client_form>
             {/* <hr style={{ height: "50px", backgroundColor: "#343434", border: "none", margin: "16px 0 0 0"}}/> */}
-            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage} DeleteConfirmation={deleteMessage}/>
         </FixedBox>
     )
 }

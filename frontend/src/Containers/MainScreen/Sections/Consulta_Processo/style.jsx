@@ -112,7 +112,6 @@ export const Consult_button = styled.button`
         transition: box-shadow 250ms, transform 250ms, background-color 0.8s ease;
 
     }
-
     
     background-color: ${({ $buttonTaskOpen }) => $buttonTaskOpen ? "#eca305" : "#CDAF6F"};
 `
@@ -172,7 +171,7 @@ export const Process_Cards = styled.div`
         justify-content: center;
         align-items: center;
         margin: 0;
-        padding: 20px;
+        padding: 20px 0;
         cursor: pointer;
         transition: font-size 0.2s, background-color 0.5s;
         text-decoration: none;
@@ -207,7 +206,7 @@ export const Card_Title = styled.h2`
         position: relative;
         width: 28px;
         height: 28px;
-        margin-left: 50px;
+        margin-left: 30px;
         margin-bottom: 5px;
         color: #CDAF6F;
         transition: height 0.2s ease, width 0.2s ease;

@@ -22,14 +22,17 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
     const [sg_Tribunal, set_Tribunal] = useState("")
     const [cd_FaseProcesso, set_FaseProcesso] = useState("1")
 
-    // variáveis de estado
+    // Variáveis de estado
     const isSelectable = nm_Cliente === ""
     const blockCamp = opcaoCliente
+    const [Loading, set_Loading] = useState(false)
+    const [firstEditRender, set_firstEditRender] = useState(false)
+
+    // Variáveis do Modal
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
-    const [Loading, set_Loading] = useState(false)
-    const [firstEditRender, set_firstEditRender] = useState(false)
+    const [deleteMessage, set_deleteMessage] = useState(false) // Caso tenha função de deletar
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -108,11 +111,25 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
 
                 setEditedProcess(true)
                 setShowEditWindow(false)
+
+                set_NumProcesso("")
+                set_nmCliente("")
+                set_OpacaoCliente("")
+                set_Autor("")
+                set_Reu("")
+                set_Cidade("")
+                set_Causa("")
+                set_Juizo("")
+                set_Acao("")
+                set_Tribunal("")
+                set_FaseProcesso("1")
                 
             } catch (error) {
                 console.error("Erro ao editar processo:", error)
                 set_FormStatusMessage("Erro ao editar Processo.")
-                set_fromStatusErrorMessage(error.response.data.error)
+                set_fromStatusErrorMessage(error.response.data.error ===
+                     "1048 (23000): Column 'cd_Cliente' cannot be null" ? 
+                     "Cliente novo não encontrado" : error.response.data.error)
                 set_ModalOpen(true)
                 set_Loading(false)
                 
@@ -138,15 +155,8 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
     // Atribuindo o valor de reu ou autor automaticamente dependendo do usuario
     useEffect(() => {
         if(firstEditRender || ShowWindow){
-            if (blockCamp === "1") {
-                // set_Autor("")
-                if(nm_Autor !== "") set_Autor(nm_Reu)
-                set_Reu(nm_Cliente)
-            } else if (blockCamp === "2") {
-                if(nm_Reu !== "") set_Reu(nm_Autor)
-                set_Autor(nm_Cliente)
-                // set_Reu("")
-            }
+            if (blockCamp === "1") {set_Reu(nm_Cliente)} 
+            else if (blockCamp === "2") {set_Autor(nm_Cliente)}
         }
         if(ShowEditWindow) set_firstEditRender(true)
     }, [blockCamp, nm_Cliente])
@@ -178,6 +188,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
             set_Juizo(editInfo.dsJuizo)
             set_Acao(editInfo.dsAcao)
             set_Tribunal(editInfo.sgTribunal)
+            set_FaseProcesso(editInfo.cdFaseProcesso)
         }
     }, [ShowEditWindow, ShowWindow])
 
@@ -197,9 +208,10 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
 
     }, [nm_Cliente, ListCliente])
 
+
     return(
         <FixedBox $Show={ShowWindow} $ShowEdit={ShowEditWindow}>
-            {Loading && (<Loading_Form />)}
+            {Loading && (<Loading_Form setDOM={true}/>)}
             <Process_back_button onClick={() => {
                     if(!ShowEditWindow){
                         setShowWindow(false)
@@ -241,8 +253,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
                 </div>
                 <div className="input-group-select-mid">
                     <label className="label" htmlFor="opcaoCliente">Selecione a posição desse cliente</label>
-                    <select onChange={(e) => {
-                        set_OpacaoCliente(e.target.value)}} name="opcaoCliente" id="opcaoCliente" className="input-select" value={opcaoCliente} required>
+                    <select onChange={(e) => {set_OpacaoCliente(e.target.value)}} name="opcaoCliente" id="opcaoCliente" className="input-select" value={opcaoCliente} required>
                         <option value="">Selecione</option>
                         <option value="1">Réu</option>
                         <option value="2">Autor</option>
@@ -311,7 +322,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
                 <Process_button className='form-button' type="submit">{ShowEditWindow ? "Enviar" : "Adicionar"}</Process_button>
             </Process_Form>
             <hr style={{ height: "15px", opacity: "0"}}/>
-            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
+            <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage} DeleteConfirmation={deleteMessage}/>
         </FixedBox>
     )
 }

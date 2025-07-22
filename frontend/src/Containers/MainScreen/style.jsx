@@ -316,13 +316,13 @@ export const Exit_card = styled.div`
     }
 
     button:hover {
-        box-shadow: 7px 5px 56px -2px red;
-        transition: box-shadow 0.3s ease-in-out;
+        color: #000;
+        transition: color 0.3s ease-in-out;
     }
 
     button:after {
         content: "";
-        background: red;
+        background: #fff;
         position: absolute;
         z-index: -1;
         left: -20%;
