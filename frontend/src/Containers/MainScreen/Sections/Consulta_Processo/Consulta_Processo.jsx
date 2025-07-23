@@ -70,7 +70,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://192.168.100.3:5000/get_processos?only=id")
+        axios.get("http://10.107.200.6:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -94,7 +94,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }else{
 
             try{
-                const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                const response = await axios.get("http://10.107.200.6:5000/get_processos", {
                     params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                 })
 
@@ -168,7 +168,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
+            const response = await axios.post("http://10.107.200.6:5000/post_card?form=intimacao", IntimacaoData)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_fromStatusErrorMessage("")
@@ -207,7 +207,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
             
         }
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
+            const response = await axios.post("http://10.107.200.6:5000/post_card?form=task", taskData)
             console.log("Tarefa adicionada com sucesso!", response.data)
             set_ModalOpen(true)
             set_FormStatusMessage("Tarefa adicionada com sucesso!")
@@ -234,7 +234,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     // Buscando Intimações
     const CatchIntimacoes = async () => {
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            const response = await axios.get("http://10.107.200.6:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Intimacoes(response.data)
         }catch(error){
             console.error("Erro ao buscar intimações:", error)
@@ -259,7 +259,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         if(editProcess){
             (async () => {
                 try{
-                    const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                    const response = await axios.get("http://10.107.200.6:5000/get_processos", {
                         params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                     })
                     set_Processos(response.data)
@@ -287,7 +287,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     
                     // }
     
-                    // const "response = await axios.delete("http://192.168.100.3:5000//delete_processo")
+                    // const "response = await axios.delete("http://10.107.200.6:5000//delete_processo")
                 })()
             }
             set_deleteConfirm(false)

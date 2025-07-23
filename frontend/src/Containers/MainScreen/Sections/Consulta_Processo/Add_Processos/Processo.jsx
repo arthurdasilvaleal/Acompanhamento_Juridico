@@ -55,7 +55,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
 
         if(ShowWindow){
             try{
-                const response = await axios.post("http://192.168.100.3:5000/post_processo", post_processo)
+                const response = await axios.post("http://10.107.200.6:5000/post_processo", post_processo)
                 console.log("Processo adicionado com sucesso:", response.data)
                 set_FormStatusMessage("Processo adicionado com sucesso!")
                 set_ModalOpen(true)
@@ -102,7 +102,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
             }
 
             try{
-                const response = await axios.put("http://192.168.100.3:5000/put_processo", put_processo)
+                const response = await axios.put("http://10.107.200.6:5000/put_processo", put_processo)
                 console.log("Processo editado com sucesso:", response.data)
                 set_FormStatusMessage("Processo editado com sucesso!")
                 set_ModalOpen(true)
@@ -141,7 +141,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
     // Pegando o nome dos clientes no banco
     useEffect(() => {
         if(ShowWindow || ShowEditWindow){
-            axios.get("http://192.168.100.3:5000/get_clientes")
+            axios.get("http://10.107.200.6:5000/get_clientes")
             .then(response => {
                 set_ListCliente(response.data)
                 console.log(response.data)

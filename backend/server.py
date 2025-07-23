@@ -425,9 +425,31 @@ def post_intimacao():
 @app.route("/get_MainInfo", methods=["GET"])
 def get_MainInfo():
 
-    query = """SELECT COUNT(*) AS qtd_Processo FROM Processo;"""
+    query = """
+        SELECT
+            (SELECT COUNT(*) AS qtd_Processo FROM Processo) AS qtd_Processo,
+            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 1) AS qtd_ProcessoFase1,
+            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 2) AS qtd_ProcessoFase2,
+            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 3) AS qtd_ProcessoFase3,
+            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 4) AS qtd_ProcessoFase4;
+        """
+
+    # query = """SELECT COUNT(*) AS qtd_Processo FROM Processo;
+    #         SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 1;"""
 
     try:
+        # cursor.execute(query, multi=True) # Para mais de uma consulta
+
+        # results = []
+        # for result in cursor:
+        #     data = result.fetchall()
+        #     results.append(data)
+
+        # return jsonify({
+        #     "qtd_Processo": results[0][0]["qtd_Processo"],
+        #     "qtd_ProcessoFase1": results[1][0]["qtd_ProcessoFase1"]
+        # })
+
         cursor.execute(query)
         result = cursor.fetchone()
         return jsonify(result)

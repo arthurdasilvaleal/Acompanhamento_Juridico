@@ -1,12 +1,12 @@
 -- Criação do Banco de Dados
--- DROP DATABASE IF EXISTS BD_AJ;
+DROP DATABASE IF EXISTS BD_AJ;
 CREATE DATABASE BD_AJ;
 USE BD_AJ;
 
 -- Criação das tabelas
 
 CREATE TABLE TipoColaborador(
-	cd_TipoColaborador int NOT NULL,
+    cd_TipoColaborador int NOT NULL,
     nm_TipoColaborador varchar(25),
     PRIMARY KEY (cd_TipoColaborador)
 );
@@ -48,7 +48,7 @@ CREATE TABLE Cliente(
 );
 
 CREATE TABLE Posicao_na_Acao(
-	cd_PosicaoAcao INT NOT NULL,
+    cd_PosicaoAcao INT NOT NULL,
     nm_PosicaoAcao VARCHAR(15),
     PRIMARY KEY (cd_PosicaoAcao)
 );
@@ -57,6 +57,12 @@ CREATE TABLE Tribunal(
     sg_Tribunal VARCHAR(6) NOT NULL,
     nm_Tribunal VARCHAR(50),
     PRIMARY KEY (sg_Tribunal)
+);
+
+CREATE TABLE FaseProcesso(
+    cd_FaseProcesso INT DEFAULT 1 NOT NULL,
+    nm_FaseProcesso VARCHAR(20),
+    PRIMARY KEY (cd_FaseProcesso)
 );
 
 CREATE TABLE Processo(
@@ -69,11 +75,12 @@ CREATE TABLE Processo(
     nm_Cidade VARCHAR(20),
     sg_Tribunal VARCHAR(6) NOT NULL,
     vl_Causa DECIMAL(10,2),
+    cd_FaseProcesso INT DEFAULT 1,
     PRIMARY KEY (cd_Processo)
 );
 
 CREATE TABLE Cliente_Processo(
-	cd_Cliente INT NOT NULL,
+    cd_Cliente INT NOT NULL,
     cd_Processo INT NOT NULL,
     cd_PosicaoAcao INT,
     PRIMARY KEY (cd_Cliente, cd_Processo)
@@ -89,7 +96,7 @@ CREATE TABLE Intimacao(
 );
 
 CREATE TABLE StatusTarefa(
-	cd_StatusTarefa int NOT NULL,
+    cd_StatusTarefa INT NOT NULL,
     nm_StatusTarefa VARCHAR(12),
     PRIMARY KEY (cd_StatusTarefa)
 );
@@ -111,6 +118,10 @@ CREATE TABLE Tarefa(
 ALTER TABLE Processo
 ADD CONSTRAINT FK_Processo_Tribunal
 	FOREIGN KEY (sg_Tribunal) REFERENCES Tribunal (sg_Tribunal);
+    
+ALTER TABLE Processo
+ADD	CONSTRAINT FK_Processo_FaseProcesso
+	FOREIGN KEY (cd_FaseProcesso) REFERENCES FaseProcesso (cd_FaseProcesso);
 
 ALTER TABLE Intimacao
 ADD CONSTRAINT FK_Intimacao_Processo
@@ -194,17 +205,173 @@ END $$
 
 DELIMITER ;
 
+-- Trigger para atualização de autor e réu, quando o nome do cliente for alterado
+
+DELIMITER $$
+
+CREATE TRIGGER TG_Update_Cliente_AutorReu
+AFTER UPDATE ON Cliente
+FOR EACH ROW
+BEGIN
+	
+    -- Atualiza processos nos quais o cliente é Autor
+    UPDATE Processo p
+    INNER JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
+    SET p.nm_Autor = NEW.nm_Cliente
+    WHERE cp.cd_Cliente = NEW.cd_Cliente AND cp.cd_PosicaoAcao = 1;
+    
+    -- Atualiza processos nos quais o cliente é Réu
+    UPDATE Processo p
+    INNER JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
+    SET p.nm_Reu = NEW.nm_Cliente
+    WHERE cp.cd_Cliente = NEW.cd_Cliente AND cp.cd_PosicaoAcao = 2;
+    
+END $$
+
+-- Stored Procedure para update de alterações dos dados de clientes
+    
+DELIMITER $$
+
+CREATE PROCEDURE SP_Update_Cliente (
+    IN sp_cd_Cliente int,
+	IN sp_nm_Cliente varchar(40),
+	IN sp_cd_CPF decimal(11,0),
+	IN sp_cd_CNPJ decimal(14,0), 
+	IN sp_nm_Logradouro varchar(40), 
+	IN sp_nm_Bairro varchar(30),
+	IN sp_nm_Cidade varchar(20),
+	IN sp_sg_Estado char(2),
+	IN sp_cd_CEP decimal(8,0), 
+	IN sp_cd_NumeroEndereco int, 
+	IN sp_ds_ComplementoEndereco varchar(20),
+	IN sp_cd_Telefone decimal(11,0),
+	IN sp_ds_Email varchar(80)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+    
+    -- Verifica se o cliente existe
+    IF NOT EXISTS (SELECT 1 FROM Cliente WHERE cd_Cliente = sp_cd_Cliente) 
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cliente não encontrado';
+    END IF;
+    
+    -- Verifica se CPF já existe em outro cliente
+	IF (sp_cd_CPF IS NOT NULL) AND 
+	EXISTS (SELECT 1 FROM Cliente WHERE cd_CPF = sp_cd_CPF AND cd_Cliente != sp_cd_Cliente) 
+	THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'CPF já cadastrado para outro cliente';
+	END IF;
+
+	-- Verifica se CNPJ já existe em outro cliente
+	IF (sp_cd_CNPJ IS NOT NULL) AND 
+	EXISTS (SELECT 1 FROM Cliente WHERE cd_CNPJ = sp_cd_CNPJ AND cd_Cliente != sp_cd_Cliente) 
+	THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'CNPJ já cadastrado para outro cliente';
+	END IF;
+
+    -- Update dos dados do cliente
+    UPDATE Cliente
+    SET
+    nm_Cliente = COALESCE(sp_nm_Cliente, nm_Cliente), -- COALESCE: atualiza apenas se o novo dado não for NULL
+	cd_CPF = sp_cd_CPF,
+	cd_CNPJ = sp_cd_CNPJ,
+	nm_Logradouro = sp_nm_Logradouro,
+	nm_Bairro = sp_nm_Bairro,
+	nm_Cidade = sp_nm_Cidade,
+	sg_Estado = sp_sg_Estado,
+	cd_CEP = sp_cd_CEP,
+	cd_NumeroEndereco = sp_cd_NumeroEndereco,
+	ds_ComplementoEndereco = sp_ds_ComplementoEndereco,
+	cd_Telefone = sp_cd_Telefone,
+	ds_Email = sp_ds_Email
+    WHERE cd_Cliente = sp_cd_Cliente;
+
+   COMMIT;
+END $$
+
+DELIMITER ;
+
+-- Stored Procedure para update de alterações dos dados de processos
+    
+DELIMITER $$
+
+-- Procedure: Atualiza dados de um processo e sua associação com o cliente (Cliente_Processo)
+
+CREATE PROCEDURE SP_Update_Processo (
+	IN sp_cd_Processo INT,
+    IN sp_cd_ClienteAntigo INT,
+    IN sp_cd_ClienteNovo INT,
+    IN sp_cd_PosicaoAcao INT,
+	IN sp_cd_NumeroProcesso VARCHAR(25),
+	IN sp_nm_Autor VARCHAR(40),
+	IN sp_nm_Reu VARCHAR(40),
+	IN sp_ds_Juizo VARCHAR(30),
+	IN sp_ds_Acao VARCHAR(50),
+	IN sp_nm_Cidade VARCHAR(20),
+	IN sp_sg_Tribunal VARCHAR(6),
+	IN sp_vl_Causa DECIMAL(10,2),
+	IN sp_cd_FaseProcesso INT
+)
+BEGIN
+    -- Tratamento de erro: rollback se houver exceção SQL
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+    
+    -- Atualiza os dados do processo
+    UPDATE Processo
+    SET
+		cd_NumeroProcesso = sp_cd_NumeroProcesso,
+		nm_Autor = sp_nm_Autor,
+		nm_Reu = sp_nm_Reu,
+		ds_Juizo = sp_ds_Juizo,
+		ds_Acao = sp_ds_Acao,
+		nm_Cidade = sp_nm_Cidade,
+		sg_Tribunal = sp_sg_Tribunal,
+		vl_Causa = sp_vl_Causa,
+		cd_FaseProcesso = sp_cd_FaseProcesso
+    WHERE cd_Processo = sp_cd_Processo;
+    
+    -- Atualiza a relação Cliente_Processo
+    UPDATE Cliente_Processo
+    SET 
+        cd_Cliente = sp_cd_ClienteNovo, 
+        cd_PosicaoAcao = sp_cd_PosicaoAcao
+    WHERE 
+        cd_Cliente = sp_cd_ClienteAntigo 
+        AND cd_Processo = sp_cd_Processo;
+
+    COMMIT;
+END $$
+
+DELIMITER ;
+
 -- INSERÇÃO DE DADOS
 
 -- Inserção de Tribunais
 INSERT INTO Tribunal (sg_Tribunal, nm_Tribunal) 
 VALUES  ('TJSP', 'Tribunal de Justiça de São Paulo'),
-		('TRT2', 'Tribunal Regional do Trabalho da 2ª Região'),
-		('TRF3', 'Tribunal Regional Federal da 3ª Região'),
+        ('TRT2', 'Tribunal Regional do Trabalho da 2ª Região'),
+        ('TRF3', 'Tribunal Regional Federal da 3ª Região'),
         ('TST', 'Superior Tribunal do Trabalho'),
-		('STJ', 'Superior Tribunal de Justiça'),
-		('STF', 'Supremo Tribunal Federal');
-        
+        ('STJ', 'Superior Tribunal de Justiça'),
+        ('STF', 'Supremo Tribunal Federal');
+	
+-- Inserção de Fases de Processo
+INSERT INTO FaseProcesso (cd_FaseProcesso, nm_FaseProcesso)
+VALUES	(1, 'Conhecimento'),
+        (2, 'Recursal'),
+        (3, 'Execução'),
+        (4, 'Finalizado');
+
 -- Inserção de tipo de Colaborador
 INSERT INTO TipoColaborador (cd_TipoColaborador, nm_TipoColaborador) 
 VALUES
@@ -216,7 +383,7 @@ VALUES
 -- Inserção de tipos de participação do cliente no processo
 INSERT INTO Posicao_na_Acao (cd_PosicaoAcao, nm_PosicaoAcao)
 VALUES
-	(1, 'Autor'),
+    (1, 'Autor'),
     (2, 'Réu'),
     (3, 'Terceiro');    
 
@@ -229,7 +396,7 @@ VALUES
         
 -- Inserção Colaborador
 INSERT INTO Colaborador (
-	nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
+    nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
     nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
     cd_Telefone, ds_Email, nm_Usuario, ds_Senha, cd_TipoColaborador)
 VALUES
@@ -244,20 +411,26 @@ VALUES
 
 -- Inserção Clientes
 INSERT INTO Cliente 
-	(nm_Cliente, cd_CPF, nm_Logradouro, nm_Bairro, 
+    (nm_Cliente, cd_CPF, cd_CNPJ, nm_Logradouro, nm_Bairro, 
     nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
     cd_Telefone, ds_Email) 
 VALUES
-('Carlos Silva', 12345678901, 'Rua João Pessoa', 'Vila Belmiro', 'Santos', 'SP', 11055030, 63, 'Apto 12', '11999990000', 'carlos@email.com'),
-('Maria Souza', 23456789012, 'Avenida Bernardino de Campos', 'Boqueirão', 'Santos', 'SP', 11060002, 48, 'Sala 3', '11988881111', 'maria@email.com'),
-('Fernando Lima', 34567890123, 'Rua Brás Cubas', 'Centro', 'Guarujá', 'SP', 11410000, 28, NULL, '13999992222', 'fernando@email.com'),
-('Juliana Costa', 45678901234, 'Praça Mauá', 'Valongo', 'Santos', 'SP', 11010000, 91, 'Loja 5', '13977773333', 'juliana@email.com'),
-('Roberto Almeida', 56789012345, 'Rua do Comércio', 'Encruzilhada', 'Santos', 'SP', 11055040, 37, 'Apto 45', '13966665555', 'roberto@email.com'),
-('Tatiane Rocha', 67890123456, 'Avenida Washington Luiz', 'Piratininga', 'São Vicente', 'SP', 11330000, 28, 'Casa 7', '13955557777', 'tatiane@email.com'),
-('Marcos Ribeiro', 78901234567, 'Alameda Ari Barroso', 'Marapé', 'Santos', 'SP', 11055050, 11, 'Apto 201', '13944449999', 'marcos@email.com'),
-('Vanessa Martins', 89012345678, 'Rua da Constituição', 'Gonzaga', 'Santos', 'SP', 11055010, 64, NULL, '13933338888', 'vanessa@email.com'),
-('Luciano Carvalho', 90123456789, 'Avenida Pinheiro Machado', 'Vila Nova', 'Santos', 'SP', 11065030, 73, 'Sala 10', '13922221111', 'luciano@email.com'),
-('Priscila Ferreira', 12309876543, 'Rua São Bento', 'Centro', 'Praia Grande', 'SP', 11700000, 82, 'Apto 33', '13911116666', 'priscila@email.com');
+('Carlos Silva', 12345678901, NULL, 'Rua João Pessoa', 'Vila Belmiro', 'Santos', 'SP', 11055030, 63, 'Apto 12', '11999990000', 'carlos@email.com'),
+('Maria Souza', 23456789012, NULL, 'Avenida Bernardino de Campos', 'Boqueirão', 'Santos', 'SP', 11060002, 48, 'Sala 3', '11988881111', 'maria@email.com'),
+('Fernando Lima', 34567890123, NULL, 'Rua Brás Cubas', 'Centro', 'Guarujá', 'SP', 11410000, 28, NULL, '13999992222', 'fernando@email.com'),
+('Juliana Costa', 45678901234, NULL, 'Praça Mauá', 'Valongo', 'Santos', 'SP', 11010000, 91, 'Loja 5', '13977773333', 'juliana@email.com'),
+('Roberto Almeida', 56789012345, NULL, 'Rua do Comércio', 'Encruzilhada', 'Santos', 'SP', 11055040, 37, 'Apto 45', '13966665555', 'roberto@email.com'),
+('Tatiane Rocha', 67890123456, NULL, 'Avenida Washington Luiz', 'Piratininga', 'São Vicente', 'SP', 11330000, 28, 'Casa 7', '13955557777', 'tatiane@email.com'),
+('Marcos Ribeiro', 78901234567, NULL, 'Alameda Ari Barroso', 'Marapé', 'Santos', 'SP', 11055050, 11, 'Apto 201', '13944449999', 'marcos@email.com'),
+('Vanessa Martins', 89012345678, NULL, 'Rua da Constituição', 'Gonzaga', 'Santos', 'SP', 11055010, 64, NULL, '13933338888', 'vanessa@email.com'),
+('Luciano Carvalho', 90123456789, NULL, 'Avenida Pinheiro Machado', 'Vila Nova', 'Santos', 'SP', 11065030, 73, 'Sala 10', '13922221111', 'luciano@email.com'),
+('Priscila Ferreira', 12309876543, NULL, 'Rua São Bento', 'Centro', 'Praia Grande', 'SP', 11700000, 82, 'Apto 33', '13911116666', 'priscila@email.com'),
+('Tech Solutions LTDA', NULL, 12345678000195, 'Rua das Inovações', 'Centro', 'São Paulo', 'SP', 01000000, 100, 'Andar 5', '1133221100', 'contato@techsolutions.com.br'),
+('Comercial Andrade ME', NULL, 23456789000166, 'Avenida Industrial', 'Distrito', 'Campinas', 'SP', 13000000, 245, 'Sala 2', '1923456789', 'vendas@andrademe.com.br'),
+('Construtora Ideal S/A', NULL, 34567890000177, 'Rua das Obras', 'Engenho Velho', 'Santos', 'SP', 11075200, 80, NULL, '1334455566', 'suporte@construtoraideal.com.br'),
+('Green Market Alimentos LTDA', NULL, 45678901000188, 'Alameda das Palmeiras', 'Jardins', 'São Vicente', 'SP', 11340000, 51, 'Loja A', '13988776655', 'sac@greenmarket.com.br'),
+('Fast Courier Transportes', NULL, 56789012000199, 'Rodovia dos Bandeirantes', 'Polo Industrial', 'Guarujá', 'SP', 11420000, 3000, 'Galpão 3', '13999887766', 'logistica@fastcourier.com.br');
+
 
 -- Inserção de Processos
 INSERT INTO Processo (cd_NumeroProcesso, nm_Autor, nm_Reu, ds_Juizo, ds_Acao, nm_Cidade, sg_Tribunal, vl_Causa) 
@@ -327,30 +500,30 @@ VALUES
 -- Inserção de novos processos com a utilização da Stored Procedure
 -- 1. Processo com Cliente 1 como Réu
 CALL Proc_Insercao_ProcessoCliente(
-    '0011111-11.2024.8.26.0011',   -- Número do processo
-    1,                             -- cd_Cliente (Carlos Silva)
-    2,                             -- Posição na ação (2 = Réu)
-    'Banco Nacional',              -- Autor
-    'Carlos Silva',                -- Réu (nosso cliente)
-    'Vara Cível',                  -- Juízo
+    '0011111-11.2024.8.26.0011',   		-- Número do processo
+    1,                             		-- cd_Cliente (Carlos Silva)
+    2,                             		-- Posição na ação (2 = Réu)
+    'Banco Nacional',              		-- Autor
+    'Carlos Silva',                		-- Réu (nosso cliente)
+    'Vara Cível',                  		-- Juízo
     'Execução de Título Extrajudicial', -- Ação
-    'São Paulo',                   -- Cidade
-    'TJSP',                        -- Tribunal
-    25000.00                       -- Valor da causa
+    'São Paulo',                   		-- Cidade
+    'TJSP',                        		-- Tribunal
+    25000.00                       		-- Valor da causa
 );
 
 -- 2. Processo com Cliente 3 como Réu
 CALL Proc_Insercao_ProcessoCliente(
-    '0012222-22.2024.8.26.0012',   -- Número do processo
-    3,                             -- cd_Cliente (Fernando Lima)
-    2,                             -- Posição na ação (2 = Réu)
-    'Construtora Alfa',            -- Autor
-    'Fernando Lima',               -- Réu (nosso cliente)
-    'Vara Cível',                  -- Juízo
-    'Indenização por Obra Inacabada', -- Ação
-    'Santos',                      -- Cidade
-    'TJSP',                        -- Tribunal
-    180000.00                      -- Valor da causa
+    '0012222-22.2024.8.26.0012',  	 	-- Número do processo
+    3,                             		-- cd_Cliente (Fernando Lima)
+    2,                             		-- Posição na ação (2 = Réu)
+    'Construtora Alfa',            		-- Autor
+    'Fernando Lima',               		-- Réu (nosso cliente)
+    'Vara Cível',                  		-- Juízo
+    'Indenização por Obra Inacabada', 	-- Ação
+    'Santos',                      		-- Cidade
+    'TJSP',                        		-- Tribunal
+    180000.00                      		-- Valor da causa
 );
 
 -- 3. Processo com Cliente 5 como Réu
@@ -394,5 +567,3 @@ CALL Proc_Insercao_ProcessoCliente(
     'TJSP',                        -- Tribunal
     35000.00                       -- Valor da causa
 );
-
-SELECT * FROM Colaborador;
