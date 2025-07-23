@@ -46,7 +46,7 @@ export default function MainScreen() {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
     
-  }, [menuOpen, Exit]);
+  }, [menuOpen, Exit])
 
   const contentMap = {
     "Visão Geral": <VisaoGeral />,

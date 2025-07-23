@@ -420,7 +420,21 @@ def post_intimacao():
         except mysql.connector.Error as err:
             print("Erro:", err)
             return jsonify({"error": str(err)}), 500
-            
+
+# Para a tela de visão Geral
+@app.route("/get_MainInfo", methods=["GET"])
+def get_MainInfo():
+
+    query = """SELECT COUNT(*) AS qtd_Processo FROM Processo;"""
+
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("Erro:", Err)
+        return jsonify({"error": str(Err)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="0.0.0.0")
 

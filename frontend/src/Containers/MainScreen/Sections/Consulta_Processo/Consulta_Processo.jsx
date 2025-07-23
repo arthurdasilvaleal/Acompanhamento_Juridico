@@ -412,8 +412,9 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                 <p><strong>E-mail: </strong>{processo.ds_Email}</p>
                                                 <hr />
                                                 <h2>DADOS DO PROCESSO</h2>
-                                                <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 
-                                                    1 ? "Conhecimento" : 2 ? "Recursal" : 3 ? "Execução" : "Finalizado"}</p>
+                                                <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 1 ? "Conhecimento" : 
+                                                    processo.cd_FaseProcesso === 2 ? "Recursal" :
+                                                    processo.cd_FaseProcesso === 3 ? "Execução" : "Finalizado"}</p>
                                                 <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
                                                 <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
                                                 <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
