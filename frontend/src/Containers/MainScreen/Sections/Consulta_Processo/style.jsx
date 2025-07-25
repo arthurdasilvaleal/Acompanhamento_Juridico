@@ -87,7 +87,7 @@ export const Consult_button = styled.button`
     width: 170px;
     height: 48px;
     /* margin-top: 25px; */
-    padding: 16px 33px;
+    /* padding: 16px 33px; */
     border-radius: 9px;
     background: #CDAF6F;
     border: none;
@@ -524,5 +524,39 @@ export const Consult_TaskForm = styled.form`
 `
 
 export const Task_card = styled.div`
-    
+    display: flex;
+    position: relative;
+    background-color: #343434;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 16px;
+    flex-direction: column;
+    overflow: hidden;
+
+    max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "1000px" : "50px"};
+    transition: max-height 0.4s ease-in-out;
+
+    .Task-Title{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        cursor: pointer;
+
+        h4{
+            margin: 0;
+        }
+    }
+
+    .task-group{
+        hr{
+            background-color: blanchedalmond;
+            box-shadow: 0 0 15px blanchedalmond;
+        }
+    }
+
+    &:hover{
+        max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "auto" : "60px"};
+        transition: max-height 0.2s ease-out;
+    }
 `

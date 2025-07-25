@@ -12,7 +12,7 @@ db = mysql.connector.connect(
     database="BD_AJ"
 )
 # Se o usuário sair da aba muito rápido, causa um erro... fix that
-cursor = db.cursor(dictionary=True)
+# cursor = db.cursor(dictionary=True) Dicionario global(DEPRECATED)
 
 # Para o Login
 @app.route("/submit_login", methods=["POST"])
@@ -20,6 +20,7 @@ def login():
     data = request.get_json()
     username = data.get("Login")
     password = data.get("Pass")
+    cursor = db.cursor(dictionary=True)
 
     query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador FROM Colaborador C
             JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
@@ -52,6 +53,7 @@ def post_clientes():
     Usuario = data.get("nm_Usuario")
     Senha = data.get("ds_Senha")
     TipoColaborador = data.get("cd_TipoColaborador")
+    cursor = db.cursor(dictionary=True)
 
     query = """INSERT INTO Colaborador (nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
             nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
@@ -62,7 +64,7 @@ def post_clientes():
         db.commit()
         return jsonify({"message": "Colaborador cadastrado"}), 201
     except mysql.connector.Error as err:
-        print("Erro: ", err)
+        print("Erro em '/post_cadastro': ", err)
         return jsonify({"error": str(err)}), 500
 
 
@@ -70,18 +72,22 @@ def post_clientes():
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
+    cursor = db.cursor(dictionary=True)
     query = "SELECT cd_Cliente, nm_Cliente FROM Cliente"
+    
     try:
         cursor.execute(query)
         result = cursor.fetchall()
         return jsonify(result)
     except mysql.connector.Error as Err:
-        return jsonify(Err)
+        print("Erro em 'get_clientes'", Err)
+        return jsonify({"error": str(Err)}), 500
 
 # Consultar dados de TODOS os clientes
 @app.route("/get_Allclientes", methods=["GET"])
 def get_Allclientes():
     
+    cursor = db.cursor(dictionary=True)
     query = """SELECT
                 c.cd_Cliente,
                 c.nm_Cliente,
@@ -121,6 +127,7 @@ def get_Allclientes():
         return jsonify(result)
     
     except mysql.connector.Error as err:
+        print("\n\nErro em 'get_Allclientes':", err)
         return jsonify({"error": str(err)}), 500
     
     
@@ -140,6 +147,7 @@ def post_cliente():
     Complemento = data.get("nm_Complemento")
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
+    cursor = db.cursor(dictionary=True)
 
     if len(CPF) > 11:
         queryCliente = """
@@ -158,7 +166,7 @@ def post_cliente():
         db.commit()
         return jsonify({"message": "Cliente alterado com sucesso!"}), 201
     except mysql.connector.Error as err:
-        print("Erro:", err)
+        print("\n\nErro em 'post_cliente':", err)
         return jsonify({"error": str(err)}), 500
 
 # Editar um cliente
@@ -178,6 +186,7 @@ def put_cliente():
     Complemento = data.get("nm_Complemento")
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
+    cursor = db.cursor(dictionary=True)
 
     if len(CPF) > 11:
         query = """CALL SP_Update_Cliente(%s, %s, null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
@@ -190,13 +199,14 @@ def put_cliente():
         db.commit()
         return jsonify({"message": "Cliente editado com sucesso!"}), 201
     except mysql.connector.Error as err:
-        print("Erro:", err)
+        print("\n\nErro '/put_cliente':", err)
         return jsonify({"error": str(err)}), 500
     
 # Para deletar um cliente
 @app.route("/delete_cliente", methods=["DELETE"])
 def delete_cliente():    
     
+    # cursor = db.cursor(dictionary=True)
     # query = ""
 
     # try:
@@ -204,7 +214,7 @@ def delete_cliente():
     #     db.commit()
     #     return jsonify({"message": "Cliente removido com sucesso!"}), 201
     # except mysql.connector.Error as err:
-    #     print("Erro:", err)
+    #     print("\n\nErro em '/delete_cliente':", err)
     #     return jsonify({"error": str(err)}), 500
 
     print("not yet :)")
@@ -214,6 +224,7 @@ def delete_cliente():
 def get_processos():
 
     only_numeros = request.args.get("only") == "id"
+    cursor = db.cursor(dictionary=True)
 
     if only_numeros:
         query = """SELECT cd_NumeroProcesso FROM Processo"""
@@ -267,6 +278,7 @@ def post_processo():
     Juizo = data.get("ds_Juizo")
     Acao = data.get("ds_Acao")
     Tribunal = data.get("sg_Tribunal")
+    cursor = db.cursor(dictionary=True)
 
     # Buscar cliente pelo nome no campo "Autor"
     query_cliente = "SELECT cd_Cliente FROM Cliente WHERE nm_Cliente = %s;"
@@ -285,7 +297,7 @@ def post_processo():
         db.commit()
         return jsonify({"message": "Processo inserido com sucesso!"}), 201
     except mysql.connector.Error as err:
-        print("Erro:", err)
+        print("\n\nErro em 'post_processo':", err)
         return jsonify({"error": str(err)}), 500
     
 #Para editar um processo
@@ -307,6 +319,7 @@ def put_processo():
     Acao = data.get("ds_Acao")
     Tribunal = data.get("sg_Tribunal")
     Fase = data.get("cd_FaseProcesso")
+    cursor = db.cursor(dictionary=True)
 
     query = """CALL SP_Update_Processo(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     
@@ -317,13 +330,14 @@ def put_processo():
         db.commit()
         return jsonify({"message": "Processo editado com sucesso!", "Valores": values}), 201
     except mysql.connector.Error as err:
-        print("Erro:", err)
+        print("\n\nErro em 'put_processo':", err)
         return jsonify({"error": str(err)}), 500
 
 # Para deletar um processo
 @app.route("/delete_processo", methods=["DELETE"])
 def delete_processo():
 
+    #cursor = db.cursor(dictionary=True)
     # query = ""
 
     # try:
@@ -331,18 +345,20 @@ def delete_processo():
     #     db.commit()
     #     return jsonify({"message": "Processo deletado com sucesso!"}), 201
     # except mysql.connector.Error as err:
-    #     print("Erro:", err)
+    #     print("\n\nErro em 'delete_processo':", err)
     #     return jsonify({"error": str(err)}), 500
 
     return print("not yet :)")
 
 # Para os Cards da consulta de processos
-@app.route("/get_card", methods=["GET"])
+@app.route("/get_cardInt", methods=["GET"])
 def get_intimacao():
 
     Nome_Parte = request.args.get("parte")
     Numero_Processo = request.args.get("numeroProcesso")
+    cursor = db.cursor(dictionary=True)
 
+    
     if Nome_Parte == "":
         query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
         FROM Intimacao I
@@ -370,13 +386,66 @@ def get_intimacao():
         values = (Nome_Parte, )
 
     try:
-        cursor.execute(query, (values))
+        cursor.execute(query, values)
         result = cursor.fetchall()
         return jsonify(result)
     except mysql.connector.Error as err:
-        print("Erro nas intimações:", err)
+        print("\n\nErro em '/get_cardInt':", err)
         return jsonify({"erro ao buscar intimações": str(err)}), 500
-    
+
+# Buscar Tarefas
+@app.route("/get_cardTask", methods=["GET"])
+def get_Task():
+
+    Nome_Parte = request.args.get("parte")
+    Numero_Processo = request.args.get("numeroProcesso")
+    cursor = db.cursor(dictionary=True)
+
+    if Nome_Parte == "":
+        query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                C.nm_Colaborador
+                FROM Tarefa T
+                JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
+                JOIN Processo P ON P.cd_Processo = I.cd_Processo
+                JOIN Colaborador C ON C.cd_Colaborador = T.cd_Colaborador
+                WHERE P.cd_NumeroProcesso = %s"""
+        values = (Numero_Processo,)
+    elif Nome_Parte != "" and Numero_Processo != "":
+        query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                Co.nm_Colaborador
+                FROM Tarefa T
+                JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
+                JOIN Processo P ON P.cd_Processo = I.cd_Processo
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                JOIN Colaborador Co ON Co.cd_Colaborador = T.cd_Colaborador
+                WHERE P.cd_NumeroProcesso = %s AND (
+                P.nm_Autor = %s OR
+                P.nm_Reu = %s OR
+                C.nm_Cliente = %s)"""
+        values = (Numero_Processo, Nome_Parte, Nome_Parte, Nome_Parte) 
+    else:
+        query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                Co.nm_Colaborador
+                FROM Tarefa T
+                JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
+                JOIN Processo P ON P.cd_Processo = I.cd_Processo
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                JOIN Colaborador Co ON Co.cd_Colaborador = T.cd_Colaborador
+                WHERE C.nm_Cliente = %s"""
+        values = (Nome_Parte, )
+
+        try:
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+            return jsonify(result)
+        except mysql.connector.Error as err:
+            print("\n\nErro em '/get_cardTask' tarefas:", err)
+            return jsonify({"erro ao buscar tarefas": str(err)}), 500
 
 # Para enviar os dados de Intimações/Tarefas
 @app.route("/post_card", methods=["POST"])
@@ -385,6 +454,7 @@ def post_intimacao():
 
     intimacao = request.args.get("form") == "intimacao"
     tarefa = request.args.get("form") == "task"
+    cursor = db.cursor(dictionary=True)
 
     if intimacao:
         dataRecebimento = data.get("dataRecebimento")
@@ -399,7 +469,7 @@ def post_intimacao():
             db.commit()
             return jsonify({"message": "Intimação inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
-            print("Erro:", err)
+            print("\n\nErro em '/post_card' postando intimação:", err)
             return jsonify({"Erro": str(err)}), 500
     
     if tarefa:
@@ -418,13 +488,14 @@ def post_intimacao():
             db.commit()
             return jsonify({"message": "Tarefa inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
-            print("Erro:", err)
+            print("\n\nErro em 'post_card' postando tarefa:", err)
             return jsonify({"error": str(err)}), 500
 
 # Para a tela de visão Geral
 @app.route("/get_MainInfo", methods=["GET"])
 def get_MainInfo():
 
+    cursor = db.cursor(dictionary=True)
     query = """
         SELECT
             (SELECT COUNT(*) AS qtd_Processo FROM Processo) AS qtd_Processo,
@@ -454,7 +525,7 @@ def get_MainInfo():
         result = cursor.fetchone()
         return jsonify(result)
     except mysql.connector.Error as Err:
-        print("Erro:", Err)
+        print("\n\nErro em 'get_MainInfo':", Err)
         return jsonify({"error": str(Err)}), 500
 
 if __name__ == "__main__":

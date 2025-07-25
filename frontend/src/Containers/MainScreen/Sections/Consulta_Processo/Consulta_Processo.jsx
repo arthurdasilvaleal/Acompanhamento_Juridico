@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_IntForm, Consult_TaskForm } from "./style"
 import { Intimacao_card, Task_card } from "./style"
@@ -9,16 +9,18 @@ import axios from "axios"
 import { useCombobox } from "downshift"
 import { PencilSquareIcon } from "@heroicons/react/20/solid"
 import { PlusIcon } from "@heroicons/react/24/outline"
+import { color } from "chart.js/helpers"
 
 
 export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }){
 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
-    const [cd_ListNumeroProcesso, set_cdListNumeroProcesso] = useState([])
+    const [cd_ListNumeroProcesso, set_cdListNumeroProcesso] = useState([]) // Datalist com os numero dos processos do banco
     const [nm_Cliente, set_nmCliente] = useState("Carlos Silva")
-    const [processos, set_Processos] = useState([])
-    const [Intimacoes, set_Intimacoes] = useState([])
+    const [processos, set_Processos] = useState([]) // Guardar os processos
+    const [Intimacoes, set_Intimacoes] = useState([]) // Guardar as intimações de cada processo
+    const [Tarefas, set_Tarefas] = useState([]) // Guardar as tarefas de cada processo
 
     // Váriáveis de Estado
     const [foundProcess, set_foundProcess] = useState(false) // Achou processo
@@ -29,6 +31,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     const [openAddProcess, set_openAddProcess] = useState(false) // Abrir a janela de adicionar processo
     const [firstContact, set_firstContact] = useState(true)// apenas para mobile (evita aquele buraco de merda)
     const [openFormIdTask, set_openFormIdTask] = useState(null) // Abre o formulário de addTarefa de cada card
+    const [openTaskId, set_openTaskId] = useState(null) // Abre cada card de tarefas para uma unica intimação por vez
     const [Loading, set_Loading] = useState(false) // Loading da busca de processos
     const [OpenEditProcess, set_OpenEditProcess] = useState(false) // Abre a janela para edição de um processo
     const [PropEditProcess, set_PropEditProcess] = useState([]) // Props para edição de processo
@@ -70,7 +73,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://10.107.200.6:5000/get_processos?only=id")
+        axios.get("http://192.168.100.3:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -94,7 +97,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }else{
 
             try{
-                const response = await axios.get("http://10.107.200.6:5000/get_processos", {
+                const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                     params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                 })
 
@@ -103,7 +106,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                     set_Processos(response.data)
                     set_foundProcess(true)
                     set_NotFound(false)
-                    CatchIntimacoes()
+                    CatchIntInfo()
+                    CatchTaskInfo()
                     document.body.style.overflow = "visible"
                 }
                 else{
@@ -168,7 +172,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }
 
         try{
-            const response = await axios.post("http://10.107.200.6:5000/post_card?form=intimacao", IntimacaoData)
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_fromStatusErrorMessage("")
@@ -181,7 +185,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                 }
             }))
 
-            CatchIntimacoes()
+            CatchIntInfo()
             
         }catch(error){
             console.error("Erro ao adicionar Intimação:", error)
@@ -196,7 +200,6 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
 
         console.log(taskFormData[id].dt_Prazo + "\n" + taskFormData[id].nm_StatusTarefa + "\n" + taskFormData[id].ds_Tarefa + "\n" + getTodayDate() + "\n" + "Colaborador: " + CodigoColaborador)
         
-
         const taskData ={
             idIntimacao: id,
             dataPrazo: taskFormData[id].dt_Prazo,
@@ -207,7 +210,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
             
         }
         try{
-            const response = await axios.post("http://10.107.200.6:5000/post_card?form=task", taskData)
+            const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
             console.log("Tarefa adicionada com sucesso!", response.data)
             set_ModalOpen(true)
             set_FormStatusMessage("Tarefa adicionada com sucesso!")
@@ -223,6 +226,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                 }
             }))
 
+            CatchTaskInfo()
+
         }catch(error){
             console.error("Erro ao adicionar Tarefa:", error)
             set_ModalOpen(true)
@@ -231,19 +236,30 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         } 
     }
 
-    // Buscando Intimações
-    const CatchIntimacoes = async () => {
+    // Buscando Intimações e Tarefas
+    const CatchIntInfo = async () => {
         try{
-            const response = await axios.get("http://10.107.200.6:5000/get_card", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            const response = await axios.get("http://192.168.100.3:5000/get_cardInt", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Intimacoes(response.data)
+            console.log(response.data)
         }catch(error){
             console.error("Erro ao buscar intimações:", error)
         }
     }
 
+    const CatchTaskInfo = async () => {
+        try{
+            const response = await axios.get("http://192.168.100.3:5000/get_cardTask", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            set_Tarefas(response.data)
+            console.log(response.data)
+        }catch(error){
+            console.log("Erro ao buscar intimações:", error)
+        }
+    }
+
     // Toda vez que abrir o card, a intimação do processo linkado é buscada (DEPRECATED)
     // useEffect(() =>{
-    //     if(openCardId !== null){CatchIntimacoes()}
+    //     if(openCardId !== null){CatchCardInfo()}
     // }, [openCardId])
 
     // Resolve o erro do buraco ao sair de uma página para outra.
@@ -259,7 +275,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         if(editProcess){
             (async () => {
                 try{
-                    const response = await axios.get("http://10.107.200.6:5000/get_processos", {
+                    const response = await axios.get("http://192.168.100.3:5000/get_processos", {
                         params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                     })
                     set_Processos(response.data)
@@ -287,7 +303,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     
                     // }
     
-                    // const "response = await axios.delete("http://10.107.200.6:5000//delete_processo")
+                    // const "response = await axios.delete("http://192.168.100.3:5000//delete_processo")
                 })()
             }
             set_deleteConfirm(false)
@@ -414,7 +430,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                 <h2>DADOS DO PROCESSO</h2>
                                                 <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 1 ? "Conhecimento" : 
                                                     processo.cd_FaseProcesso === 2 ? "Recursal" :
-                                                    processo.cd_FaseProcesso === 3 ? "Execução" : "Finalizado"}</p>
+                                                    processo.cd_FaseProcesso === 3 ? "Execução" : 
+                                                    processo.cd_FaseProcesso === 4 ? "Finalizado" : "Cancelado"}</p>
                                                 <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
                                                 <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
                                                 <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
@@ -427,7 +444,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                     <p style={{ margin: "0", textAlign: "center" }}>{processo.ds_Acao}</p>
                                                 </div>
                                             </div>
-                                            <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar</Consult_button>
+                                            <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar intimação</Consult_button>
                                         </div>
                                         
                                         <Consult_IntForm className="formInt" $buttonOpen={OpenAddInt} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
@@ -449,19 +466,21 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                             {Intimacoes.map((intimacao) => {
                                                 
                                                 //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
-                                                function formatDateWithoutTimezone(dateStr) {
+                                                function formatDateWithoutTimezone(dateStr, hour) {
                                                     const date = new Date(dateStr)
                                                     const dia = String(date.getUTCDate()).padStart(2, '0')
                                                     const mes = String(date.getUTCMonth() + 1).padStart(2, '0')
                                                     const ano = date.getUTCFullYear()
-                                                    const hora = String(date.getUTCHours()).padStart(2, '0')
-                                                    const minuto = String(date.getUTCMinutes()).padStart(2, '0')
-                                                    const segundo = String(date.getUTCSeconds()).padStart(2, '0')
-
-                                                    return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`
+                                                    if(hour === true){
+                                                        const hora = String(date.getUTCHours()).padStart(2, '0')
+                                                        const minuto = String(date.getUTCMinutes()).padStart(2, '0')
+                                                        const segundo = String(date.getUTCSeconds()).padStart(2, '0')
+                                                        return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`
+                                                    }
+                                                    return `${dia}/${mes}/${ano}`
                                                 }
                                                 //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
-                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento)
+                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento, true)
 
                                                 if(processo.cd_Processo === intimacao.cd_Processo){
                                                     const formTaskisOpen = openFormIdTask === intimacao.cd_Intimacao
@@ -471,7 +490,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                             <p><strong>Data do recebimento: </strong>{formatted}</p>
                                                             <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
                                                             <div className="addTask">
-                                                                <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>Adicionar tarefa
+                                                                <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+                                                                    Adicionar tarefa
                                                                     <PlusIcon style={{ width: "25px" }} />
                                                                 </Consult_button>
                                                                 <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
@@ -502,8 +522,48 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                                                                     <Consult_button>Enviar</Consult_button>
                                                                 </Consult_TaskForm>
                                                             </div>
+                                                            
+                                                            {Tarefas.length > 0 &&(
+                                                                <div>
+                                                                    {Tarefas.map((task) => {  
+                                                                        const formatedInc = formatDateWithoutTimezone(task.dt_Registro, true)
+                                                                        const formatedPra = formatDateWithoutTimezone(task.dt_Prazo, false)
+                                                                        
+                                                                        const statusStyle = {
+                                                                            1: { color: "yellow" },
+                                                                            2: { color: "orange" },
+                                                                            3: { color: "green" },
+                                                                        }
+
+                                                                        if(task.cd_Intimacao === intimacao.cd_Intimacao){
+
+                                                                            const taskOpen = openTaskId === task.cd_Tarefa
+                                                                            return(
+                                                                                <Task_card key={task.cd_Tarefa} $taskIdOpen={taskOpen}>
+                                                                                    <div className="Task-Title" onClick={() => set_openTaskId(taskOpen ? null : task.cd_Tarefa)}>
+                                                                                        <h4>Tarefa {task.cd_Tarefa}</h4>
+                                                                                        <p style={statusStyle[task.cd_StatusTarefa]}><strong>{task.cd_StatusTarefa === 1 ? "Aguardando" :
+                                                                                            task.cd_StatusTarefa === 2 ? "Em andamento" : "Concluído"}</strong>
+                                                                                        </p>
+                                                                                    </div>
+                                                                                    <div className="task-group">
+                                                                                        <hr />
+                                                                                        <p><strong>Adicionada por: </strong>{task.nm_Colaborador}</p>
+                                                                                        <p><strong>Incluida: </strong>{formatedInc}</p>
+                                                                                        <p><strong>Prazo: </strong>{formatedPra}</p>
+                                                                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px"}}>
+                                                                                            <strong>Descrição</strong>
+                                                                                            <p>{task.ds_Tarefa}</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </Task_card>
+                                                                            )
+                                                                        }
+                                                                    })}
+                                                                </div>
+                                                            )}
                                                             <hr />
-                                                        </div>     
+                                                        </div>
                                                     )
                                                 }
                                             })}
@@ -520,3 +580,4 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         </>
     )
 }
+

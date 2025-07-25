@@ -1,19 +1,24 @@
 import { useState, useEffect } from "react"
-import { CountProcesses } from "./style"
+import { CountProcesses, Info_Container, WorkerInfo } from "./style"
 import { Doughnut, Line, Bar } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
+  defaults,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  DoughnutController,
+  ArcElement
 } from "chart.js"
-
 import axios from "axios"
 
-export default function VisaoGeral(){
+// defaults.maintainAspectRatio = false;
+// defaults.responsive = true;
+
+export default function VisaoGeral({ NomeColaborador }){
 
     // Variáveis dos graficos
     const [countProcess, set_countProcess] = useState(null) // Contador de processos
@@ -28,15 +33,18 @@ export default function VisaoGeral(){
         CategoryScale,
         LinearScale,
         BarElement,
+        DoughnutController,
+        ArcElement,
         Title,
         Tooltip,
         Legend
     )
 
+    // Inserindo os dados nas variáveis
     useEffect(() => {
         (async () => {
             try{
-                const response = await axios.get("http://10.107.200.6:5000/get_MainInfo")
+                const response = await axios.get("http://192.168.100.3:5000/get_MainInfo")
                 console.log(response.data)
                 set_countProcess(response.data.qtd_Processo)
                 set_countFase1(response.data.qtd_ProcessoFase1)
@@ -52,43 +60,76 @@ export default function VisaoGeral(){
 
     }, [])
 
-
     return(
         <div style={{ padding: "20px"}}>
-            <CountProcesses>
-                <Bar
-                    data={{ 
-                        labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Total"],
-                        datasets: [
-                            {
-                                label: "Fases",
-                                data: [countFase1, countFase2, countFase3, countFase4, countProcess],
-                                backgroundColor: [
-                                    "rgba(141, 54, 250, 0.8)",
-                                    "rgba(141, 197, 250, 0.8)",
-                                    "rgba(255, 100, 39, 0.8)",
-                                    "rgba(5, 197, 39, 0.8)",
-                                    "rgba(22, 40, 250, 0.8)"
+            <WorkerInfo>
+                <h1>{NomeColaborador}</h1>
+                <hr />
+                <p>Bem Vindo(a) ao sistema Acompanhamento Jurídico!</p>
+            </WorkerInfo>
 
-                                ]
-                            },
-                        ],
-                    }}
-                    options={{ 
-                        responsive: true,
-                        plugins:{
-                            legend: { position: "top" },
-                            title: {
-                                display: true,
-                                text: "Quantidade de Processos por Status"
+            <Info_Container>
+                <CountProcesses>
+                    <Bar
+                        data={{ 
+                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Total"],
+                            datasets: [
+                                {
+                                    label: "Fases",
+                                    data: [countFase1, countFase2, countFase3, countFase4, countProcess],
+                                    backgroundColor: [
+                                        "rgba(141, 54, 250, 0.8)",
+                                        "rgba(141, 197, 250, 0.8)",
+                                        "rgba(255, 100, 39, 0.8)",
+                                        "rgba(5, 197, 39, 0.8)",
+                                        "rgba(22, 40, 250, 0.8)"
+
+                                    ],
+                                    borderRadius: 5,
+                                },
+                            ],
+                        }}
+                        options={{
+                            plugins:{
+                                legend: { position: "top" },
+                                title: {
+                                    display: true,
+                                    text: "Quantidade de Processos por Status"
+                                }
                             }
-                        }
-                    }}
-                >
-
-                </Bar>
-            </CountProcesses>
-            
+                        }}
+                    />
+                </CountProcesses>
+                <CountProcesses>
+                    <Doughnut
+                        data={{ 
+                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado" ],
+                            datasets: [
+                                {
+                                    label: "Fases",
+                                    data: [countFase1, countFase2, countFase3, countFase4],
+                                    backgroundColor: [
+                                        "rgba(141, 54, 250, 0.8)",
+                                        "rgba(141, 197, 250, 0.8)",
+                                        "rgba(255, 100, 39, 0.8)",
+                                        "rgba(5, 197, 39, 0.8)"
+                                    ],
+                                    borderRadius: 5,
+                                },
+                            ],
+                        }}
+                        options={{
+                            plugins:{
+                                legend: { position: "top" },
+                                title: {
+                                    display: true,
+                                    text: "Quantidade de Processos por Status"
+                                }
+                            }
+                        }}
+                    />
+                </CountProcesses>
+            </Info_Container>
         </div>
     )
 }

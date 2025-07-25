@@ -37,7 +37,7 @@ export default function Consulta_Cliente({ TipoColaborador }){
         setLoading_clientes(true)
 
         try{
-            const response = await axios.get("http://10.107.200.6:5000//get_Allclientes")
+            const response = await axios.get("http://192.168.100.3:5000//get_Allclientes")
             // console.log(response.data)
             set_allClientes(response.data)
 
@@ -79,7 +79,7 @@ export default function Consulta_Cliente({ TipoColaborador }){
 
                 // }
 
-                // const "response = await axios.delete("http://10.107.200.6:5000//delete_cliente")
+                // const "response = await axios.delete("http://192.168.100.3:5000//delete_cliente")
             })()
         }
         set_deleteConfirm(false)
