@@ -228,7 +228,7 @@ BEGIN
     
 END $$
 
--- Stored Procedure para update de alterações dos dados de clientes
+-- Stored Procedure para update dos dados de clientes
     
 DELIMITER $$
 
@@ -295,11 +295,10 @@ END $$
 
 DELIMITER ;
 
--- Stored Procedure para update de alterações dos dados de processos
+-- Stored Procedure para update dos dados de processos
+-- Atualiza dados de um processo e sua associação com o cliente (Cliente_Processo)
     
 DELIMITER $$
-
--- Procedure: Atualiza dados de um processo e sua associação com o cliente (Cliente_Processo)
 
 CREATE PROCEDURE SP_Update_Processo (
 	IN sp_cd_Processo INT,
@@ -354,6 +353,100 @@ END $$
 
 DELIMITER ;
 
+-- Stored Procedure para delete de cliente
+
+DELIMITER $$
+
+CREATE PROCEDURE SP_Delete_Cliente (
+	IN sp_cd_Cliente INT
+)
+BEGIN
+    -- Tratamento de erro: rollback se houver exceção SQL
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+    
+    -- Verifica se o cliente existe
+    IF sp_cd_Cliente NOT IN (SELECT cd_Cliente FROM Cliente)
+    THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cliente não encontrado';
+    END IF;
+    
+    -- Verifica se há vínculo na tabela Cliente_Processo
+    IF sp_cd_Cliente IN (SELECT cd_Cliente FROM Cliente_Processo)
+    THEN
+		SET @mensagem = CONCAT(	'Não foi possível concluir a exclusão, pois o cliente está vinculado aos autos: ', 
+								(SELECT GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ', ')
+								FROM Processo p
+								INNER JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
+								WHERE cp.cd_Cliente = 1));
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @mensagem;
+	ELSE
+		DELETE FROM Cliente
+        WHERE cd_Cliente = sp_cd_Cliente;
+	END IF;
+    
+    COMMIT;
+END $$
+
+DELIMITER ;
+
+-- Stored Procedure para delete de processo
+
+DELIMITER $$
+
+CREATE PROCEDURE SP_Delete_Processo (
+	IN sp_cd_Processo INT
+)
+BEGIN
+    -- Tratamento de erro: rollback se houver exceção SQL
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+    
+    -- Verifica se o processo existe
+    IF NOT EXISTS (SELECT 1 FROM Processo WHERE cd_Processo = sp_cd_Processo)
+	THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Processo não encontrado';
+	END IF;
+    
+    -- Verifica se o processo não possui intimações
+    IF NOT EXISTS (	SELECT cd_Intimacao
+					FROM Intimacao
+                    WHERE cd_Processo = sp_cd_Processo)
+	THEN
+        DELETE FROM Cliente_Processo
+        WHERE cd_Processo = sp_cd_Processo;
+        DELETE FROM Processo
+        WHERE cd_Processo = sp_cd_Processo;
+	ELSE
+		IF EXISTS (	SELECT t.cd_Tarefa
+					FROM Tarefa t
+                    INNER JOIN Intimacao i ON i.cd_Intimacao = t.cd_Intimacao
+                    WHERE (i.cd_Processo = sp_cd_Processo) AND (t.cd_StatusTarefa <> 3)	)
+		THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERRO: Exclusão não realizada, o processo possui tarefas pendentes';
+		ELSE
+			UPDATE Processo
+            SET cd_FaseProcesso = 5
+            WHERE cd_Processo = sp_cd_Processo;
+            
+            SELECT 'Fase do processo alterada para "Cancelado"' AS Mensagem;
+
+		END IF;
+	END IF;
+    
+    COMMIT;
+END $$
+
+DELIMITER ;
+
 -- INSERÇÃO DE DADOS
 
 -- Inserção de Tribunais
@@ -370,7 +463,8 @@ INSERT INTO FaseProcesso (cd_FaseProcesso, nm_FaseProcesso)
 VALUES	(1, 'Conhecimento'),
         (2, 'Recursal'),
         (3, 'Execução'),
-        (4, 'Finalizado');
+        (4, 'Finalizado'),
+        (5, 'Cancelado');
 
 -- Inserção de tipo de Colaborador
 INSERT INTO TipoColaborador (cd_TipoColaborador, nm_TipoColaborador) 
@@ -567,3 +661,93 @@ CALL Proc_Insercao_ProcessoCliente(
     'TJSP',                        -- Tribunal
     35000.00                       -- Valor da causa
 );
+
+SELECT I.*
+            FROM Intimacao I
+            JOIN Processo P ON P.cd_Processo = I.cd_Processo
+            JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+            JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+            WHERE C.nm_Cliente = "Fernando Lima";
+            
+USE bd_aj;
+SELECT * FROM Processo;
+SELECT * FROM Cliente;
+SELECT * FROM Colaborador;
+SELECT * FROM Tarefa;
+SELECT * FROM Intimacao;
+SELECT COUNT(*) FROM Processo;
+
+SELECT 
+    i.cd_Intimacao,
+    i.dt_Recebimento,
+    i.ds_Intimacao,
+    p.cd_NumeroProcesso,
+    p.nm_Autor,
+    p.nm_Reu
+FROM 
+    Intimacao i
+JOIN 
+    Processo p ON i.cd_Processo = p.cd_Processo
+LEFT JOIN 
+    Cliente_Processo cp ON p.cd_Processo = cp.cd_Processo
+LEFT JOIN 
+    Cliente c ON cp.cd_Cliente = c.cd_Cliente
+WHERE 
+    p.cd_NumeroProcesso = '0003333-40.2023.8.26.0003'
+    AND (
+        p.nm_Autor LIKE 'Fernando Lima' OR
+        p.nm_Reu LIKE 'Fernando Lima' OR
+        c.nm_Cliente LIKE 'Fernando Lima'
+    );
+    
+    
+SELECT 
+	c.nm_Cliente AS 'Cliente',
+    GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR '\n') AS 'Processo'
+FROM Cliente_Processo cp
+INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
+INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo
+GROUP BY c.nm_Cliente; -- Esse só traz UM UNICO processo (Não serve)
+
+SELECT c.*, p.cd_NumeroProcesso, p.cd_Processo
+FROM Cliente_Processo cp
+INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
+INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo;
+
+SELECT
+                c.cd_Cliente,
+                c.nm_Cliente,
+                c.cd_CPF,
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado, 
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email,
+                GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' @ ') AS 'cd_numProcessos'
+            FROM Cliente c
+            INNER JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+            INNER JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+            GROUP BY
+                c.cd_cliente,
+                c.nm_Cliente, 
+                c.cd_CPF, 
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado,
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email;
+                
+SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+                FROM Processo P
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                WHERE P.nm_Autor = "Carlos Silva";
