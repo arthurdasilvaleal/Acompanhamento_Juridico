@@ -326,8 +326,7 @@ export const Consult_IntForm = styled.form`
     }
 
     .input, .input-select {
-        height: 44px;
-        width: 30vw;
+        width: auto;
         background-color: #00000039;
         color: #fff;
         border: 2px solid transparent;
@@ -377,7 +376,7 @@ export const Consult_IntForm = styled.form`
     }
 
     #ds_Intimacao{
-        height: 172px;
+        height: 220px;
         padding-top: 20px;
         resize: none;
     }

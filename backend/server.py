@@ -443,6 +443,33 @@ def get_Task():
         print("\n\nErro em '/get_cardTask' tarefas:", err)
         return jsonify({"erro ao buscar tarefas": str(err)}), 500
 
+# Para atualizar as tarefas
+@app.route("/put_cardTask", methods=["PUT"])
+def put_cardTask():
+
+    data = request.get_json()
+    cursor = db.cursor(dictionary=True)
+
+    dt_Prazo = data.get("dtPrazo")
+    cd_Status = data.get("cdStatus")
+    ds_Tarefa = data.get("dsTarefa")
+    cd_Tarefa = data.get("cdTarefa")
+    values = (dt_Prazo, cd_Status, ds_Tarefa, cd_Tarefa)
+
+    query = """UPDATE Tarefa
+            SET dt_Prazo = %s, cd_StatusTarefa = %s, ds_Tarefa = %s
+            WHERE cd_Tarefa = %s;"""
+    
+    try:
+        cursor.execute(query, values)
+        db.commit()
+        return jsonify({"message": "Tarefa editada com sucesso!", "Values": values}), 201
+    except mysql.connector.Error as err:
+        print("\n\nErro '/put_cardTask':", err)
+        return jsonify({"error": str(err)}), 500
+        
+
+
 # Para enviar os dados de Intimações/Tarefas
 @app.route("/post_card", methods=["POST"])
 def post_intimacao():

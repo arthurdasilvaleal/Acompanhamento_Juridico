@@ -13,7 +13,7 @@ import { PlusIcon } from "@heroicons/react/24/outline"
 import { color } from "chart.js/helpers"
 
 
-export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }){
+export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, NomeColaborador }){
 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
@@ -41,6 +41,11 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
     const [deleteProcess, set_DeleteProcess] = useState(null) // Para armazenar o código do processo e mandá-lo para exclusão
     const [editTaskSvg, set_editTaskSvg] = useState(false) // Controla a ação de editar um card de tarefa
 
+    // Para o formulario de edição de cada tarefa
+    const [edit_dtPrazo, set_edit_dtPrazo] = useState("")
+    const [edit_cdStatus, set_edit_cdStatus] = useState("")
+    const [edit_dsTarefa, set_edit_dsTarefa] = useState("")
+
     // Variáveis do Modal
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
@@ -63,7 +68,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         }))
     }
 
-    // Função que separa cada formulário de tarefa
+    // Função que separa cada formulário de tarefa de cada intimação
     const handleTaskChange = (intimacaoId, field, value) => {
         set_taskFormData(prev => ({
             ...prev,
@@ -296,43 +301,71 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
         set_editProcess(false)
     }, [editProcess])
 
-    // ON PROCESS -------------------------------------------------
-
     // Para deletar um processo
     useEffect(() => {
-            if(deleteConfirm){
-                (async () => {
+        if(deleteConfirm){
+            (async () => {
+                try{
+                    const response = await axios.delete("http://192.168.100.3:5000//delete_processo", { 
+                        data: { deleteProcess },
+                        headers: { "Content-Type": "application/json" }
+                    })
+                    console.log(response)
+                    set_deleteDialog(false)
+                    set_formStatusErrorMessage("")
+                    set_FormStatusMessage("Processo deletado com sucesso!")
+                    
+                    // Buscando a lista atualizada no banco
                     try{
-                        const response = await axios.delete("http://192.168.100.3:5000//delete_processo", { 
-                            data: { deleteProcess },
-                            headers: { "Content-Type": "application/json" }
+                        const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                            params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                         })
-                        console.log(response)
-                        set_deleteDialog(false)
-                        set_formStatusErrorMessage("")
-                        set_FormStatusMessage("Processo deletado com sucesso!")
 
-                        try{
-                            const response = await axios.get("http://192.168.100.3:5000/get_processos", {
-                                params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
-                            })
-
-                            set_Processos(response.data)
-                        } catch (error){
-                            console.log("Erro em atualizar processos após uma exclusão:", error)
-                        }
+                        set_Processos(response.data)
                     } catch (error){
-                        set_deleteDialog(false)
-                        set_FormStatusMessage("Erro ao deletar processo")
-                        set_formStatusErrorMessage(error.response.data.error)
-
+                        console.log("Erro em atualizar processos após uma exclusão:", error)
                     }
-                })()
-            }
-            set_deleteConfirm(false)
-        }, [deleteConfirm])
+                } catch (error){
+                    set_deleteDialog(false)
+                    set_FormStatusMessage("Erro ao deletar processo")
+                    set_formStatusErrorMessage(error.response.data.error)
 
-    // ON PROCESS -------------------------------------------------
+                }
+            })()
+        }
+        set_deleteConfirm(false)
+    }, [deleteConfirm])
+
+    // Para editar um card de tarefa
+    const handleUpdateTaskSubmit = async (e, cdTarefa) =>{
+        e.preventDefault()
+        set_Loading(true)
+        console.log(edit_dtPrazo, edit_cdStatus, edit_dsTarefa, cdTarefa)
+
+        const updateTask = {
+                dtPrazo: edit_dtPrazo,
+                cdStatus: edit_cdStatus,
+                dsTarefa: edit_dsTarefa,
+                cdTarefa: cdTarefa
+            }
+
+        try{
+            const response = await axios.put("http://192.168.100.3:5000/put_cardTask", updateTask)
+            console.log(response)
+            set_ModalOpen(true)
+            set_FormStatusMessage("Tarefa editada com sucesso!")
+            set_formStatusErrorMessage("")
+            set_editTaskSvg(null)
+            CatchIntInfo()
+
+        }catch (error){
+            console.log("Erro ao editar tarefa:", error)
+            set_ModalOpen(true)
+            set_FormStatusMessage("Tarefa editada com sucesso!")
+            set_formStatusErrorMessage(error.response.data.error)
+        }
+        set_Loading(false)
+    }
 
     // Props da tela de adicionar processos
     const ProcessProps = {
@@ -401,239 +434,248 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador }
                         const formatedMoney = processo.vl_Causa.replace(".", ",")
 
                         return (
-                            <AnimatePresence>
-                                <div key={processo.cd_Processo} className="OneCard">
-                                    <hr />
-                                    <Card_Title $cardOpen={isOpen} onClick={() => {
-                                        set_OpenCardId(isOpen ? null : processo.cd_Processo)
-                                        set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
-                                        }}>Processo Nº {processo.cd_NumeroProcesso}
-                                        {/* Caso o colaborador for estágiario, não pode editar nem excluir os processos */}
-                                        {TipoColaborador != "Estagiário" && (
-                                            <>
-                                                <PencilSquareIcon onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    set_OpenEditProcess(true)
-                                                    set_PropEditProcess({
-                                                        cdNumeroProcesso: processo.cd_NumeroProcesso,
-                                                        cdProcesso: processo.cd_Processo,
-                                                        dsAcao: processo.ds_Acao,
-                                                        dsJuizo: processo.ds_Juizo,
-                                                        nmAutor: processo.nm_Autor,
-                                                        nmCidade: processo.nm_Cidade,
-                                                        nmCliente: processo.nm_Cliente,
-                                                        cdCliente: processo.cd_Cliente,
-                                                        nmReu: processo.nm_Reu,
-                                                        sgTribunal: processo.sg_Tribunal,
-                                                        vlCausa: processo.vl_Causa.replace("." , ","),
-                                                        cdFaseProcesso: processo.cd_FaseProcesso 
-                                                    })
-                                                }}/>
-                                                <svg onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    set_ModalOpen(true)
-                                                    set_deleteDialog(true)
-                                                    set_FormStatusMessage("Processo " + processo.cd_NumeroProcesso)
-                                                    set_DeleteProcess(processo.cd_Processo)
-                                                }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 13.5H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
-                                                </svg>
-                                            </>
-                                        )}
-                                    </Card_Title>
+                            <div key={processo.cd_Processo} className="OneCard">
+                                <hr />
+                                <Card_Title $cardOpen={isOpen} onClick={() => {
+                                    set_OpenCardId(isOpen ? null : processo.cd_Processo)
+                                    set_CloseForm(isOpen ? true : false) // Verifica se o card está aberto e fecha a consulta
+                                    }}>Processo Nº {processo.cd_NumeroProcesso}
+                                    {/* Caso o colaborador for estágiario, não pode editar nem excluir os processos */}
+                                    {TipoColaborador != "Estagiário" && (
+                                        <>
+                                            <PencilSquareIcon onClick={(e) => {
+                                                e.stopPropagation()
+                                                set_OpenEditProcess(true)
+                                                set_PropEditProcess({
+                                                    cdNumeroProcesso: processo.cd_NumeroProcesso,
+                                                    cdProcesso: processo.cd_Processo,
+                                                    dsAcao: processo.ds_Acao,
+                                                    dsJuizo: processo.ds_Juizo,
+                                                    nmAutor: processo.nm_Autor,
+                                                    nmCidade: processo.nm_Cidade,
+                                                    nmCliente: processo.nm_Cliente,
+                                                    cdCliente: processo.cd_Cliente,
+                                                    nmReu: processo.nm_Reu,
+                                                    sgTribunal: processo.sg_Tribunal,
+                                                    vlCausa: processo.vl_Causa.replace("." , ","),
+                                                    cdFaseProcesso: processo.cd_FaseProcesso 
+                                                })
+                                            }}/>
+                                            <svg onClick={(e) => {
+                                                e.stopPropagation()
+                                                set_ModalOpen(true)
+                                                set_deleteDialog(true)
+                                                set_FormStatusMessage("Processo " + processo.cd_NumeroProcesso)
+                                                set_DeleteProcess(processo.cd_Processo)
+                                            }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13.5H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </Card_Title>
 
-                                    <Card $cardOpen={isOpen}>
-                                        <First_info $buttonOpen={OpenAddInt}>
-                                            <div className="Core-data">
-                                                <div className="Client-info">
-                                                    <h2>Dados do Cliente</h2>
-                                                    <hr />
-                                                    <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
-                                                    <p><strong>Telefone: </strong>{formatedPhone}</p>
-                                                    <p><strong>E-mail: </strong>{processo.ds_Email}</p>
-                                                    <hr />
-                                                    <h2>DADOS DO PROCESSO</h2>
-                                                    <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 1 ? "Conhecimento" : 
-                                                        processo.cd_FaseProcesso === 2 ? "Recursal" :
-                                                        processo.cd_FaseProcesso === 3 ? "Execução" : 
-                                                        processo.cd_FaseProcesso === 4 ? "Finalizado" : "Cancelado"}</p>
-                                                    <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
-                                                    <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
-                                                    <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
-                                                    <p><strong>Descrição: </strong>{processo.ds_Juizo}</p>
-                                                    <p><strong>Cidade: </strong>{processo.nm_Cidade}</p>
-                                                    <p><strong>Valor da causa:</strong> R${formatedMoney}</p>
-                                                    <br />
-                                                    <div className="DsAcao">
-                                                        <h4 style={{ margin: "0 0 5px 0" }}><strong>Descrição da ação</strong></h4>
-                                                        <p style={{ margin: "0", textAlign: "center" }}>{processo.ds_Acao}</p>
-                                                    </div>
+                                <Card $cardOpen={isOpen}>
+                                    <First_info $buttonOpen={OpenAddInt}>
+                                        <div className="Core-data">
+                                            <div className="Client-info">
+                                                <h2>Dados do Cliente</h2>
+                                                <hr />
+                                                <p><strong>Nome: </strong>{processo.nm_Cliente}</p>
+                                                <p><strong>Telefone: </strong>{formatedPhone}</p>
+                                                <p><strong>E-mail: </strong>{processo.ds_Email}</p>
+                                                <hr />
+                                                <h2>DADOS DO PROCESSO</h2>
+                                                <p><strong>Situação: </strong>{processo.cd_FaseProcesso === 1 ? "Conhecimento" : 
+                                                    processo.cd_FaseProcesso === 2 ? "Recursal" :
+                                                    processo.cd_FaseProcesso === 3 ? "Execução" : 
+                                                    processo.cd_FaseProcesso === 4 ? "Finalizado" : "Cancelado"}</p>
+                                                <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
+                                                <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
+                                                <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
+                                                <p><strong>Descrição: </strong>{processo.ds_Juizo}</p>
+                                                <p><strong>Cidade: </strong>{processo.nm_Cidade}</p>
+                                                <p><strong>Valor da causa:</strong> R${formatedMoney}</p>
+                                                <br />
+                                                <div className="DsAcao">
+                                                    <h4 style={{ margin: "0 0 5px 0" }}><strong>Descrição da ação</strong></h4>
+                                                    <p style={{ margin: "0", textAlign: "center" }}>{processo.ds_Acao}</p>
                                                 </div>
-                                                <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar intimação</Consult_button>
                                             </div>
-                                            
-                                            <Consult_IntForm className="formInt" $buttonOpen={OpenAddInt} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
-                                                <h2>Adicionar Intimação</h2>
-                                                <hr />
-                                                <div className="input-group">
-                                                    <label className="label" htmlFor="ds_Intimacao">Descrição</label>
-                                                    <textarea onChange={(e) => handleCardChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
-                                                    value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
-                                                    autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
-                                                </div>
-                                                <Consult_button>Enviar</Consult_button>
-                                            </Consult_IntForm>
-                                            
-                                        </First_info>
-                                        {Intimacoes.length > 0 && (
-                                            <Intimacao_card>
-                                                <hr />
-                                                {Intimacoes.map((intimacao) => {
-                                                    
-                                                    //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
-                                                    function formatDateWithoutTimezone(dateStr, hour) {
-                                                        const date = new Date(dateStr)
-                                                        const dia = String(date.getUTCDate()).padStart(2, '0')
-                                                        const mes = String(date.getUTCMonth() + 1).padStart(2, '0')
-                                                        const ano = date.getUTCFullYear()
-                                                        if(hour === true){
-                                                            const hora = String(date.getUTCHours()).padStart(2, '0')
-                                                            const minuto = String(date.getUTCMinutes()).padStart(2, '0')
-                                                            const segundo = String(date.getUTCSeconds()).padStart(2, '0')
-                                                            return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`
-                                                        }
-                                                        return `${dia}/${mes}/${ano}`
+                                            <Consult_button onClick={() => set_OpenAddInt(prev => !prev)}>Adicionar intimação</Consult_button>
+                                        </div>
+                                        
+                                        <Consult_IntForm className="formInt" $buttonOpen={OpenAddInt} onSubmit={(e) => PostIntimaçãoSubmit(e, processo.cd_Processo)}>
+                                            <h2>Adicionar Intimação</h2>
+                                            <hr />
+                                            <div className="input-group">
+                                                <label className="label" htmlFor="ds_Intimacao">Descrição</label>
+                                                <textarea onChange={(e) => handleCardChange(processo.cd_Processo, 'ds_Intimacao', e.target.value)}
+                                                value={formData[processo.cd_Processo]?.ds_Intimacao || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
+                                                autoComplete="off" name="ds_Intimacao" id="ds_Intimacao" className="input" type="text" required/>
+                                            </div>
+                                            <Consult_button>Enviar</Consult_button>
+                                        </Consult_IntForm>
+                                        
+                                    </First_info>
+                                    {Intimacoes.length > 0 && (
+                                        <Intimacao_card>
+                                            <hr />
+                                            {Intimacoes.map((intimacao) => {
+                                                
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
+                                                function formatDateWithoutTimezone(dateStr, hour, dateUS) {
+                                                    const date = new Date(dateStr)
+                                                    const dia = String(date.getUTCDate()).padStart(2, '0')
+                                                    const mes = String(date.getUTCMonth() + 1).padStart(2, '0')
+                                                    const ano = date.getUTCFullYear()
+                                                    if(hour === true){
+                                                        const hora = String(date.getUTCHours()).padStart(2, '0')
+                                                        const minuto = String(date.getUTCMinutes()).padStart(2, '0')
+                                                        const segundo = String(date.getUTCSeconds()).padStart(2, '0')
+                                                        return `${dia}/${mes}/${ano} ${hora}:${minuto}:${segundo}`
                                                     }
-                                                    //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
-                                                    const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento, true)
+                                                    if(dateUS){
+                                                        return `${ano}-${mes}-${dia}`
+                                                    }
+                                                    return `${dia}/${mes}/${ano}`
+                                                }
+                                                //ERRO: 20/02... VEM COMO 19/02 (DUE TO TIME ZONE DIFERENCES)
+                                                const formatted = formatDateWithoutTimezone(intimacao.dt_Recebimento, true, false)
 
-                                                    if(processo.cd_Processo === intimacao.cd_Processo){
-                                                        const formTaskisOpen = openFormIdTask === intimacao.cd_Intimacao
-                                                        return(
-                                                            <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
-                                                                <h2>Dados da Intimação {intimacao.cd_Intimacao}</h2>
-                                                                <p><strong>Data do recebimento: </strong>{formatted}</p>
-                                                                <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
-                                                                <div className="addTask">
-                                                                    <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>
-                                                                        Adicionar tarefa
-                                                                        <PlusIcon style={{ width: "25px" }} />
-                                                                    </Consult_button>
-                                                                    <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
-                                                                        <h2>Adicionar Tarefa</h2>
-                                                                        <hr />
-                                                                        <div className="input-group">
-                                                                            <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                                            <input onChange={(e) => {handleTaskChange(intimacao.cd_Intimacao, 'dt_Prazo', e.target.value)}}
-                                                                            value={taskFormData[intimacao.cd_Intimacao]?.dt_Prazo || ''} autoComplete="off"
-                                                                            name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
-                                                                        </div>
-                                                                        <div className="input-group-select">
-                                                                            <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
-                                                                            <select onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'nm_StatusTarefa', e.target.value)}
-                                                                            value={taskFormData[intimacao.cd_Intimacao]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
-                                                                                <option value="">Selecione</option>
-                                                                                <option value="1">Aguardando</option>
-                                                                                <option value="2">Em andamento</option>
-                                                                                <option value="3">Concluído</option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div className="input-group">
-                                                                            <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
-                                                                            <textarea onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'ds_Tarefa', e.target.value)}
-                                                                            value={taskFormData[intimacao.cd_Intimacao]?.ds_Tarefa || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
-                                                                            autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" className="input" type="text" maxLength={200} required/>
-                                                                        </div>
-                                                                        <Consult_button>Enviar</Consult_button>
-                                                                    </Consult_TaskForm>
-                                                                </div>
-                                                                
-                                                                {Tarefas.length > 0 &&(
-                                                                    <div>
-                                                                        {Tarefas.map((task) => {  
-                                                                            const formatedRecebimento = formatDateWithoutTimezone(task.dt_Registro, true)
-                                                                            const formatedPrazo = formatDateWithoutTimezone(task.dt_Prazo, false)
-                                                                            
-                                                                            const statusStyle = {
-                                                                                1: { color: "yellow" },
-                                                                                2: { color: "orange" },
-                                                                                3: { color: "green" },
-                                                                            }
-
-                                                                            if(task.cd_Intimacao === intimacao.cd_Intimacao){
-
-                                                                                const taskOpen = openTaskId === task.cd_Tarefa
-                                                                                const editTaskOpen = editTaskSvg === task.cd_Tarefa
-                                                                                return(
-                                                                                    <>
-                                                                                        <Task_card key={task.cd_Tarefa} $taskIdOpen={taskOpen}>
-                                                                                            <div className="Task-Title" onClick={() => set_openTaskId(taskOpen ? null : task.cd_Tarefa)}>
-                                                                                                <h4>Tarefa {task.cd_Tarefa}</h4>
-                                                                                                <p style={statusStyle[task.cd_StatusTarefa]}><strong>{task.cd_StatusTarefa === 1 ? "Aguardando" :
-                                                                                                    task.cd_StatusTarefa === 2 ? "Em andamento" : "Concluído"}</strong>
-                                                                                                </p>
-                                                                                                <svg onClick={(e) => {
-                                                                                                    e.stopPropagation()
-                                                                                                    set_editTaskSvg(editTaskOpen ? null : task.cd_Tarefa)
-                                                                                                }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                                                                </svg>
-
-                                                                                            </div>
-                                                                                            <div className="task-group">
-                                                                                                <hr />
-                                                                                                <p><strong>Adicionada por: </strong>{task.nm_Colaborador}</p>
-                                                                                                <p><strong>Incluida: </strong>{formatedRecebimento}</p>
-                                                                                                <p><strong>Prazo: </strong>{formatedPrazo}</p>
-                                                                                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px"}}>
-                                                                                                    <strong>Descrição</strong>
-                                                                                                    <p>{task.ds_Tarefa}</p>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </Task_card>
-                                                                                        <Edit_taskForm $EditOpen={editTaskOpen}>
-                                                                                            <h2>Editar Tarefa</h2>
-                                                                                            <hr />
-                                                                                            <div className="input-group">
-                                                                                                <label className="label" htmlFor="dt_Prazo">Prazo</label>
-                                                                                                <input onChange={(e) => null}
-                                                                                                autoComplete="off"
-                                                                                                name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
-                                                                                            </div>
-                                                                                            <div className="input-group-select">
-                                                                                                <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
-                                                                                                <select onChange={(e) => null}
-                                                                                                id="nm_StatusTarefa" className="input-select" required>
-                                                                                                    <option value="">Selecione</option>
-                                                                                                    <option value="1">Aguardando</option>
-                                                                                                    <option value="2">Em andamento</option>
-                                                                                                    <option value="3">Concluído</option>
-                                                                                                </select>
-                                                                                            </div>
-                                                                                            <div className="input-group">
-                                                                                                <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
-                                                                                                <textarea onChange={(e) => null} autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" 
-                                                                                                className="input" type="text" maxLength={200} required/>
-                                                                                            </div>
-                                                                                            <Consult_button>Enviar</Consult_button>
-                                                                                        </Edit_taskForm>
-                                                                                    </>
-                                                                                )
-                                                                            }
-                                                                        })}
+                                                if(processo.cd_Processo === intimacao.cd_Processo){
+                                                    const formTaskisOpen = openFormIdTask === intimacao.cd_Intimacao
+                                                    return(
+                                                        <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
+                                                            <h2>Dados da Intimação {intimacao.cd_Intimacao}</h2>
+                                                            <p><strong>Data do recebimento: </strong>{formatted}</p>
+                                                            <p><strong>Descrição: </strong>{intimacao.ds_Intimacao}</p>
+                                                            <div className="addTask">
+                                                                <Consult_button $buttonTaskOpen={formTaskisOpen} onClick={() => {set_openFormIdTask(formTaskisOpen ? null : intimacao.cd_Intimacao)}} style={{ display: "flex", flexDirection: "row", padding: "0", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+                                                                    Adicionar tarefa
+                                                                    <PlusIcon style={{ width: "25px" }} />
+                                                                </Consult_button>
+                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
+                                                                    <h2>Adicionar Tarefa</h2>
+                                                                    <hr />
+                                                                    <div className="input-group">
+                                                                        <label className="label" htmlFor="dt_Prazo">Prazo</label>
+                                                                        <input onChange={(e) => {handleTaskChange(intimacao.cd_Intimacao, 'dt_Prazo', e.target.value)}}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.dt_Prazo || ''} autoComplete="off"
+                                                                        name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
                                                                     </div>
-                                                                )}
-                                                                <hr />
+                                                                    <div className="input-group-select">
+                                                                        <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
+                                                                        <select onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'nm_StatusTarefa', e.target.value)}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.nm_StatusTarefa || ''} name="nm_StatusTarefa" id="nm_StatusTarefa" className="input-select" required>
+                                                                            <option value="">Selecione</option>
+                                                                            <option value="1">Aguardando</option>
+                                                                            <option value="2">Em andamento</option>
+                                                                            <option value="3">Concluído</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="input-group">
+                                                                        <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
+                                                                        <textarea onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'ds_Tarefa', e.target.value)}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.ds_Tarefa || '' /*Isso evita que o valor seja undefined ou null, previnindo erros*/}
+                                                                        autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" className="input" type="text" maxLength={200} required/>
+                                                                    </div>
+                                                                    <Consult_button>Enviar</Consult_button>
+                                                                </Consult_TaskForm>
                                                             </div>
-                                                        )
-                                                    }
-                                                })}
-                                            </Intimacao_card>
+                                                            
+                                                            {Tarefas.length > 0 &&(
+                                                                <div>
+                                                                    {Tarefas.map((task) => {  
+                                                                        const formatedRecebimento = formatDateWithoutTimezone(task.dt_Registro, true, false)
+                                                                        const formatedPrazo = formatDateWithoutTimezone(task.dt_Prazo, false, false)
+                                                                        
+                                                                        const statusStyle = {
+                                                                            1: { color: "yellow" },
+                                                                            2: { color: "orange" },
+                                                                            3: { color: "green" },
+                                                                        }
 
-                                        )}
-                                    </Card>
-                                </div>
-                            </AnimatePresence>
+                                                                        if(task.cd_Intimacao === intimacao.cd_Intimacao){
+
+                                                                            // Para abrir cada tarefa
+                                                                            const taskOpen = openTaskId === task.cd_Tarefa
+                                                                            // Para abrir o formulario de edição de cada tarefa
+                                                                            const editTaskOpen = editTaskSvg === task.cd_Tarefa
+
+                                                                            return(
+                                                                                <div key={task.cd_Tarefa}>
+                                                                                    <Task_card $taskIdOpen={taskOpen}>
+                                                                                        <div className="Task-Title" onClick={() => set_openTaskId(taskOpen ? null : task.cd_Tarefa)}>
+                                                                                            <h4>Tarefa {task.cd_Tarefa}</h4>
+                                                                                            <p style={statusStyle[task.cd_StatusTarefa]}><strong>{task.cd_StatusTarefa === 1 ? "Aguardando" :
+                                                                                                task.cd_StatusTarefa === 2 ? "Em andamento" : "Concluído"}</strong>
+                                                                                            </p>
+                                                                                            {/* Os estagiários podem apenas editar tarefas que eles mesmos criaram */}
+                                                                                            {(TipoColaborador !== "Estagiário" || task.nm_Colaborador === NomeColaborador) && (
+                                                                                            <svg onClick={(e) => {
+                                                                                                e.stopPropagation()
+                                                                                                set_editTaskSvg(editTaskOpen ? null : task.cd_Tarefa)
+                                                                                                set_edit_dtPrazo(formatDateWithoutTimezone(task.dt_Prazo, false, true))
+                                                                                                set_edit_cdStatus(task.cd_StatusTarefa)
+                                                                                                set_edit_dsTarefa(task.ds_Tarefa)
+                                                                                            }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                                                            </svg>
+                                                                                            )}
+                                                                                        </div>
+                                                                                        <div className="task-group">
+                                                                                            <hr />
+                                                                                            <p><strong>Adicionada por: </strong>{task.nm_Colaborador}</p>
+                                                                                            <p><strong>Incluida: </strong>{formatedRecebimento}</p>
+                                                                                            <p><strong>Prazo: </strong>{formatedPrazo}</p>
+                                                                                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px"}}>
+                                                                                                <strong>Descrição</strong>
+                                                                                                <p>{task.ds_Tarefa}</p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </Task_card>
+                                                                                    <Edit_taskForm $EditOpen={editTaskOpen} onSubmit={(e) => handleUpdateTaskSubmit(e, task.cd_Tarefa)}>
+                                                                                        <h2>Editar Tarefa</h2>
+                                                                                        <hr />
+                                                                                        <div className="input-group">
+                                                                                            <label className="label" htmlFor="dt_Prazo">Prazo</label>
+                                                                                            <input onChange={(e) => set_edit_dtPrazo(e.target.value)}
+                                                                                            autoComplete="off" value={edit_dtPrazo}
+                                                                                            name="dt_Prazo" id="dt_Prazo" className="input" type="date" required/>
+                                                                                        </div>
+                                                                                        <div className="input-group-select">
+                                                                                            <label className="label" htmlFor="nm_StatusTarefa">Status da tarefa</label>
+                                                                                            <select onChange={(e) => set_edit_cdStatus(e.target.value)} value={edit_cdStatus}
+                                                                                            id="nm_StatusTarefa" className="input-select" required>
+                                                                                                <option value="">Selecione</option>
+                                                                                                <option value="1">Aguardando</option>
+                                                                                                <option value="2">Em andamento</option>
+                                                                                                <option value="3">Concluído</option>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div className="input-group">
+                                                                                            <label className="label" htmlFor="ds_Tarefa">Descrição da Tarefa</label>
+                                                                                            <textarea onChange={(e) => set_edit_dsTarefa(e.target.value)} autoComplete="off" name="ds_Tarefa" id="ds_Tarefa" 
+                                                                                            className="input" type="text" maxLength={200} value={edit_dsTarefa} required/>
+                                                                                        </div>
+                                                                                        <Consult_button>Enviar</Consult_button>
+                                                                                    </Edit_taskForm>
+                                                                                </div>
+                                                                            )
+                                                                        }
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                            <hr />
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </Intimacao_card>
+
+                                    )}
+                                </Card>
+                            </div>
                         )
                     })}
                 </Process_Cards>
