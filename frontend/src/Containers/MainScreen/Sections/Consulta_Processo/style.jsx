@@ -533,7 +533,7 @@ export const Task_card = styled.div`
     flex-direction: column;
     overflow: hidden;
 
-    max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "1000px" : "50px"};
+    max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "300px" : "50px"};
     transition: max-height 0.4s ease-in-out;
 
     .Task-Title{
@@ -555,8 +555,127 @@ export const Task_card = styled.div`
         }
     }
 
+    svg{
+        position: relative;
+        width: 28px;
+        height: 28px;
+        margin-left: 30px;
+        margin-bottom: 5px;
+        color: #CDAF6F;
+        transition: height 0.2s ease, width 0.2s ease;
+    }
+
+    svg:hover{
+        width: 34px;
+        height: 34px;
+        transition: all 0.2s ease;
+    }
+
     &:hover{
-        max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "auto" : "60px"};
+        max-height: ${({ $taskIdOpen }) => $taskIdOpen ? "300px" : "60px"};
         transition: max-height 0.2s ease-out;
+    }
+`
+
+export const Edit_taskForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: ${({ $EditOpen }) => !$EditOpen ? "0" : "20px 30px"};
+    gap: 20px;
+    margin-top: 10px;
+    background-color: #00000070;
+    overflow: hidden;
+    border-radius: 16px;
+    height: ${({ $EditOpen }) => !$EditOpen ? "0" : "522px"}; 
+    opacity: ${({ $EditOpen }) => !$EditOpen ? "0" : "1"};
+    pointer-events: ${({$EditOpen }) => !$EditOpen ? "none" : ""};
+    transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
+    
+    & > h2{
+        text-align: center;
+        text-transform: uppercase;
+        margin: 10px 0;
+    }
+
+    & > hr{
+        margin: 0;
+        background-color: #CDAF6F;
+        border: none;
+        box-shadow: 0 0 30px #CDAF6F;
+        height: 2px;
+        width: 100%;
+    }
+
+    .GroupBy{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 105px;
+    }
+
+    .input-group{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        textarea{
+            resize: none;
+            padding: 20px;
+            height: 100px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator{
+            filter: invert(1); /* inverte a cor — útil em temas escuros */
+            cursor: pointer;
+        }
+    }
+
+    .input, .input-select {
+        height: 44px;
+        width: 50vw;
+        background-color: #00000039;
+        color: #fff;
+        border: 2px solid transparent;
+        border-radius: .5rem;
+        padding: 0 1rem;
+        font-size: 1rem;
+        transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    .label {
+        font-size: .9rem;
+        place-content: center;
+        font-weight: bold;
+        width: 150px;
+        color: #CDAF6F;
+        transition: color .3s cubic-bezier(.25,.01,.25,1) 0s;
+    }
+
+    .input:hover, .input:focus, .input-group:hover .input, .input-select:hover, .input-select:focus {
+        outline: none;
+        border-color: #fff;
+    }
+    
+    .input-group-select{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .input-select{
+            width: calc(50vw + 36px);
+            @media (max-width: 768px) {
+                width: auto;
+            }
+        }
+
+        option{
+            background-color: #00000039;
+            color: #000;
+        }
+    }
+
+    button{
+        margin: auto;
     }
 `

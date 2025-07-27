@@ -27,6 +27,10 @@ export default function VisaoGeral({ NomeColaborador }){
     const [countFase2, set_countFase2] = useState(null) // Contador Fase2
     const [countFase3, set_countFase3] = useState(null) // Contador Fase3
     const [countFase4, set_countFase4] = useState(null) // Contador Fase4
+    const [countFase5, set_countFase5] = useState(null) // Contador Fase5
+    const [countStatus1, set_countStatus1] = useState(null) // Contador Status1
+    const [countStatus2, set_countStatus2] = useState(null) // Contador Status2
+    const [countStatus3, set_countStatus3] = useState(null) // Contador Status3
 
     // Componentes do Chart.js
     ChartJS.register(
@@ -51,6 +55,10 @@ export default function VisaoGeral({ NomeColaborador }){
                 set_countFase2(response.data.qtd_ProcessoFase2)
                 set_countFase3(response.data.qtd_ProcessoFase3)
                 set_countFase4(response.data.qtd_ProcessoFase4)
+                set_countFase5(response.data.qtd_ProcessoFase5)
+                set_countStatus1(response.data.qtd_TarefaStatus1)
+                set_countStatus2(response.data.qtd_TarefaStatus2)
+                set_countStatus3(response.data.qtd_TarefaStatus3)
             }
             catch(error){
                 console.log("Erro ao incluir grafico: " + error)
@@ -72,18 +80,15 @@ export default function VisaoGeral({ NomeColaborador }){
                 <CountProcesses>
                     <Bar
                         data={{ 
-                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Total"],
+                            labels: ["Aguardando", "Em andamento", "Concluído"],
                             datasets: [
                                 {
-                                    label: "Fases",
-                                    data: [countFase1, countFase2, countFase3, countFase4, countProcess],
+                                    label: "Situação",
+                                    data: [countStatus1, countStatus2, countStatus3],
                                     backgroundColor: [
-                                        "rgba(141, 54, 250, 0.8)",
-                                        "rgba(141, 197, 250, 0.8)",
-                                        "rgba(255, 100, 39, 0.8)",
-                                        "rgba(5, 197, 39, 0.8)",
-                                        "rgba(22, 40, 250, 0.8)"
-
+                                        "yellow",
+                                        "orange",
+                                        "green",
                                     ],
                                     borderRadius: 5,
                                 },
@@ -94,7 +99,7 @@ export default function VisaoGeral({ NomeColaborador }){
                                 legend: { position: "top" },
                                 title: {
                                     display: true,
-                                    text: "Quantidade de Processos por Status"
+                                    text: "Situação das Tarefas de intimações"
                                 }
                             }
                         }}
@@ -103,16 +108,17 @@ export default function VisaoGeral({ NomeColaborador }){
                 <CountProcesses>
                     <Doughnut
                         data={{ 
-                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado" ],
+                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Cancelado"],
                             datasets: [
                                 {
                                     label: "Fases",
-                                    data: [countFase1, countFase2, countFase3, countFase4],
+                                    data: [countFase1, countFase2, countFase3, countFase4, countFase5],
                                     backgroundColor: [
                                         "rgba(141, 54, 250, 0.8)",
                                         "rgba(141, 197, 250, 0.8)",
                                         "rgba(255, 100, 39, 0.8)",
-                                        "rgba(5, 197, 39, 0.8)"
+                                        "rgba(5, 197, 39, 0.8)",
+                                        "rgba(255, 16, 16, 0.8)"
                                     ],
                                     borderRadius: 5,
                                 },

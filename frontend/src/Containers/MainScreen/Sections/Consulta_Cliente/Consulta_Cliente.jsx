@@ -24,11 +24,12 @@ export default function Consulta_Cliente({ TipoColaborador }){
     const [addedCliente, set_addedCliente] = useState(false) // Puxa os clientes após uma inserção
     const [editCliente, set_editCliente] = useState(false) // abre o form para alterar o cliente
     const [ClienteInfo, set_clienteInfo] = useState([])
+    const [DeleteCliente, set_DeleteCliente] = useState(null)
 
     // Variáveis do modal
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
-    const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
+    const [fromStatusErrorMessage, set_formStatusErrorMessage] = useState("")
     const [deleteDialog, set_deleteDialog] = useState(false) // Caso tenha função de deletar
     const [deleteConfirm, set_deleteConfirm] = useState(false)
 
@@ -38,7 +39,7 @@ export default function Consulta_Cliente({ TipoColaborador }){
 
         try{
             const response = await axios.get("http://192.168.100.3:5000//get_Allclientes")
-            // console.log(response.data)
+            console.log(response.data)
             set_allClientes(response.data)
 
             setLoading_clientes(false)
@@ -73,13 +74,21 @@ export default function Consulta_Cliente({ TipoColaborador }){
     useEffect(() => {
         if(deleteConfirm){
             (async () => {
-                if(deleteConfirm){console.log("Deletou")}
-                else{console.log("não deletou")}
-                // const Delete_Cliente = {
-
-                // }
-
-                // const "response = await axios.delete("http://192.168.100.3:5000//delete_cliente")
+                try{
+                    const response = await axios.delete("http://192.168.100.3:5000/delete_cliente", { 
+                        data: { DeleteCliente },
+                        headers: { "Content-Type": "application/json" }
+                    })
+                    console.log(response)
+                    set_deleteDialog(false)
+                    set_formStatusErrorMessage("")
+                    set_FormStatusMessage("Cliente deletado com sucesso!")
+                    getAllClientes()
+                } catch (error){
+                    set_deleteDialog(false)
+                    set_FormStatusMessage("Erro ao deletar Cliente")
+                    set_formStatusErrorMessage(error.response.data.error)
+                }
             })()
         }
         set_deleteConfirm(false)
@@ -209,6 +218,7 @@ export default function Consulta_Cliente({ TipoColaborador }){
                                                         set_ModalOpen(true)
                                                         set_deleteDialog(true)
                                                         set_FormStatusMessage("cliente " + cliente.nm_Cliente)
+                                                        set_DeleteCliente(cliente.cd_Cliente)
                                                     }}>Deletar</h6>
                                                 )}
                                             </div>

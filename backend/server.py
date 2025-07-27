@@ -204,20 +204,18 @@ def put_cliente():
     
 # Para deletar um cliente
 @app.route("/delete_cliente", methods=["DELETE"])
-def delete_cliente():    
-    
-    # cursor = db.cursor(dictionary=True)
-    # query = ""
+def delete_cliente(): 
 
-    # try:
-    #     cursor.execute(query)
-    #     db.commit()
-    #     return jsonify({"message": "Cliente removido com sucesso!"}), 201
-    # except mysql.connector.Error as err:
-    #     print("\n\nErro em '/delete_cliente':", err)
-    #     return jsonify({"error": str(err)}), 500
+    cdCliente = request.get_json().get("DeleteCliente")
+    cursor = db.cursor(dictionary=True)
 
-    print("not yet :)")
+    try:
+        cursor.callproc("SP_Delete_Cliente", [cdCliente])
+        db.commit()
+        return jsonify({"message": "Cliente removido com sucesso!"}), 201
+    except mysql.connector.Error as err:
+        print("\n\nErro em '/delete_cliente':", err)
+        return jsonify({"error": str(err)}), 500
 
 # Pegar os numeros dos processos bem como todos os dados do processo ou parte buscados
 @app.route("/get_processos", methods=["GET"])
@@ -337,18 +335,16 @@ def put_processo():
 @app.route("/delete_processo", methods=["DELETE"])
 def delete_processo():
 
-    #cursor = db.cursor(dictionary=True)
-    # query = ""
+    cursor = db.cursor(dictionary=True)
+    cdProcesso = request.get_json().get("deleteProcess")
 
-    # try:
-    #     cursor.execute(query)
-    #     db.commit()
-    #     return jsonify({"message": "Processo deletado com sucesso!"}), 201
-    # except mysql.connector.Error as err:
-    #     print("\n\nErro em 'delete_processo':", err)
-    #     return jsonify({"error": str(err)}), 500
-
-    return print("not yet :)")
+    try:
+        cursor.callproc("SP_Delete_Processo", [cdProcesso])
+        db.commit()
+        return jsonify({"message": "Processo deletado com sucesso!", "Processo": cdProcesso}), 201
+    except mysql.connector.Error as err:
+        print("\n\nErro em 'delete_processo':", err)
+        return jsonify({"error": str(err)}), 500
 
 # Para os Cards da consulta de processos
 @app.route("/get_cardInt", methods=["GET"])
@@ -439,13 +435,13 @@ def get_Task():
                 WHERE C.nm_Cliente = %s"""
         values = (Nome_Parte, )
 
-        try:
-            cursor.execute(query, values)
-            result = cursor.fetchall()
-            return jsonify(result)
-        except mysql.connector.Error as err:
-            print("\n\nErro em '/get_cardTask' tarefas:", err)
-            return jsonify({"erro ao buscar tarefas": str(err)}), 500
+    try:
+        cursor.execute(query, values)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as err:
+        print("\n\nErro em '/get_cardTask' tarefas:", err)
+        return jsonify({"erro ao buscar tarefas": str(err)}), 500
 
 # Para enviar os dados de Intimações/Tarefas
 @app.route("/post_card", methods=["POST"])
@@ -500,9 +496,15 @@ def get_MainInfo():
         SELECT
             (SELECT COUNT(*) AS qtd_Processo FROM Processo) AS qtd_Processo,
             (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 1) AS qtd_ProcessoFase1,
-            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 2) AS qtd_ProcessoFase2,
-            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 3) AS qtd_ProcessoFase3,
-            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 4) AS qtd_ProcessoFase4;
+            (SELECT COUNT(*) AS qtd_ProcessoFase2 FROM Processo WHERE cd_FaseProcesso = 2) AS qtd_ProcessoFase2,
+            (SELECT COUNT(*) AS qtd_ProcessoFase3 FROM Processo WHERE cd_FaseProcesso = 3) AS qtd_ProcessoFase3,
+            (SELECT COUNT(*) AS qtd_ProcessoFase4 FROM Processo WHERE cd_FaseProcesso = 4) AS qtd_ProcessoFase4,
+            (SELECT COUNT(*) AS qtd_ProcessoFase5 FROM Processo WHERE cd_FaseProcesso = 5) AS qtd_ProcessoFase5,
+            (SELECT COUNT(*) AS qtd_TarefaFase1 FROM Tarefa WHERE cd_StatusTarefa = 1) AS qtd_TarefaStatus1,
+            (SELECT COUNT(*) AS qtd_TarefaFase2 FROM Tarefa WHERE cd_StatusTarefa = 2) AS qtd_TarefaStatus2,
+            (SELECT COUNT(*) AS qtd_TarefaFase3 FROM Tarefa WHERE cd_StatusTarefa = 3) AS qtd_TarefaStatus3;
+
+
         """
 
     # query = """SELECT COUNT(*) AS qtd_Processo FROM Processo;

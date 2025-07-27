@@ -6,9 +6,9 @@ export default function Modal({ isOpen, onClose, message, messageError, DeleteCo
 
   return ReactDOM.createPortal(
     <ModalOverlay>
-      <ModalContent $SucessBorder={messageError === "" && DeleteConfirmation === false} $ConfirmBorder={DeleteConfirmation !== false}>
+      <ModalContent $SucessBorder={messageError === "" && !DeleteConfirmation} $ConfirmBorder={DeleteConfirmation}>
         <CloseButton onClick={onClose}>×</CloseButton>
-        { DeleteConfirmation !== false ?(
+        { DeleteConfirmation ?(
             <>
                   <h2 style={{ color: "orange" }}>Deletar {message}?</h2>
                   <p>Tem certeza que deseja deletar?</p>
@@ -38,8 +38,8 @@ export default function Modal({ isOpen, onClose, message, messageError, DeleteCo
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
-    const [deleteMessage, set_deleteMessage] = useState(false) // Caso tenha função de deletar
-    const [deleteConfirm, set_deleteConfirm] = useState(false)
+    const [deleteMessage, set_deleteMessage] = useState(false) // Abre a caixa de confirmação de Delete
+    const [deleteConfirm, set_deleteConfirm] = useState(false) // Para confirmar o Delete
 
     <Modal isOpen={isModalOpen} onClose={() => set_ModalOpen(false)} message={formStatusMessage} messageError={fromStatusErrorMessage}/>
 */
