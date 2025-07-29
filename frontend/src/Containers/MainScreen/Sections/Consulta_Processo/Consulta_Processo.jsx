@@ -306,7 +306,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         if(deleteConfirm){
             (async () => {
                 try{
-                    const response = await axios.delete("http://192.168.100.3:5000//delete_processo", { 
+                    const response = await axios.delete("http://192.168.100.3:5000/delete_processo", { 
                         data: { deleteProcess },
                         headers: { "Content-Type": "application/json" }
                     })

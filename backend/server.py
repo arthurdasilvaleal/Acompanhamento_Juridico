@@ -519,6 +519,8 @@ def post_intimacao():
 def get_MainInfo():
 
     cursor = db.cursor(dictionary=True)
+    colaborador = request.args.get("colaborador")
+
     query = """
         SELECT
             (SELECT COUNT(*) AS qtd_Processo FROM Processo) AS qtd_Processo,
@@ -529,28 +531,11 @@ def get_MainInfo():
             (SELECT COUNT(*) AS qtd_ProcessoFase5 FROM Processo WHERE cd_FaseProcesso = 5) AS qtd_ProcessoFase5,
             (SELECT COUNT(*) AS qtd_TarefaFase1 FROM Tarefa WHERE cd_StatusTarefa = 1) AS qtd_TarefaStatus1,
             (SELECT COUNT(*) AS qtd_TarefaFase2 FROM Tarefa WHERE cd_StatusTarefa = 2) AS qtd_TarefaStatus2,
-            (SELECT COUNT(*) AS qtd_TarefaFase3 FROM Tarefa WHERE cd_StatusTarefa = 3) AS qtd_TarefaStatus3;
-
-
+            (SELECT COUNT(*) AS qtd_TarefaFase3 FROM Tarefa WHERE cd_StatusTarefa = 3) AS qtd_TarefaStatus3,
+            (SELECT COUNT(*) AS qtd_MyTask FROM Tarefa WHERE cd_Colaborador = %s) AS qtd_MyTask;
         """
-
-    # query = """SELECT COUNT(*) AS qtd_Processo FROM Processo;
-    #         SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 1;"""
-
     try:
-        # cursor.execute(query, multi=True) # Para mais de uma consulta
-
-        # results = []
-        # for result in cursor:
-        #     data = result.fetchall()
-        #     results.append(data)
-
-        # return jsonify({
-        #     "qtd_Processo": results[0][0]["qtd_Processo"],
-        #     "qtd_ProcessoFase1": results[1][0]["qtd_ProcessoFase1"]
-        # })
-
-        cursor.execute(query)
+        cursor.execute(query, (colaborador,))
         result = cursor.fetchone()
         return jsonify(result)
     except mysql.connector.Error as Err:

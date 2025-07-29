@@ -1,5 +1,5 @@
 -- Criação do Banco de Dados
-DROP DATABASE IF EXISTS BD_AJ;
+-- DROP DATABASE IF EXISTS BD_AJ;
 CREATE DATABASE BD_AJ;
 USE BD_AJ;
 
@@ -91,7 +91,6 @@ CREATE TABLE Intimacao(
     dt_Recebimento DATETIME,
     cd_Processo INT NOT NULL,
     ds_Intimacao TEXT,
-    cd_Colaborador int,
     PRIMARY KEY (cd_Intimacao)
 );
 
@@ -101,6 +100,12 @@ CREATE TABLE StatusTarefa(
     PRIMARY KEY (cd_StatusTarefa)
 );
 
+CREATE TABLE TipoTarefa(
+	cd_TipoTarefa INT AUTO_INCREMENT NOT NULL,
+    nm_TipoTarefa VARCHAR(80),
+    PRIMARY KEY (cd_TipoTarefa)
+);
+
 CREATE TABLE Tarefa(
     cd_Tarefa INT AUTO_INCREMENT NOT NULL,
     cd_Intimacao INT NOT NULL,
@@ -108,7 +113,7 @@ CREATE TABLE Tarefa(
     dt_Prazo DATE,
     cd_Colaborador INT NOT NULL,
     cd_StatusTarefa int NOT NULL,
-    nm_TipoTarefa VARCHAR(30),
+    cd_TipoTarefa INT NOT NULL,
     ds_Tarefa VARCHAR(200),
     PRIMARY KEY (cd_Tarefa)
 );
@@ -126,10 +131,6 @@ ADD	CONSTRAINT FK_Processo_FaseProcesso
 ALTER TABLE Intimacao
 ADD CONSTRAINT FK_Intimacao_Processo
 	FOREIGN KEY (cd_Processo) REFERENCES Processo (cd_Processo);
-    
-ALTER TABLE Intimacao
-ADD CONSTRAINT FK_Intimacao_Colaborador
-	FOREIGN KEY (cd_Colaborador) REFERENCES Colaborador (cd_Colaborador);
 
 ALTER TABLE Tarefa
 ADD CONSTRAINT FK_Tarefa_Intimacao
@@ -143,6 +144,10 @@ ALTER TABLE Tarefa
 ADD CONSTRAINT FK_Tarefa_StatusTarefa
 	FOREIGN KEY (cd_StatusTarefa) REFERENCES StatusTarefa (cd_StatusTarefa);
     
+ALTER TABLE Tarefa
+ADD CONSTRAINT FK_Tarefa_TipoTarefa
+	FOREIGN KEY (cd_TipoTarefa) REFERENCES TipoTarefa (cd_TipoTarefa);
+
 ALTER TABLE Colaborador
 ADD	CONSTRAINT FK_Colaborador_TipoColaborador
 	FOREIGN KEY (cd_TipoColaborador) REFERENCES TipoColaborador (cd_TipoColaborador);
@@ -487,6 +492,65 @@ VALUES
 (1, 'Aguardando'),
 (2, 'Em andamento'),
 (3, 'Concluído');
+
+INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
+-- Petições e atos processuais
+('Despachar com Juízo'),
+('Diligência externa'),
+('Incidente de Desconsideração PJ'),
+('Pedido de habilitação'),
+('Petição Diversa'),
+('Petição Inicial'),
+('Protocolar petição'),
+
+-- Provas
+('Arrolar testemunhas'),
+('Especificação de provas'),
+
+-- Custas e cálculos
+('Comprovar pagamento'),
+('Comprovar recolhimento de custas'),
+('Elaborar cálculo'),
+('Recolher custas'),
+
+-- Execução
+('Cumprimento de Sentença'),
+
+-- Comunicação com cliente
+('Agendar reunião com cliente'),
+('Reporte ao cliente'),
+('Solicitar cumprimento de obrigação (cliente)'),
+('Solicitar documento (cliente)'),
+('Solicitar informações (cliente)'),
+('Solicitar pagamento (cliente)'),
+('Comprovar cumprimento de obrigação'),
+
+-- Administração
+('Organização de documentos'),
+('Análise de intimação'),
+
+-- Recursos
+('Recurso - Agravo de Instrumento'),
+('Recurso - Agravo em Execução Penal'),
+('Recurso - Agravo em Recurso Especial/Extraordinário'),
+('Recurso - Agravo Interno'),
+('Recurso - Agravo Regimental'),
+('Recurso - Agravo Regimental/Interno'),
+('Recurso - Agravo de Petição'),
+('Recurso - Apelação'),
+('Recurso - de Revista'),
+('Recurso - Embargos à Execução'),
+('Recurso - Embargos à Execução Fiscal'),
+('Recurso - Embargos de Declaração'),
+('Recurso - Embargos de Divergência'),
+('Recurso - Embargos Infringentes'),
+('Recurso - Especial'),
+('Recurso - Extraordinário'),
+('Recurso - Habeas Corpus'),
+('Recurso - Mandado de Segurança'),
+('Recurso - Ordinário'),
+('Recurso - em Sentido Estrito'),
+('Recurso - Outros');
         
 -- Inserção Colaborador
 INSERT INTO Colaborador (
@@ -573,23 +637,47 @@ VALUES
 ('2024-03-05', 5, 'Intimação para retirada de alvará judicial expedido em favor do cliente.');
 
 -- Inserção de Tarefas
-INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, nm_TipoTarefa, ds_Tarefa) 
-VALUES 
-(1, '2025-05-01 08:00:00', '2025-05-10', 1, 1, 'Elaborar Contestação', 'Preparar contestação para o processo XYZ'),
-(2, '2025-05-01 09:30:00', '2025-05-15', 2, 2, 'Juntar Documentos', 'Coletar e juntar documentos comprobatórios'),
-(3, '2025-05-02 10:15:00', '2025-05-20', 3, 1, 'Preparar Audiência', 'Preparar documentos e estratégia para audiência'),
-(4, '2025-05-02 14:00:00', '2025-05-25', 4, 3, 'Analisar Laudo', 'Analisar laudo pericial e preparar manifestação'),
-(5, '2025-05-03 11:45:00', '2025-06-01', 5, 1, 'Acompanhar Tutela', 'Monitorar implementação da tutela antecipada'),
-(6, '2025-05-03 16:30:00', '2025-06-05', 6, 2, 'Preparar Audiência', 'Preparar argumentos para audiência preliminar'),
-(7, '2025-05-04 08:45:00', '2025-06-10', 7, 1, 'Elaborar Razões Finais', 'Preparar memoriais finais para o processo'),
-(8, '2025-05-04 13:20:00', '2025-06-15', 8, 1, 'Produzir Prova Pericial', 'Coordenar produção de prova pericial'),
-(9, '2025-05-05 10:00:00', '2025-06-20', 1, 2, 'Elaborar Contrarrazões', 'Preparar contrarrazões ao recurso'),
-(10, '2025-05-05 15:15:00', '2025-06-25', 2, 3, 'Preparar Audiência', 'Organizar documentos para audiência de instrução'),
-(11, '2025-05-06 09:30:00', '2025-06-30', 3, 1, 'Elaborar Contrarrazões', 'Preparar contrarrazões ao agravo'),
-(12, '2025-05-06 14:45:00', '2025-07-05', 4, 2, 'Preparar Recurso', 'Elaborar recurso contra decisão'),
-(13, '2025-05-07 11:00:00', '2025-07-10', 5, 1, 'Esclarecer Petição', 'Responder a solicitação do juízo'),
-(14, '2025-05-07 16:20:00', '2025-07-15', 6, 3, 'Cumprir Sentença', 'Implementar medidas para cumprimento de sentença'),
-(15, '2025-05-08 08:30:00', '2025-07-20', 7, 1, 'Retirar Alvará', 'Retirar alvará judicial no fórum');
+INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa) VALUES
+(15, '2025-06-06 00:00:00', '2025-06-25', 8, 3, 10, 'Tarefa relacionada ao tipo 10.'),
+(9, '2025-05-31 00:00:00', '2025-06-07', 7, 3, 21, 'Tarefa relacionada ao tipo 21.'),
+(2, '2025-05-08 00:00:00', '2025-05-28', 3, 2, 11, 'Tarefa relacionada ao tipo 11.'),
+(8, '2025-06-10 00:00:00', '2025-06-22', 1, 3, 26, 'Tarefa relacionada ao tipo 26.'),
+(11, '2025-09-14 00:00:00', '2025-09-30', 5, 2, 33, 'Tarefa relacionada ao tipo 33.'),
+(7, '2025-08-05 00:00:00', '2025-08-25', 6, 1, 17, 'Tarefa relacionada ao tipo 17.'),
+(14, '2025-07-11 00:00:00', '2025-07-28', 2, 1, 5, 'Tarefa relacionada ao tipo 5.'),
+(1, '2025-04-18 00:00:00', '2025-04-30', 8, 2, 8, 'Tarefa relacionada ao tipo 8.'),
+(3, '2025-03-25 00:00:00', '2025-04-10', 4, 3, 40, 'Tarefa relacionada ao tipo 40.'),
+(10, '2025-07-20 00:00:00', '2025-07-31', 7, 2, 19, 'Tarefa relacionada ao tipo 19.'),
+(13, '2025-05-01 00:00:00', '2025-05-15', 7, 1, 6, 'Tarefa relacionada ao tipo 6.'),
+(5, '2025-06-03 00:00:00', '2025-06-15', 5, 2, 4, 'Tarefa relacionada ao tipo 4.'),
+(6, '2025-08-18 00:00:00', '2025-09-05', 3, 1, 28, 'Tarefa relacionada ao tipo 28.'),
+(4, '2025-02-10 00:00:00', '2025-02-20', 2, 3, 13, 'Tarefa relacionada ao tipo 13.'),
+(12, '2025-06-25 00:00:00', '2025-07-01', 6, 2, 23, 'Tarefa relacionada ao tipo 23.'),
+(1, '2025-04-02 00:00:00', '2025-04-18', 1, 3, 30, 'Tarefa relacionada ao tipo 30.'),
+(2, '2025-05-15 00:00:00', '2025-06-05', 4, 1, 1, 'Tarefa relacionada ao tipo 1.'),
+(3, '2025-06-08 00:00:00', '2025-06-20', 6, 2, 14, 'Tarefa relacionada ao tipo 14.'),
+(4, '2025-06-29 00:00:00', '2025-07-10', 8, 1, 35, 'Tarefa relacionada ao tipo 35.'),
+(5, '2025-05-12 00:00:00', '2025-05-25', 7, 3, 9, 'Tarefa relacionada ao tipo 9.'),
+(6, '2025-07-05 00:00:00', '2025-07-19', 6, 2, 32, 'Tarefa relacionada ao tipo 32.'),
+(7, '2025-08-10 00:00:00', '2025-08-22', 5, 1, 2, 'Tarefa relacionada ao tipo 2.'),
+(8, '2025-09-01 00:00:00', '2025-09-15', 4, 3, 24, 'Tarefa relacionada ao tipo 24.'),
+(9, '2025-06-01 00:00:00', '2025-06-10', 3, 1, 39, 'Tarefa relacionada ao tipo 39.'),
+(10, '2025-07-12 00:00:00', '2025-07-26', 2, 2, 12, 'Tarefa relacionada ao tipo 12.'),
+(11, '2025-08-15 00:00:00', '2025-08-31', 1, 1, 7, 'Tarefa relacionada ao tipo 7.'),
+(12, '2025-07-18 00:00:00', '2025-07-30', 5, 2, 20, 'Tarefa relacionada ao tipo 20.'),
+(13, '2025-05-09 00:00:00', '2025-05-20', 8, 3, 34, 'Tarefa relacionada ao tipo 34.'),
+(14, '2025-09-10 00:00:00', '2025-09-25', 7, 2, 3, 'Tarefa relacionada ao tipo 3.'),
+(15, '2025-06-17 00:00:00', '2025-06-27', 6, 3, 25, 'Tarefa relacionada ao tipo 25.'),
+(1, '2025-03-12 00:00:00', '2025-03-28', 5, 1, 15, 'Tarefa relacionada ao tipo 15.'),
+(2, '2025-05-28 00:00:00', '2025-06-08', 4, 2, 22, 'Tarefa relacionada ao tipo 22.'),
+(3, '2025-07-01 00:00:00', '2025-07-12', 3, 3, 29, 'Tarefa relacionada ao tipo 29.'),
+(4, '2025-06-11 00:00:00', '2025-06-30', 2, 1, 16, 'Tarefa relacionada ao tipo 16.'),
+(5, '2025-08-03 00:00:00', '2025-08-18', 1, 3, 18, 'Tarefa relacionada ao tipo 18.'),
+(6, '2025-07-14 00:00:00', '2025-07-24', 4, 2, 36, 'Tarefa relacionada ao tipo 36.'),
+(7, '2025-08-06 00:00:00', '2025-08-20', 8, 1, 27, 'Tarefa relacionada ao tipo 27.'),
+(8, '2025-09-05 00:00:00', '2025-09-15', 7, 2, 37, 'Tarefa relacionada ao tipo 37.'),
+(9, '2025-07-22 00:00:00', '2025-08-01', 6, 3, 31, 'Tarefa relacionada ao tipo 31.'),
+(10, '2025-06-07 00:00:00', '2025-06-21', 5, 1, 38, 'Tarefa relacionada ao tipo 38.');
 
 -- Inserção de novos processos com a utilização da Stored Procedure
 -- 1. Processo com Cliente 1 como Réu
@@ -662,92 +750,3 @@ CALL Proc_Insercao_ProcessoCliente(
     35000.00                       -- Valor da causa
 );
 
-SELECT I.*
-            FROM Intimacao I
-            JOIN Processo P ON P.cd_Processo = I.cd_Processo
-            JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
-            JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
-            WHERE C.nm_Cliente = "Fernando Lima";
-            
-USE bd_aj;
-SELECT * FROM Processo;
-SELECT * FROM Cliente;
-SELECT * FROM Colaborador;
-SELECT * FROM Tarefa;
-SELECT * FROM Intimacao;
-SELECT COUNT(*) FROM Processo;
-
-SELECT 
-    i.cd_Intimacao,
-    i.dt_Recebimento,
-    i.ds_Intimacao,
-    p.cd_NumeroProcesso,
-    p.nm_Autor,
-    p.nm_Reu
-FROM 
-    Intimacao i
-JOIN 
-    Processo p ON i.cd_Processo = p.cd_Processo
-LEFT JOIN 
-    Cliente_Processo cp ON p.cd_Processo = cp.cd_Processo
-LEFT JOIN 
-    Cliente c ON cp.cd_Cliente = c.cd_Cliente
-WHERE 
-    p.cd_NumeroProcesso = '0003333-40.2023.8.26.0003'
-    AND (
-        p.nm_Autor LIKE 'Fernando Lima' OR
-        p.nm_Reu LIKE 'Fernando Lima' OR
-        c.nm_Cliente LIKE 'Fernando Lima'
-    );
-    
-    
-SELECT 
-	c.nm_Cliente AS 'Cliente',
-    GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR '\n') AS 'Processo'
-FROM Cliente_Processo cp
-INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
-INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo
-GROUP BY c.nm_Cliente; -- Esse só traz UM UNICO processo (Não serve)
-
-SELECT c.*, p.cd_NumeroProcesso, p.cd_Processo
-FROM Cliente_Processo cp
-INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
-INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo;
-
-SELECT
-                c.cd_Cliente,
-                c.nm_Cliente,
-                c.cd_CPF,
-                c.cd_CNPJ,
-                c.nm_Logradouro,
-                c.cd_NumeroEndereco,
-                c.nm_Bairro,
-                c.nm_Cidade,
-                c.sg_Estado, 
-                c.cd_CEP,
-                c.cd_Telefone,
-                c.ds_Email,
-                GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' @ ') AS 'cd_numProcessos'
-            FROM Cliente c
-            INNER JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
-            INNER JOIN Processo p ON cp.cd_Processo = p.cd_Processo
-            GROUP BY
-                c.cd_cliente,
-                c.nm_Cliente, 
-                c.cd_CPF, 
-                c.cd_CNPJ,
-                c.nm_Logradouro,
-                c.cd_NumeroEndereco,
-                c.nm_Bairro,
-                c.nm_Cidade,
-                c.sg_Estado,
-                c.cd_CEP,
-                c.cd_Telefone,
-                c.ds_Email;
-                
-SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
-                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
-                FROM Processo P
-                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
-                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
-                WHERE P.nm_Autor = "Carlos Silva";

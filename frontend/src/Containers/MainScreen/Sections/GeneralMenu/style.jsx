@@ -22,6 +22,18 @@ export const WorkerInfo = styled.div`
     }   
 `
 
+export const MainWorker_Count = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    width: calc(100% - 20px); // Se faz necessário por causa do canvas "empurrar o elemento para fora" quando usado o padding
+    background-color: white;
+    border-radius: 16px;
+    margin: 20px 0;
+    padding: 10px;
+`
+
 export const Info_Container = styled.div`
     display: flex;
     flex-direction: row;
@@ -46,7 +58,7 @@ export const CountProcesses = styled.div`
     border-radius: 16px;
     border: transparent;
     height: 100%;
-    width: calc(50% - 20px);
+    width: calc(50% - 20px); // Se faz necessário por causa do canvas "empurrar o elemento para fora" quando usado o padding
 
     background-color: white;
     animation: pop-left 0.5s ease-in-out;

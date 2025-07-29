@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { CountProcesses, Info_Container, WorkerInfo } from "./style"
+import { CountProcesses, Info_Container, WorkerInfo, MainWorker_Count } from "./style"
 import { Doughnut, Line, Bar } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -11,14 +11,16 @@ import {
   Tooltip,
   Legend,
   DoughnutController,
-  ArcElement
+  ArcElement,
+  PointElement,
+  LineElement
 } from "chart.js"
 import axios from "axios"
 
 // defaults.maintainAspectRatio = false;
 // defaults.responsive = true;
 
-export default function VisaoGeral({ NomeColaborador }){
+export default function VisaoGeral({ NomeColaborador, CodigoColaborador }){
 
     // Variáveis dos graficos
     const [countProcess, set_countProcess] = useState(null) // Contador de processos
@@ -31,6 +33,7 @@ export default function VisaoGeral({ NomeColaborador }){
     const [countStatus1, set_countStatus1] = useState(null) // Contador Status1
     const [countStatus2, set_countStatus2] = useState(null) // Contador Status2
     const [countStatus3, set_countStatus3] = useState(null) // Contador Status3
+    const [countMyTasks, set_countMyTasks] = useState(null) // Contador das minha tarefas
 
     // Componentes do Chart.js
     ChartJS.register(
@@ -39,6 +42,8 @@ export default function VisaoGeral({ NomeColaborador }){
         BarElement,
         DoughnutController,
         ArcElement,
+        PointElement,
+        LineElement,
         Title,
         Tooltip,
         Legend
@@ -48,7 +53,9 @@ export default function VisaoGeral({ NomeColaborador }){
     useEffect(() => {
         (async () => {
             try{
-                const response = await axios.get("http://192.168.100.3:5000/get_MainInfo")
+                const response = await axios.get("http://192.168.100.3:5000/get_MainInfo", {
+                    params: { colaborador: CodigoColaborador }
+                })
                 console.log(response.data)
                 set_countProcess(response.data.qtd_Processo)
                 set_countFase1(response.data.qtd_ProcessoFase1)
@@ -59,9 +66,10 @@ export default function VisaoGeral({ NomeColaborador }){
                 set_countStatus1(response.data.qtd_TarefaStatus1)
                 set_countStatus2(response.data.qtd_TarefaStatus2)
                 set_countStatus3(response.data.qtd_TarefaStatus3)
+                set_countMyTasks(response.data.qtd_MyTask)
             }
             catch(error){
-                console.log("Erro ao incluir grafico: " + error)
+                console.log("Erro ao incluir gráficos: " + error)
             }
             
         })()
@@ -75,7 +83,34 @@ export default function VisaoGeral({ NomeColaborador }){
                 <hr />
                 <p>Bem Vindo(a) ao sistema Acompanhamento Jurídico!</p>
             </WorkerInfo>
-
+            <MainWorker_Count>
+                <Line
+                    data={{
+                        labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+                        datasets: [
+                            {
+                                label: "Venda",
+                                data: [200, 300, 500],
+                                backgroundColor: [
+                                    "rgb(255, 22, 22)",
+                                    "rgb(0, 243, 101)",
+                                    "rgb(0, 60, 255)", 
+                                ],
+                                borderColor: "rgba(0, 0, 0, 0.2)"
+                            }
+                        ]
+                    }}
+                    options={{
+                        plugins:{
+                            legend: { position: "top" },
+                            title: {
+                                display: true,
+                                text: "Total de tarefas adicionadas e concluídas por mês"
+                            }
+                        }
+                    }}
+                />
+            </MainWorker_Count>
             <Info_Container>
                 <CountProcesses>
                     <Bar
@@ -86,11 +121,18 @@ export default function VisaoGeral({ NomeColaborador }){
                                     label: "Situação",
                                     data: [countStatus1, countStatus2, countStatus3],
                                     backgroundColor: [
-                                        "yellow",
-                                        "orange",
-                                        "green",
+                                        "rgba(255, 205, 86, 0.6)",
+                                        "rgba(255, 159, 64, 0.6)",
+                                        "rgba(75, 192, 192, 0.6)",
                                     ],
+                                    borderColor: [
+                                        "rgb(255, 205, 86)",
+                                        "rgb(255, 159, 64)",
+                                        "rgb(75, 192, 192)",
+                                    ],
+                                    borderWidth: 3,
                                     borderRadius: 5,
+                                    
                                 },
                             ],
                         }}
