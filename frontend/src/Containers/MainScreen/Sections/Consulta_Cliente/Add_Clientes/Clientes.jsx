@@ -71,7 +71,7 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente, s
 
         if(showWindow){
             try{
-                const response = await axios.post("http://192.168.100.3:5000/post_cliente", post_cliente)
+                const response = await axios.post("http://10.107.200.9:5000/post_cliente", post_cliente)
                 console.log("Cliente adicionado com sucesso:", response.data)
                 set_FormStatusMessage("Cliente adicionado com sucesso!")
                 set_ModalOpen(true)
@@ -119,7 +119,7 @@ export default function Clientes({ showWindow, setShowWindow, setaddedCliente, s
             }
 
             try{
-                const response = await axios.put("http://192.168.100.3:5000/put_cliente", put_cliente)
+                const response = await axios.put("http://10.107.200.9:5000/put_cliente", put_cliente)
                 console.log("Cliente editado com sucesso:", response.data)
                 set_FormStatusMessage("Cliente editado com sucesso!")
                 set_ModalOpen(true)

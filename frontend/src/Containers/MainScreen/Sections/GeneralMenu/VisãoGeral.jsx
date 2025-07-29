@@ -53,7 +53,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador }){
     useEffect(() => {
         (async () => {
             try{
-                const response = await axios.get("http://192.168.100.3:5000/get_MainInfo", {
+                const response = await axios.get("http://10.107.200.9:5000/get_MainInfo", {
                     params: { colaborador: CodigoColaborador }
                 })
                 console.log(response.data)
@@ -92,8 +92,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador }){
                                 label: "Venda",
                                 data: [200, 300, 500],
                                 backgroundColor: [
-                                    "rgb(255, 22, 22)",
-                                    "rgb(0, 243, 101)",
                                     "rgb(0, 60, 255)", 
                                 ],
                                 borderColor: "rgba(0, 0, 0, 0.2)"

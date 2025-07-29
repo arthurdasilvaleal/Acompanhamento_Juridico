@@ -399,7 +399,7 @@ def get_Task():
 
     if Nome_Parte == "":
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
                 C.nm_Colaborador
                 FROM Tarefa T
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
@@ -409,7 +409,7 @@ def get_Task():
         values = (Numero_Processo,)
     elif Nome_Parte != "" and Numero_Processo != "":
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
                 Co.nm_Colaborador
                 FROM Tarefa T
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
@@ -424,7 +424,7 @@ def get_Task():
         values = (Numero_Processo, Nome_Parte, Nome_Parte, Nome_Parte) 
     else:
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.nm_TipoTarefa, T.ds_Tarefa,
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
                 Co.nm_Colaborador
                 FROM Tarefa T
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao

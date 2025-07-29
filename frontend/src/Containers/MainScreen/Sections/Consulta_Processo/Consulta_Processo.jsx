@@ -11,6 +11,7 @@ import { useCombobox } from "downshift"
 import { PencilSquareIcon } from "@heroicons/react/20/solid"
 import { PlusIcon } from "@heroicons/react/24/outline"
 import { color } from "chart.js/helpers"
+import { select } from "framer-motion/client"
 
 
 export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, NomeColaborador }){
@@ -40,6 +41,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
     const [editProcess, set_editProcess] = useState(false) // Para quando um processo for editado, apos os dados forem validados, eles voltam atualizados
     const [deleteProcess, set_DeleteProcess] = useState(null) // Para armazenar o código do processo e mandá-lo para exclusão
     const [editTaskSvg, set_editTaskSvg] = useState(false) // Controla a ação de editar um card de tarefa
+    const [selectTypeTask, set_selectTypeTask] = useState("") // Controla o tipo de tarefa que aparece no select seguinte
 
     // Para o formulario de edição de cada tarefa
     const [edit_dtPrazo, set_edit_dtPrazo] = useState("")
@@ -81,7 +83,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
 
     // Pegando os numeros dos processos
     useEffect(() => {
-        axios.get("http://192.168.100.3:5000/get_processos?only=id")
+        axios.get("http://10.107.200.9:5000/get_processos?only=id")
           .then(response => {
             set_cdListNumeroProcesso(response.data)
           })
@@ -105,7 +107,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         }else{
 
             try{
-                const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                const response = await axios.get("http://10.107.200.9:5000/get_processos", {
                     params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                 })
 
@@ -180,7 +182,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         }
 
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=intimacao", IntimacaoData)
+            const response = await axios.post("http://10.107.200.9:5000/post_card?form=intimacao", IntimacaoData)
             set_ModalOpen(true)
             set_FormStatusMessage("Intimação adicionada com sucesso!")
             set_formStatusErrorMessage("")
@@ -218,7 +220,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
             
         }
         try{
-            const response = await axios.post("http://192.168.100.3:5000/post_card?form=task", taskData)
+            const response = await axios.post("http://10.107.200.9:5000/post_card?form=task", taskData)
             console.log("Tarefa adicionada com sucesso!", response.data)
             set_ModalOpen(true)
             set_FormStatusMessage("Tarefa adicionada com sucesso!")
@@ -247,7 +249,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
     // Buscando Intimações e Tarefas (Tentei separar as funções, porém causava erros no servidor)
     const CatchIntInfo = async () => {
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_cardInt", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            const response = await axios.get("http://10.107.200.9:5000/get_cardInt", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Intimacoes(response.data)
             console.log(response.data)
         }catch(error){
@@ -255,7 +257,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         }
 
         try{
-            const response = await axios.get("http://192.168.100.3:5000/get_cardTask", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
+            const response = await axios.get("http://10.107.200.9:5000/get_cardTask", {params: { parte: nm_Cliente, numeroProcesso: cd_NumeroProcesso }})
             set_Tarefas(response.data)
             console.log(response.data)
         }catch(error){
@@ -285,7 +287,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         if(editProcess){
             (async () => {
                 try{
-                    const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                    const response = await axios.get("http://10.107.200.9:5000/get_processos", {
                         params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                     })
                     set_Processos(response.data)
@@ -306,7 +308,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         if(deleteConfirm){
             (async () => {
                 try{
-                    const response = await axios.delete("http://192.168.100.3:5000/delete_processo", { 
+                    const response = await axios.delete("http://10.107.200.9:5000/delete_processo", { 
                         data: { deleteProcess },
                         headers: { "Content-Type": "application/json" }
                     })
@@ -317,7 +319,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                     
                     // Buscando a lista atualizada no banco
                     try{
-                        const response = await axios.get("http://192.168.100.3:5000/get_processos", {
+                        const response = await axios.get("http://10.107.200.9:5000/get_processos", {
                             params: { id_processo: cd_NumeroProcesso, parte: nm_Cliente }
                         })
 
@@ -350,7 +352,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
             }
 
         try{
-            const response = await axios.put("http://192.168.100.3:5000/put_cardTask", updateTask)
+            const response = await axios.put("http://10.107.200.9:5000/put_cardTask", updateTask)
             console.log(response)
             set_ModalOpen(true)
             set_FormStatusMessage("Tarefa editada com sucesso!")
@@ -491,7 +493,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                     processo.cd_FaseProcesso === 4 ? "Finalizado" : "Cancelado"}</p>
                                                 <p><strong style={{ color: "#CDAF6F"}}>Autor: </strong>{processo.nm_Autor}</p>
                                                 <p><strong style={{ color: "#fc0328" }}>Réu: </strong>{processo.nm_Reu}</p>
-                                                <p><strong>Juizado: </strong>{processo.sg_Tribunal}</p>
+                                                <p><strong>Juizo: </strong>{processo.sg_Tribunal}</p>
                                                 <p><strong>Descrição: </strong>{processo.ds_Juizo}</p>
                                                 <p><strong>Cidade: </strong>{processo.nm_Cidade}</p>
                                                 <p><strong>Valor da causa:</strong> R${formatedMoney}</p>
@@ -544,6 +546,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
 
                                                 if(processo.cd_Processo === intimacao.cd_Processo){
                                                     const formTaskisOpen = openFormIdTask === intimacao.cd_Intimacao
+                                                    const typeTaskOpen = selectTypeTask !== ""
                                                     return(
                                                         <div className="Intimacao-group" key={intimacao.cd_Intimacao}>
                                                             <h2>Dados da Intimação {intimacao.cd_Intimacao}</h2>
@@ -554,7 +557,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                                     Adicionar tarefa
                                                                     <PlusIcon style={{ width: "25px" }} />
                                                                 </Consult_button>
-                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
+                                                                <Consult_TaskForm $addTaskOpen={formTaskisOpen} $openTypeTask={typeTaskOpen} onSubmit={(e) => PostTaskSubmit(e, intimacao.cd_Intimacao)}>
                                                                     <h2>Adicionar Tarefa</h2>
                                                                     <hr />
                                                                     <div className="input-group">
@@ -571,6 +574,92 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                                             <option value="1">Aguardando</option>
                                                                             <option value="2">Em andamento</option>
                                                                             <option value="3">Concluído</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="input-group-select">
+                                                                        <label style={{ width: "200px"}} className="label" htmlFor="nm_TipoPrimary">Tipo primário da tarefa</label>
+                                                                        <select onChange={(e) => {set_selectTypeTask(e.target.value); console.log(typeTaskOpen)}} value={selectTypeTask}
+                                                                        name="nm_TipoPrimary" id="nm_TipoPrimary" className="input-select" required>
+                                                                            <option value="">Selecione</option>
+                                                                            <option value="1">Petições e Atos processuais</option>
+                                                                            <option value="2">Provas</option>
+                                                                            <option value="3">Custas e cálculos</option>
+                                                                            <option value="4">Execução</option>
+                                                                            <option value="5">Comunicação com cliente</option>
+                                                                            <option value="6">Administração</option>
+                                                                            <option value="7">Recursos</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div className="input-group-select-primary">
+                                                                        <label className="label" htmlFor="cd_TipoTarefa">Tipo da tarefa</label>
+                                                                        <select onChange={(e) => handleTaskChange(intimacao.cd_Intimacao, 'cd_TipoTarefa', e.target.value)}
+                                                                        value={taskFormData[intimacao.cd_Intimacao]?.nm_StatusTarefa || ''} name="cd_TipoTarefa" id="cd_TipoTarefa" className="input-select" required>
+                                                                            {selectTypeTask === 1 ? 
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="1">Despachar com Juízo</option>
+                                                                                <option value="2">Diligência externa</option>
+                                                                                <option value="3">Incidente de Desconsideração PJ</option>
+                                                                                <option value="4">Pedido de habilitação</option>
+                                                                                <option value="5">Petição Diversa</option>
+                                                                                <option value="6">Petição Inicial</option>
+                                                                                <option value="7">Protocolar petição</option>
+                                                                            </>) : selectTypeTask === 2 ? 
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="8">Arrolar Testemunhas</option>
+                                                                                <option value="9">Especificação de provas</option>
+                                                                            </>) : selectTypeTask === 3 ?
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="10">Comprovar pagamento</option>
+                                                                                <option value="11">Comprovar recolhimento de custas</option>
+                                                                                <option value="12">Elaborar cálculo</option>
+                                                                                <option value="13">Recolher custas</option>
+                                                                            </>) : selectTypeTask === 4 ?
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="14">Cumprimento de Sentença</option>
+                                                                            </>) : selectTypeTask === 5 ?
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="15">Agendar reunião com cliente</option>
+                                                                                <option value="16">Reporte ao cliente</option>
+                                                                                <option value="17">Solicitar cumprimeto de obrigação (cliente)</option>
+                                                                                <option value="18">Solicitar documento (cliente)</option>
+                                                                                <option value="19">Solicitar informações (cliente)</option>
+                                                                                <option value="20">Solicitar pagamento (cliente)</option>
+                                                                                <option value="21">Comprovar cumprimento de obrigação</option>
+                                                                            </>) : selectTypeTask === 6 ?
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="22">Organização de documentos</option>
+                                                                                <option value="23">Análise de intimação</option>
+                                                                            </>) : 
+                                                                            (<>
+                                                                                <option value="">Selecione</option>
+                                                                                <option value="24">Agravo de Instrumento</option>
+                                                                                <option value="25">Agravo em Execução Penal</option>
+                                                                                <option value="26">Agravo em Recurso Especial/Extraordinário</option>
+                                                                                <option value="27">Agravo Interno</option>
+                                                                                <option value="28">Agravo Regimental</option>
+                                                                                <option value="29">Agravo Regimental/Interno</option>
+                                                                                <option value="30">Agravo de Petição</option>
+                                                                                <option value="31">Apelação</option>
+                                                                                <option value="32">de Revista</option>
+                                                                                <option value="33">Embargos à Execução</option>
+                                                                                <option value="34">Embargos à Execução Fiscal</option>
+                                                                                <option value="35">Embargos de Declaração</option>
+                                                                                <option value="36">Embargos de Divergência</option>
+                                                                                <option value="37">Embargos Infrigentes</option>
+                                                                                <option value="38">Especial</option>
+                                                                                <option value="39">Extraordinário</option>
+                                                                                <option value="40">Habeas Corpus</option>
+                                                                                <option value="41">Mandado de Segurança</option>
+                                                                                <option value="42">Ordinário</option>
+                                                                                <option value="43">em Sentido Estrito</option>
+                                                                                <option value="44">Outros</option>
+                                                                            </>)}
                                                                         </select>
                                                                     </div>
                                                                     <div className="input-group">

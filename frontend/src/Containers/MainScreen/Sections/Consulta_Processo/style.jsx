@@ -499,7 +499,7 @@ export const Consult_TaskForm = styled.form`
         border-color: #fff;
     }
     
-    .input-group-select{
+    .input-group-select, .input-group-select-primary{
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -515,6 +515,12 @@ export const Consult_TaskForm = styled.form`
             background-color: #00000039;
             color: #000;
         }
+    }
+
+    .input-group-select-primary{
+        max-height: ${({ $openTypeTask }) => $openTypeTask ? "400px" : "0px"};
+        transition: max-height 0.2s ease;
+        overflow: hidden;
     }
 
     button{

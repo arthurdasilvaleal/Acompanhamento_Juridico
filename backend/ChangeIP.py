@@ -3,8 +3,8 @@ import re
 
 # Configurações
 diretorio_raiz = '../frontend'  # Pode ser alterado para o caminho desejado
-ip_antigo = '10.107.200.6'
-ip_novo = '192.168.100.3'
+ip_antigo = '192.168.100.3'
+ip_novo = '10.107.200.9'
 padrao_regex = re.compile(rf'http://{re.escape(ip_antigo)}(:\d+)?')
 
 extensao = '.jsx'
