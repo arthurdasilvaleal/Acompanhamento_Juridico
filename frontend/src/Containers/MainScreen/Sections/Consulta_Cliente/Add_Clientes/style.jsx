@@ -82,6 +82,8 @@ export const Client_form = styled.form`
 
         .input-select{
             width: calc(30vw + 36px);
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
         }
 
         option{

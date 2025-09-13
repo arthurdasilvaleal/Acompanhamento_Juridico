@@ -1,9 +1,11 @@
 import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card, Animated_background } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import VisaoGeral from './Sections/GeneralMenu/VisãoGeral.jsx'
 import Consulta_Processo from './Sections/Consulta_Processo/Consulta_Processo.jsx'
 import Consulta_Cliente from './Sections/Consulta_Cliente/Consulta_Cliente.jsx'
+import Report from './Sections/Relatorios/Report.jsx'
 import Logo from '../../Images/logo.png'
 import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 
@@ -17,7 +19,7 @@ export default function MainScreen() {
     return () => clearTimeout(timer)
   }, [])
 
-  const {nome, tipo, codigo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
+  const {nome, tipo, codigo, codigoTipo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
   const unSex = () => {
     if(tipo === "Estagiário" || tipo === "Advogado"){
       return "(a)"
@@ -49,10 +51,10 @@ export default function MainScreen() {
   }, [menuOpen, Exit])
 
   const contentMap = {
-    "Visão Geral": <VisaoGeral NomeColaborador={nome} CodigoColaborador={codigo}/>,
+    "Visão Geral": <VisaoGeral NomeColaborador={nome} CodigoColaborador={codigo} CodigoTipoColaborador={codigoTipo}/>,
     "Processos": <Consulta_Processo CodigoColaborador={codigo} TipoColaborador={tipo} NomeColaborador={nome}/>,
     "Clientes": <Consulta_Cliente TipoColaborador={tipo}/>,
-    "Relatórios": <></>
+    "Relatórios": <Report />
   }
 
   const SubTitleObject = {
@@ -66,6 +68,7 @@ export default function MainScreen() {
 
   if(contentMap !== "Processos"){document.body.style.overflow = "visible"}
 
+  document.body.style.backgroundColor = "#343434"
   // Debug de renderizações de componentes
   // const renderCount = useRef(0)
   // renderCount.current += 1
@@ -95,8 +98,8 @@ export default function MainScreen() {
             set_ExitInteracted(true)
             }} id="bottone1"><strong>Sair</strong></button>
         </Main_Menu>
-        <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
 
+        <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
           <Animated_background />
 
           <Main_Title>
@@ -111,7 +114,6 @@ export default function MainScreen() {
             <hr />
           </Main_Title>
           {contentMap[option]}
-          
         </Main_Content>
         <Exit_card $Exiting={Exit} $Visible={Exit_Interacted}>
           <svg onClick={() => set_Exit(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">

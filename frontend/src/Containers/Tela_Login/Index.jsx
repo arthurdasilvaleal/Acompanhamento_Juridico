@@ -26,7 +26,7 @@ export default function Login(){
         const params = {Login, Pass}
         try{
             set_Loading(true)
-            const response = await axios.post("http://10.107.200.9:5000/submit_login", params)
+            const response = await axios.post("http://localhost:5000/submit_login", params)
             
             if(response.data.success){
                 localStorage.setItem("logado", "true")
@@ -35,7 +35,8 @@ export default function Login(){
                     state: {
                         nome: response.data.user.nm_Colaborador,
                         tipo: response.data.user.nm_TipoColaborador,
-                        codigo: response.data.user.cd_Colaborador
+                        codigo: response.data.user.cd_Colaborador,
+                        codigoTipo: response.data.user.cd_TipoColaborador
                     }
                 })
             } 

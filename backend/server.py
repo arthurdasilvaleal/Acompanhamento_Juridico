@@ -1,6 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
+from fpdf import FPDF
+import io
 import mysql.connector
+
+# Para o loop de inserção de dados automáticos
+import threading, time, random, requests
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app) # Resolve o erro do navegador bloquear a conexão
@@ -14,6 +20,82 @@ db = mysql.connector.connect(
 # Se o usuário sair da aba muito rápido, causa um erro... fix that
 # cursor = db.cursor(dictionary=True) Dicionario global(DEPRECATED)
 
+# Adicionando dados automáticos(útil para o dashboard - DESATIVAR EM PRODUÇÃO!!!!!!!!)
+FillRandomDataTask = False
+MainRole = ""
+
+def Submit_Random_Task():
+
+    cursor = db.cursor(dictionary=True)
+
+    query = "SELECT COUNT(*) FROM Intimacao"
+    cursor.execute(query)
+    result = cursor.fetchone()
+    total_int = result["COUNT(*)"]
+
+    query2 = "SELECT COUNT(*) FROM Colaborador"
+    cursor.execute(query2)
+    result2 = cursor.fetchone()
+    total_worker = result2["COUNT(*)"]
+
+    ultimo_estado = None
+
+    while True:
+        if FillRandomDataTask:
+            if ultimo_estado != True:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Envio automático ativado")
+                ultimo_estado = True
+
+            if MainRole == "task":
+                TaskData = {
+                    "idIntimacao": random.randint(1, total_int),
+                    "DataRecebimento": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "dataPrazo": (datetime.now() + timedelta(days=random.randint(-180, 300))).strftime('%Y-%m-%d'),
+                    "idColaborador": random.randint(1, total_worker),
+                    "StatusTarefa": random.choice([1, 2, 3]),
+                    "DescricaoTarefa": f"Tarefa automática {random.randint(1000, 9999)}",
+                    "idTipoTarefa": random.randint(1, 4)
+                }
+
+                try:
+                    response = requests.post("http://192.168.100.3:5000/post_card?form=task", json=TaskData)
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] Tarefa enviada: {response.status_code} - {response.json()}")
+                except Exception as e:
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] ERRO ao enviar tarefa: {e}")
+            else:
+                IntData = {
+                    
+                }
+
+                print("MainRole diferente de task. Ignorando o envio.")
+        else:
+            if ultimo_estado != False:
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Envio automático desativado")
+                ultimo_estado = False
+        
+        time.sleep(random.randint(10, 30))
+
+@app.route("/activate_AutoSubmit", methods=["POST"])
+def ativar_envio():
+
+    data = request.get_json()
+
+    Activate = data.get("activate")
+    role = data.get("role")
+
+    global MainRole, FillRandomDataTask
+
+    if Activate:
+        MainRole = role
+        FillRandomDataTask = True
+        return jsonify({"mensagem": "Envio automático ATIVADO", "Arg": Activate}), 200
+    else:
+        FillRandomDataTask = False
+        return jsonify({"mensagem": "Envio automático DESATIVADO", "Arg": Activate}), 200
+ 
+# Adicionando dados automáticos(útil para o dashboard - DESATIVAR EM PRODUÇÃO!!!!!!!!)
+
+
 # Para o Login
 @app.route("/submit_login", methods=["POST"])
 def login():
@@ -22,7 +104,7 @@ def login():
     password = data.get("Pass")
     cursor = db.cursor(dictionary=True)
 
-    query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador FROM Colaborador C
+    query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador, C.cd_TipoColaborador FROM Colaborador C
             JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
             WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
     
@@ -399,9 +481,10 @@ def get_Task():
 
     if Nome_Parte == "":
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
-                C.nm_Colaborador
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa, T.cd_TipoTarefa,
+                C.nm_Colaborador, TP.nm_TipoTarefa
                 FROM Tarefa T
+                JOIN TipoTarefa TP ON TP.cd_TipoTarefa = T.cd_TipoTarefa
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
                 JOIN Processo P ON P.cd_Processo = I.cd_Processo
                 JOIN Colaborador C ON C.cd_Colaborador = T.cd_Colaborador
@@ -409,9 +492,10 @@ def get_Task():
         values = (Numero_Processo,)
     elif Nome_Parte != "" and Numero_Processo != "":
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
-                Co.nm_Colaborador
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa, T.cd_TipoTarefa,
+                Co.nm_Colaborador, TP.nm_TipoTarefa
                 FROM Tarefa T
+                JOIN TipoTarefa TP ON TP.cd_TipoTarefa = T.cd_TipoTarefa
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
                 JOIN Processo P ON P.cd_Processo = I.cd_Processo
                 JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
@@ -424,9 +508,10 @@ def get_Task():
         values = (Numero_Processo, Nome_Parte, Nome_Parte, Nome_Parte) 
     else:
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
-                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa,
-                Co.nm_Colaborador
+                T.cd_Colaborador, T.cd_StatusTarefa, T.ds_Tarefa, T.cd_TipoTarefa,
+                Co.nm_Colaborador, TP.nm_TipoTarefa
                 FROM Tarefa T
+                JOIN TipoTarefa TP ON TP.cd_TipoTarefa = T.cd_TipoTarefa
                 JOIN Intimacao I ON I.cd_Intimacao = T.cd_Intimacao
                 JOIN Processo P ON P.cd_Processo = I.cd_Processo
                 JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
@@ -483,12 +568,11 @@ def post_intimacao():
         dataRecebimento = data.get("dataRecebimento")
         descrição = data.get("descricaoIntimacao")
         codigoProcesso = data.get("codigoProcesso")
-        codigoColaborador = data.get("idColaborador")
 
-        query = "INSERT INTO Intimacao (cd_Processo, dt_Recebimento, ds_Intimacao, cd_Colaborador) VALUES (%s, %s, %s, %s)"
+        query = "INSERT INTO Intimacao (cd_Processo, dt_Recebimento, ds_Intimacao) VALUES (%s, %s, %s)"
 
         try:
-            cursor.execute(query, (codigoProcesso, dataRecebimento, descrição, codigoColaborador,))
+            cursor.execute(query, (codigoProcesso, dataRecebimento, descrição,))
             db.commit()
             return jsonify({"message": "Intimação inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
@@ -502,12 +586,13 @@ def post_intimacao():
         idColaborador = data.get("idColaborador")
         StatusTarefa = data.get("StatusTarefa")
         DescricaoTarefa = data.get("DescricaoTarefa")
+        CodigoTipoTarefa = data.get("idTipoTarefa")
 
-        query = """INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, ds_Tarefa) 
-                VALUES (%s, %s, %s, %s, %s, %s)"""
+        query = """INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, ds_Tarefa, cd_TipoTarefa) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
         
         try:
-            cursor.execute(query, (idIntimacao, DataRecebimento, dataPrazo, idColaborador, StatusTarefa, DescricaoTarefa,))
+            cursor.execute(query, (idIntimacao, DataRecebimento, dataPrazo, idColaborador, StatusTarefa, DescricaoTarefa, CodigoTipoTarefa,))
             db.commit()
             return jsonify({"message": "Tarefa inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
@@ -523,26 +608,217 @@ def get_MainInfo():
 
     query = """
         SELECT
-            (SELECT COUNT(*) AS qtd_Processo FROM Processo) AS qtd_Processo,
-            (SELECT COUNT(*) AS qtd_ProcessoFase1 FROM Processo WHERE cd_FaseProcesso = 1) AS qtd_ProcessoFase1,
-            (SELECT COUNT(*) AS qtd_ProcessoFase2 FROM Processo WHERE cd_FaseProcesso = 2) AS qtd_ProcessoFase2,
-            (SELECT COUNT(*) AS qtd_ProcessoFase3 FROM Processo WHERE cd_FaseProcesso = 3) AS qtd_ProcessoFase3,
-            (SELECT COUNT(*) AS qtd_ProcessoFase4 FROM Processo WHERE cd_FaseProcesso = 4) AS qtd_ProcessoFase4,
-            (SELECT COUNT(*) AS qtd_ProcessoFase5 FROM Processo WHERE cd_FaseProcesso = 5) AS qtd_ProcessoFase5,
-            (SELECT COUNT(*) AS qtd_TarefaFase1 FROM Tarefa WHERE cd_StatusTarefa = 1) AS qtd_TarefaStatus1,
-            (SELECT COUNT(*) AS qtd_TarefaFase2 FROM Tarefa WHERE cd_StatusTarefa = 2) AS qtd_TarefaStatus2,
-            (SELECT COUNT(*) AS qtd_TarefaFase3 FROM Tarefa WHERE cd_StatusTarefa = 3) AS qtd_TarefaStatus3,
-            (SELECT COUNT(*) AS qtd_MyTask FROM Tarefa WHERE cd_Colaborador = %s) AS qtd_MyTask;
+            (SELECT COUNT(*) FROM Processo) AS qtd_Processo,
+            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 1) AS Conhecimento,
+            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 2) AS Recursal,
+            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 3) AS Execução,
+            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 4) AS Finalizado,
+            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 5) AS Cancelado,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 1) AS Aguardando,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 2) AS Em_andamento,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 3) AS Concluido,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1) AS qtd_MyTaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2) AS qtd_MyTaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3) AS qtd_MyTaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4) AS qtd_MyTaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5) AS qtd_MyTaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6) AS qtd_MyTaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7) AS qtd_MyTaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8) AS qtd_MyTaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9) AS qtd_MyTaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10) AS qtd_MyTaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11) AS qtd_MyTaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12) AS qtd_MyTaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1) AS qtd_TaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2) AS qtd_TaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3) AS qtd_TaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4) AS qtd_TaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5) AS qtd_TaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6) AS qtd_TaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7) AS qtd_TaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8) AS qtd_TaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9) AS qtd_TaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10) AS qtd_TaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11) AS qtd_TaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12) AS qtd_TaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth1,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth2,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth3,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth4,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth5,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth6,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth7,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth8,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth9,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth10,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth11,
+            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth12,
+            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND cd_StatusTarefa = 3) AS qtd_MyTaskFinished;
         """
     try:
-        cursor.execute(query, (colaborador,))
+        cursor.execute(query, (colaborador, colaborador, colaborador, colaborador, colaborador, 
+            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
+            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
+            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador,
+            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
+            colaborador, colaborador, colaborador, colaborador,))
         result = cursor.fetchone()
         return jsonify(result)
     except mysql.connector.Error as Err:
         print("\n\nErro em 'get_MainInfo':", Err)
         return jsonify({"error": str(Err)}), 500
 
+@app.route("/generate_pdf", methods=["POST"])
+def generate_pdf():
+
+    data = request.get_json()
+    cursor = db.cursor(dictionary=True)
+
+    PrimeiroFiltro = data.get("FilterOne") 
+    SegundoFiltro = data.get("FilterTwo")
+    TerceiroFiltro = data.get("FilterThree")
+
+    # Ajudstando o PDF
+    class PDF(FPDF):
+        def header(self):
+            # Inserir imagem (x, y, largura)
+            if self.page_no() == 1:
+                # Logo
+                self.image("../frontend/src/Images/logo.png", 10, 8, 40)  
+
+                # Move o cursor abaixo da imagem
+                self.set_y(30)
+
+                # Título
+                self.set_font("Arial", "B", 16)
+                self.cell(0, 10, "Sistema de Acompanhamento Jurídico", ln=1, align="R")
+                self.set_font("Arial", "", 12)
+                self.cell(0, 8, "Relatório de Clientes e Processos", ln=1, align="R")
+                self.ln(3)
+
+                # Linha separadora
+                self.set_draw_color(0, 0, 0)  # cor preta
+                self.set_line_width(0.5)      # espessura da linha
+                self.line(10, self.get_y(), 200, self.get_y())  # x1, y1, x2, y2
+                self.ln(10)  # espaço após a linha
+
+        def footer(self):
+            # Número da página no rodapé
+            self.set_y(-15)
+            self.set_font("Arial", "I", 8)
+            self.cell(0, 10, f"Página {self.page_no()}", align="C")
+
+    # (*DEPRECATED*)
+    # query = "SELECT * FROM Tarefa WHERE 1=1" # WHERE 1=1: Truque para definir a clausula AND depois
+    # params = []
+
+    # if filtro_colaborador:
+    #     query += " AND cd_Colaborador = %s"
+    #     params.append(filtro_colaborador)
+
+    # if filtro_status:
+    #     query += " AND cd_StatusTarefa = %s"
+    #     params.append(filtro_status)
+
+    cursor.execute("CALL PDFDownloadCase(%s, %s, %s)", (PrimeiroFiltro, SegundoFiltro, TerceiroFiltro))
+    result = cursor.fetchall()
+    Title = ""
+
+    # Delegação dos Filtros
+    # 1 = "Processos"
+    # 2 = "Clientes"
+    # 3 = "Colaboradores"
+
+    print(PrimeiroFiltro, SegundoFiltro, TerceiroFiltro)
+
+    match PrimeiroFiltro:
+        case 1:
+            Title = "Still lefting"
+        case 2:
+            if SegundoFiltro == 1:
+                Title = "Relatório de Todos os clientes"
+            elif SegundoFiltro == 3:
+                Title = f"Relatório do {(TerceiroFiltro)}"
+        case _:   
+            Title = "Error"
+
+    # Criar PDF
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, Title, ln=True, align="C")
+    pdf.ln(5)
+
+    if PrimeiroFiltro == 2 and (SegundoFiltro == 1 or SegundoFiltro == 3):
+        # Loop de clientes
+        pdf.set_font("Arial", size=10)
+        for t in result:
+            pdf.set_font("Arial", style="B", size=10)
+            pdf.cell(0, 8, f"Cliente: {t.get('Cliente', '')}", ln=True)
+            pdf.set_font("Arial", size=10)
+
+            pdf.multi_cell(0, 6,
+                f"CPF/CNPJ: {t.get('CPF/CNPJ', '')}\n"
+                f"Endereço: {t.get('Logradouro', '')}, {t.get('Número', '')}, {t.get('Bairro', '')}, "
+                f"{t.get('Cidade', '')} - {t.get('Estado', '')}, CEP {t.get('CEP', '')}\n"
+                f"Telefone: {t.get('Telefone', '')}\n"
+                f"E-mail: {t.get('E-mail', '')}\n"
+                f"Processo(s): {t.get('Processo(s)') or 'Nenhum processo cadastrado'}"
+            )
+            pdf.ln(5)  # espaço entre cards
+
+    # Salvar PDF na memória
+    pdf_output = io.BytesIO()
+    pdf_bytes = pdf.output(dest='S').encode('latin1')  # exporta como string, depois converte p/ bytes
+    pdf_output.write(pdf_bytes)
+    pdf_output.seek(0)
+
+    return send_file(
+        pdf_output,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name="relatorio.pdf"
+    )
+
 if __name__ == "__main__":
+    t = threading.Thread(target=Submit_Random_Task, daemon=True)
+    t.start()
     app.run(debug=True, port=5000, host="0.0.0.0")
 
 

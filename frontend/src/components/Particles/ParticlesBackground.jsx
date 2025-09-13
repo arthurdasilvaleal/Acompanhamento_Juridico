@@ -61,7 +61,7 @@ const ParticlesBG = memo(() => {
             default: "bounce",
           },
           random: true,
-          speed: { min: 1, max: 4 },
+          speed:  1.3,
           straight: false,
         },
         number: {

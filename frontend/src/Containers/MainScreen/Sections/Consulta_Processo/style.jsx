@@ -128,7 +128,7 @@ export const Twin_Button = styled.div`
     }
     .add-processo-button{
         opacity: ${({ $disableForProcess }) => $disableForProcess ? "0" : "1"};
-        pointer-events: ${({ $disableForProcess }) => $disableForProcess ? "none" : "all"};
+        pointer-events: ${({ $disableForProcess }) => $disableForProcess ? "none" : ""};
         transition: all 250ms ease-in-out;
     }
 `
@@ -423,7 +423,7 @@ export const Consult_TaskForm = styled.form`
     overflow: hidden;
     border-radius: 16px;
     margin: auto;
-    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "522px"}; 
+    height: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "702px"}; 
     opacity: ${({ $addTaskOpen }) => !$addTaskOpen ? "0" : "1"};
     pointer-events: ${({ $addTaskOpen }) => !$addTaskOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
@@ -518,8 +518,9 @@ export const Consult_TaskForm = styled.form`
     }
 
     .input-group-select-primary{
-        max-height: ${({ $openTypeTask }) => $openTypeTask ? "400px" : "0px"};
-        transition: max-height 0.2s ease;
+        max-height: ${({ $openTypeTask }) => $openTypeTask ? "70px" : "0"};
+        opacity: ${({ $openTypeTask }) => $openTypeTask ? "1" : "0"};
+        transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out;
         overflow: hidden;
     }
 
@@ -592,7 +593,7 @@ export const Edit_taskForm = styled.form`
     background-color: #00000070;
     overflow: hidden;
     border-radius: 16px;
-    height: ${({ $EditOpen }) => !$EditOpen ? "0" : "522px"}; 
+    height: ${({ $EditOpen }) => !$EditOpen ? "0" : "722px"}; 
     opacity: ${({ $EditOpen }) => !$EditOpen ? "0" : "1"};
     pointer-events: ${({$EditOpen }) => !$EditOpen ? "none" : ""};
     transition: transform 0.2s ease, opacity 0.2s ease, height 0.6s ease, padding 0.4s ease;
@@ -662,7 +663,7 @@ export const Edit_taskForm = styled.form`
         border-color: #fff;
     }
     
-    .input-group-select{
+    .input-group-select, .input-group-select-primary{
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -670,7 +671,7 @@ export const Edit_taskForm = styled.form`
         .input-select{
             width: calc(50vw + 36px);
             @media (max-width: 768px) {
-                width: auto;
+                /* width: auto; */
             }
         }
 

@@ -12,11 +12,11 @@ export const Main_Menu = styled.aside`
     align-items: center;
     justify-content: space-around;
     position: fixed;
-    height: 100vh;
+    height: 100dvh;
     width: 200px;
     background-color: #343434;
     color: #fff;
-    z-index: 999;
+    z-index: 998;
     transition: transform 0.3s ease-in-out;
     transform: ${({ $isOpen }) => ($isOpen ? "translateX(0)" : "translateX(-100%)")};
 
@@ -201,7 +201,6 @@ export const Animated_background = styled.div`
     position: fixed;
     min-height: 950px;
     width: 100%;
-    height: 100%;
     z-index: -1;
     background: linear-gradient(270deg, #405357, #928DAB, #634331);
     background-size: 600% 600%;

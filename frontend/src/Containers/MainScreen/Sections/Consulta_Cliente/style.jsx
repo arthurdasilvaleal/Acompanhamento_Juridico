@@ -2,7 +2,7 @@ import styled from "styled-components"
 
 export const ShowClientes = styled.div`
     opacity: ${({ $addClientes, $editClientes }) => ($editClientes || $addClientes) ? "0" : "1"};
-    pointer-events: ${({ $addClientes, $editClientes }) => ($editClientes || $addClientes) ? "none" : "all"};
+    pointer-events: ${({ $addClientes, $editClientes }) => ($editClientes || $addClientes) ? "none" : ""};
     transition: all 0.2s ease-in-out;
 `
 
@@ -144,10 +144,11 @@ export const Card_Cliente = styled.div`
     cursor: pointer;
     margin: 5px;
     position: relative;
+    backdrop-filter: blur(10px);
     transition: transform 0.2s ease, max-height 0.4s cubic-bezier(.17,.6,.53,.91), opacity 0.3s ease;
     overflow: hidden;
     opacity: ${({ $fullDetailed }) => $fullDetailed ? "1" : "0"};
-    pointer-events: ${({ $fullDetailed }) => $fullDetailed ? "all" : "none"};
+    pointer-events: ${({ $fullDetailed }) => $fullDetailed ? "" : "none"};
     
     /* width: 250px; */
 
@@ -159,6 +160,7 @@ export const Card_Cliente = styled.div`
 
     .card-Content{
         padding: 10px;
+        
     }
 
     p{

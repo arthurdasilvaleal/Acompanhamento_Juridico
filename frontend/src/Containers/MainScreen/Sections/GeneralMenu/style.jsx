@@ -34,6 +34,27 @@ export const MainWorker_Count = styled.div`
     padding: 10px;
 `
 
+export const AdmOnly_Button = styled.button`
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    border: transparent;
+    border-radius: 16px;
+    height: 40px;
+    padding: 10px;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    background-color: ${({ $submitButton }) => !$submitButton ? "rgba(229, 255, 0, 0.61)" : "#fff"};
+    color: #000;
+    outline: none;
+
+    &:hover{
+        box-shadow: -2px -3px 89px 5px rgba(229, 255, 0, 0.61);
+        transition: box-shadow 0.2s ease, background-color 0.2s ease;
+        background-color: rgba(229, 255, 0, 0.61);
+    }
+`
+
 export const Info_Container = styled.div`
     display: flex;
     flex-direction: row;
