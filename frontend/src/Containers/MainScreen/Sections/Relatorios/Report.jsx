@@ -38,11 +38,13 @@ export default function Report(){
 
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }))
-            link.setAttribute("download", "relatorio.pdf")
+            link.setAttribute("download", "Relatorio.pdf")
             document.body.appendChild(link)
             link.click()
             link.remove()
             console.log(response)
+            set_ThirdSelect("")
+
         }catch (error){
             console.log("Erro ao gerar PDF:", error)
         }
@@ -76,7 +78,7 @@ export default function Report(){
                         set_FilterStatus(e.target.value !== "" ? 1 : 0)
                         set_SecondSelect(e.target.value === "" && "")
                         }} value={FirstSelect} required>
-                        {FirstSelect === "" && (   
+                        {FirstSelect === "" && ( 
                             <option value="">Selecione</option>
                         )}
                         <option value="1">Processos</option>
@@ -124,25 +126,25 @@ export default function Report(){
                                 <label>Selecione o tipos de dados de processos</label>
                                 <select name="Filter" id="" onChange={(e) => {
                                     set_SecondSelect(e.target.value)
-                                    set_FilterStatus(e.target.value === "2" ? 2 : e.target.value === "1" ? 5 : 1)
+                                    set_FilterStatus(e.target.value === "3" ? 4 : e.target.value === "1" ? 5 : 1)
                                     }} required>
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
-                                    <option value="2">Apenas meus</option>
+                                    <option value="3">Cliente específico</option>
                                 </select>
                             </div>
                         </FilterBox>
                     </motion.div>
                 ) : FirstSelect === "3" && (
                     <motion.div
-                    key="worker-filter"
+                    key="client-filter"
                     layout
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                     >
-                        <FilterBox className="worker-filter">
+                        <FilterBox className="client-filter">
                             <div className="input-group-select">
                                 <label>Selecione o tipos de dados de colaboradores</label>
                                 <select name="Filter" id="" onChange={(e) => {
@@ -157,16 +159,17 @@ export default function Report(){
                         </FilterBox>
                     </motion.div>
                 )}
+                {/* Terciro Filtro: Apenas CLientes selecionados */}
                 {SecondSelect === "3" && (
                     <motion.div
-                    key="worker-picker"
+                    key="client-picker"
                     layout
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                     >
-                        <FilterBox className="worker-picker">
+                        <FilterBox className="client-picker">
                             <div className="input-group-select">
                                 <label>Cliente</label>
                                 <select name="Filter" id="" onChange={(e) => {

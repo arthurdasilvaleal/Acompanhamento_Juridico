@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from fpdf import FPDF
+from decimal import Decimal
 import io
 import mysql.connector
+from mysql.connector import pooling
 
 # Para o loop de inserção de dados automáticos
 import threading, time, random, requests
@@ -11,12 +13,20 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 CORS(app) # Resolve o erro do navegador bloquear a conexão
 
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="BD_AJ"
+dbconfig = {
+    "host": "localhost",
+    "user": "root",
+    "password": "root",
+    "database": "BD_AJ"
+}
+
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name="mypool",
+    pool_size=10,          # número máximo de conexões simultâneas
+    pool_reset_session=True,
+    **dbconfig
 )
+
 # Se o usuário sair da aba muito rápido, causa um erro... fix that
 # cursor = db.cursor(dictionary=True) Dicionario global(DEPRECATED)
 
@@ -26,7 +36,8 @@ MainRole = ""
 
 def Submit_Random_Task():
 
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     query = "SELECT COUNT(*) FROM Intimacao"
     cursor.execute(query)
@@ -102,7 +113,9 @@ def login():
     data = request.get_json()
     username = data.get("Login")
     password = data.get("Pass")
-    cursor = db.cursor(dictionary=True)
+
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador, C.cd_TipoColaborador FROM Colaborador C
             JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
@@ -112,8 +125,12 @@ def login():
     user = cursor.fetchone()
 
     if user:
+        cursor.close()
+        conn.close()
         return jsonify({"success": True, "message": "Login bem-sucedido", "user": user })
     else:
+        cursor.close()
+        conn.close()
         return jsonify({"success": False, "message": "Usuário ou senha incorretos"}), 401
 
 # Para Cadastro
@@ -135,7 +152,8 @@ def post_clientes():
     Usuario = data.get("nm_Usuario")
     Senha = data.get("ds_Senha")
     TipoColaborador = data.get("cd_TipoColaborador")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     query = """INSERT INTO Colaborador (nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
             nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
@@ -143,18 +161,22 @@ def post_clientes():
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, SHA2(%s, 256), %s)"""
     try:
         cursor.execute(query, (Nome, CPF, Endereco, Bairro, Cidade, Estado, CEP, NumeroEnd, Complemento, Telefone, Email, Usuario, Senha, TipoColaborador))
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Colaborador cadastrado"}), 201
     except mysql.connector.Error as err:
         print("Erro em '/post_cadastro': ", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 # Consultar nome dos clientes
 @app.route("/get_clientes", methods=["GET"])
 def get_clientes():
 
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     query = "SELECT cd_Cliente, nm_Cliente FROM Cliente"
     
     try:
@@ -164,12 +186,16 @@ def get_clientes():
     except mysql.connector.Error as Err:
         print("Erro em 'get_clientes'", Err)
         return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Consultar dados de TODOS os clientes
 @app.route("/get_Allclientes", methods=["GET"])
 def get_Allclientes():
     
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     query = """SELECT
                 c.cd_Cliente,
                 c.nm_Cliente,
@@ -211,6 +237,9 @@ def get_Allclientes():
     except mysql.connector.Error as err:
         print("\n\nErro em 'get_Allclientes':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
     
     
 # Cadastrar Clientes
@@ -229,7 +258,8 @@ def post_cliente():
     Complemento = data.get("nm_Complemento")
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     if len(CPF) > 11:
         queryCliente = """
@@ -245,11 +275,14 @@ def post_cliente():
     try:
         valuesCliente = (Nome, CPF, Numero, Complemento, Telefone, Email, Logradouro, Bairro, Cidade, Estado, CEP)
         cursor.execute(queryCliente, valuesCliente)
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Cliente alterado com sucesso!"}), 201
     except mysql.connector.Error as err:
         print("\n\nErro em 'post_cliente':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Editar um cliente
 @app.route("/put_cliente", methods=["PUT"])
@@ -268,7 +301,8 @@ def put_cliente():
     Complemento = data.get("nm_Complemento")
     Telefone = data.get("cd_Telefone")
     Email = data.get("ds_Email")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     if len(CPF) > 11:
         query = """CALL SP_Update_Cliente(%s, %s, null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
@@ -278,33 +312,41 @@ def put_cliente():
     try:
         valuesCliente = (Codigo, Nome, CPF, Logradouro, Bairro, Cidade, Estado, CEP, Numero, Complemento, Telefone, Email)
         cursor.execute(query, valuesCliente)
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Cliente editado com sucesso!"}), 201
     except mysql.connector.Error as err:
         print("\n\nErro '/put_cliente':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
     
 # Para deletar um cliente
 @app.route("/delete_cliente", methods=["DELETE"])
 def delete_cliente(): 
 
     cdCliente = request.get_json().get("DeleteCliente")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     try:
         cursor.callproc("SP_Delete_Cliente", [cdCliente])
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Cliente removido com sucesso!"}), 201
     except mysql.connector.Error as err:
         print("\n\nErro em '/delete_cliente':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Pegar os numeros dos processos bem como todos os dados do processo ou parte buscados
 @app.route("/get_processos", methods=["GET"])
 def get_processos():
 
     only_numeros = request.args.get("only") == "id"
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     if only_numeros:
         query = """SELECT cd_NumeroProcesso FROM Processo"""
@@ -315,6 +357,9 @@ def get_processos():
             return jsonify(numeros)
         except mysql.connector.Error as Err:
             return jsonify(Err)
+        finally:
+            cursor.close()
+            conn.close()
     
     Num_Processo = request.args.get("id_processo")
     Nome_Parte = request.args.get("parte")
@@ -330,6 +375,8 @@ def get_processos():
         cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
         print(Nome_Parte)
+        cursor.close()
+        conn.close()
         return jsonify(result)
     
     else:
@@ -341,6 +388,8 @@ def get_processos():
         WHERE P.cd_NumeroProcesso = %s AND (P.nm_Autor = %s OR P.nm_Reu = %s OR C.nm_Cliente = %s)"""
         cursor.execute(query, (Num_Processo, Nome_Parte, Nome_Parte, Nome_Parte))
         result = cursor.fetchall()
+        cursor.close()
+        conn.close()
         return jsonify(result)
 
 # Cadastrar um processo
@@ -358,7 +407,8 @@ def post_processo():
     Juizo = data.get("ds_Juizo")
     Acao = data.get("ds_Acao")
     Tribunal = data.get("sg_Tribunal")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     # Buscar cliente pelo nome no campo "Autor"
     query_cliente = "SELECT cd_Cliente FROM Cliente WHERE nm_Cliente = %s;"
@@ -374,11 +424,14 @@ def post_processo():
     values = (NumProcesso, códigoCliente, Posicao, Autor, Reu, Juizo, Acao, Cidade, Tribunal, Causa)
     try:
         cursor.execute(query_processo, values)
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Processo inserido com sucesso!"}), 201
     except mysql.connector.Error as err:
         print("\n\nErro em 'post_processo':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
     
 #Para editar um processo
 @app.route("/put_processo", methods=["PUT"])
@@ -399,7 +452,8 @@ def put_processo():
     Acao = data.get("ds_Acao")
     Tribunal = data.get("sg_Tribunal")
     Fase = data.get("cd_FaseProcesso")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     query = """CALL SP_Update_Processo(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
     
@@ -407,26 +461,33 @@ def put_processo():
     
     try:
         cursor.execute(query, values)
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Processo editado com sucesso!", "Valores": values}), 201
     except mysql.connector.Error as err:
         print("\n\nErro em 'put_processo':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Para deletar um processo
 @app.route("/delete_processo", methods=["DELETE"])
 def delete_processo():
 
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     cdProcesso = request.get_json().get("deleteProcess")
 
     try:
         cursor.callproc("SP_Delete_Processo", [cdProcesso])
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Processo deletado com sucesso!", "Processo": cdProcesso}), 201
     except mysql.connector.Error as err:
         print("\n\nErro em 'delete_processo':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Para os Cards da consulta de processos
 @app.route("/get_cardInt", methods=["GET"])
@@ -434,8 +495,8 @@ def get_intimacao():
 
     Nome_Parte = request.args.get("parte")
     Numero_Processo = request.args.get("numeroProcesso")
-    cursor = db.cursor(dictionary=True)
-
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     
     if Nome_Parte == "":
         query = """SELECT I.dt_Recebimento, I.ds_Intimacao, I.cd_Processo, I.cd_Intimacao
@@ -470,6 +531,9 @@ def get_intimacao():
     except mysql.connector.Error as err:
         print("\n\nErro em '/get_cardInt':", err)
         return jsonify({"erro ao buscar intimações": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Buscar Tarefas
 @app.route("/get_cardTask", methods=["GET"])
@@ -477,7 +541,8 @@ def get_Task():
 
     Nome_Parte = request.args.get("parte")
     Numero_Processo = request.args.get("numeroProcesso")
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     if Nome_Parte == "":
         query = """SELECT T.cd_Tarefa, T.cd_Intimacao, T.dt_Registro, T.dt_Prazo,
@@ -527,13 +592,17 @@ def get_Task():
     except mysql.connector.Error as err:
         print("\n\nErro em '/get_cardTask' tarefas:", err)
         return jsonify({"erro ao buscar tarefas": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Para atualizar as tarefas
 @app.route("/put_cardTask", methods=["PUT"])
 def put_cardTask():
 
     data = request.get_json()
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     dt_Prazo = data.get("dtPrazo")
     cd_Status = data.get("cdStatus")
@@ -547,11 +616,14 @@ def put_cardTask():
     
     try:
         cursor.execute(query, values)
-        db.commit()
+        conn.commit()
         return jsonify({"message": "Tarefa editada com sucesso!", "Values": values}), 201
     except mysql.connector.Error as err:
         print("\n\nErro '/put_cardTask':", err)
         return jsonify({"error": str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
         
 
 
@@ -562,7 +634,8 @@ def post_intimacao():
 
     intimacao = request.args.get("form") == "intimacao"
     tarefa = request.args.get("form") == "task"
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     if intimacao:
         dataRecebimento = data.get("dataRecebimento")
@@ -573,11 +646,14 @@ def post_intimacao():
 
         try:
             cursor.execute(query, (codigoProcesso, dataRecebimento, descrição,))
-            db.commit()
+            conn.commit()
             return jsonify({"message": "Intimação inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
             print("\n\nErro em '/post_card' postando intimação:", err)
             return jsonify({"Erro": str(err)}), 500
+        finally:
+            cursor.close()
+            conn.close()
     
     if tarefa:
         idIntimacao = data.get("idIntimacao")
@@ -593,17 +669,21 @@ def post_intimacao():
         
         try:
             cursor.execute(query, (idIntimacao, DataRecebimento, dataPrazo, idColaborador, StatusTarefa, DescricaoTarefa, CodigoTipoTarefa,))
-            db.commit()
+            conn.commit()
             return jsonify({"message": "Tarefa inserida com sucesso!"}), 201
         except mysql.connector.Error as err:
             print("\n\nErro em 'post_card' postando tarefa:", err)
             return jsonify({"error": str(err)}), 500
+        finally:
+            cursor.close()
+            conn.close()
 
 # Para a tela de visão Geral
 @app.route("/get_MainInfo", methods=["GET"])
 def get_MainInfo():
 
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
     colaborador = request.args.get("colaborador")
 
     query = """
@@ -703,12 +783,17 @@ def get_MainInfo():
     except mysql.connector.Error as Err:
         print("\n\nErro em 'get_MainInfo':", Err)
         return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
+# Gerando o PDF da aba de relatórios
 @app.route("/generate_pdf", methods=["POST"])
 def generate_pdf():
 
     data = request.get_json()
-    cursor = db.cursor(dictionary=True)
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
     PrimeiroFiltro = data.get("FilterOne") 
     SegundoFiltro = data.get("FilterTwo")
@@ -758,6 +843,9 @@ def generate_pdf():
 
     cursor.execute("CALL PDFDownloadCase(%s, %s, %s)", (PrimeiroFiltro, SegundoFiltro, TerceiroFiltro))
     result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
     Title = ""
 
     # Delegação dos Filtros
@@ -769,7 +857,10 @@ def generate_pdf():
 
     match PrimeiroFiltro:
         case 1:
-            Title = "Still lefting"
+            if SegundoFiltro == 1:
+                Title = "Relatório de todos os processos"
+            elif SegundoFiltro == 3:
+                Title = f"Relatórios de processos do cliente {(TerceiroFiltro)}"
         case 2:
             if SegundoFiltro == 1:
                 Title = "Relatório de Todos os clientes"
@@ -785,6 +876,28 @@ def generate_pdf():
     pdf.cell(0, 10, Title, ln=True, align="C")
     pdf.ln(5)
 
+    # Formatando o CPF/CNPJ
+    def format_cpf(cpf: str) -> str:
+        if cpf and len(cpf) == 11:
+            return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+        return cpf or ""
+
+    def format_cnpj(cnpj: str) -> str:
+        if cnpj and len(cnpj) == 14:
+            return f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
+        return cnpj or ""
+
+    def format_cpf_cnpj(doc: str) -> str:
+        if not doc:
+            return ""
+        if len(doc) == 11:
+            return format_cpf(doc)
+        if len(doc) == 14:
+            return format_cnpj(doc)
+        return doc
+    # Formatando o CPF/CNPJ
+
+    # (Clientes, TODOS, Específico)
     if PrimeiroFiltro == 2 and (SegundoFiltro == 1 or SegundoFiltro == 3):
         # Loop de clientes
         pdf.set_font("Arial", size=10)
@@ -793,8 +906,10 @@ def generate_pdf():
             pdf.cell(0, 8, f"Cliente: {t.get('Cliente', '')}", ln=True)
             pdf.set_font("Arial", size=10)
 
+            doc = format_cpf_cnpj(t.get("CPF/CNPJ"))
+            
             pdf.multi_cell(0, 6,
-                f"CPF/CNPJ: {t.get('CPF/CNPJ', '')}\n"
+                f"CPF/CNPJ: {doc}\n"
                 f"Endereço: {t.get('Logradouro', '')}, {t.get('Número', '')}, {t.get('Bairro', '')}, "
                 f"{t.get('Cidade', '')} - {t.get('Estado', '')}, CEP {t.get('CEP', '')}\n"
                 f"Telefone: {t.get('Telefone', '')}\n"
@@ -802,6 +917,40 @@ def generate_pdf():
                 f"Processo(s): {t.get('Processo(s)') or 'Nenhum processo cadastrado'}"
             )
             pdf.ln(5)  # espaço entre cards
+
+    # (Processos, TODOS, Cliente específico)
+    elif PrimeiroFiltro == 1 and (SegundoFiltro == 1 or SegundoFiltro == 3):
+        pdf.set_font("Arial", size=10)
+        for t in result:
+            pdf.set_font("Arial", style="B", size=10)
+            doc = format_cpf_cnpj(t.get("cd_CPF") or t.get("cd_CNPJ"))
+            
+            if SegundoFiltro == 3:
+                pdf.cell(0, 8, f"Autor: {t.get('nm_Autor', '')} {doc}", ln=True)
+            else:
+                pdf.cell(0, 8, f"Autor: {t.get('nm_Autor', '')}", ln=True)
+            pdf.set_font("Arial", size=10)
+            pdf.multi_cell(0, 6, 
+                f"Processo: {t.get('cd_NumeroProcesso', '')}\n"
+                f"Réu: {t.get('nm_Reu', '')}\n"
+                f"Juizado: {t.get('ds_Juizo', '')}\n"
+                f"Ação: {t.get('ds_Acao', '')}\n"
+                f"Cidade: {t.get('nm_Cidade', '')}\n"
+                f"Sigla do Tribunal: {t.get('sg_Tribunal', '')}\n"
+            )
+            pdf.set_font("Arial", style="B", size=10)
+
+            # Formatando os valores da causa
+            valor = t.get("vl_Causa", "")
+            if isinstance(valor, Decimal):
+                valor = f"{valor:,.2f}"  # formata com 2 casas
+                valor = valor.replace(",", "X").replace(".", ",").replace("X", ".")
+                # truque para trocar ponto por vírgula sem confundir separador de milhar
+
+            pdf.cell(0, 6, f"Valor da causa: R${valor}", ln=True)
+
+            pdf.ln(5)  # espaço entre cards
+
 
     # Salvar PDF na memória
     pdf_output = io.BytesIO()
