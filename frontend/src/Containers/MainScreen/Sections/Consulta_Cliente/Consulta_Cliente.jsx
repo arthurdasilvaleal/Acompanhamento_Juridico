@@ -8,7 +8,7 @@ import Loading from "../../../../components/Loading_Form/Loading"
 import Particles from "../../../../components/Particles/ParticlesBackground"
 import axios from "axios"
 
-export default function Consulta_Cliente({ TipoColaborador }){
+export default function Consulta_Cliente({ TipoColaborador, active }){
 
     // Clientes adicionados
     const [allClientes, set_allClientes] = useState([]) 

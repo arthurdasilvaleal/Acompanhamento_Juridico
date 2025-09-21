@@ -127,11 +127,13 @@ export const Grid_Box = styled.div`
     flex-direction: row;
     flex-wrap: wrap;
     padding: 10px;
+
     @media (max-width: 768px) {
         justify-content: space-around;
 
         .onlyDesktop{
             display: none;
+            position: relative;
         }
     }
 `
@@ -150,7 +152,10 @@ export const Card_Cliente = styled.div`
     opacity: ${({ $fullDetailed }) => $fullDetailed ? "1" : "0"};
     pointer-events: ${({ $fullDetailed }) => $fullDetailed ? "" : "none"};
     
-    /* width: 250px; */
+    /* 🔹 Largura fixa e responsiva */
+    flex: 1 1 250px;   /* ocupa no mínimo 250px */
+    max-width: 300px;  /* nunca passa de 300px */
+    min-width: 250px;  /* garante largura igual */
 
     max-height: ${({ $detailed, $fullDetailed }) => {
         if($detailed && !$fullDetailed){return "260px"}
@@ -167,7 +172,7 @@ export const Card_Cliente = styled.div`
         margin: 5px 0;
         white-space: normal;
         overflow-wrap: break-word;
-        word-break: break-all;
+        word-break: break-word;
     }
 
     hr{

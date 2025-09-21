@@ -3,6 +3,7 @@ import styled from "styled-components"
 export const Consult_form = styled.form`
     display: flex;
     flex-direction: row;
+    position: relative;
     padding: 20px 30px 0 30px;
     gap: 40px;
     background-color: #2b2b2b;
@@ -146,6 +147,7 @@ export const InputError = styled.input`
 `
 
 export const Process_Cards = styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     margin: 0;

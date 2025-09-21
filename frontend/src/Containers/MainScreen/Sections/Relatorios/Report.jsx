@@ -14,6 +14,8 @@ export default function Report(){
     // Variáveis de estado
     const [FilterStatus, set_FilterStatus] = useState("") // Barra de progresso ao continuar com os filtros
     const [ClientInfo, set_ClientInfo] = useState([])
+    const [ProcessInfo, set_ProcessInfo] = useState([])
+    const [WorkerInfo, set_WorkerInfo] = useState([])
 
 
     // Extrair os dados do banco 
@@ -43,7 +45,6 @@ export default function Report(){
             link.click()
             link.remove()
             console.log(response)
-            set_ThirdSelect("")
 
         }catch (error){
             console.log("Erro ao gerar PDF:", error)
@@ -58,9 +59,35 @@ export default function Report(){
                 try{
                     const response = await axios.get("http://localhost:5000/get_clientes")
                     set_ClientInfo(response.data)
-                    console.log(response)
+                    // console.log(response)
                 }catch(error){
                     console.log("Erro ao buscar clientes.", error)
+                }
+                
+            })()
+        }
+        
+        if(SecondSelect === "4" && ProcessInfo.length === 0){
+            (async() => {
+                try{
+                    const response = await axios.get("http://localhost:5000/get_processos?only=id")
+                    set_ProcessInfo(response.data)
+                    // console.log(response)
+                }catch(error){
+                    console.log("Erro ao buscar Processos.", error)
+                }
+                
+            })()
+        }
+
+        if(SecondSelect === "5" && WorkerInfo.length === 0){
+            (async() => {
+                try{
+                    const response = await axios.get("http://localhost:5000/get_colaborador")
+                    set_WorkerInfo(response.data)
+                    console.log(response)
+                }catch(error){
+                    console.log("Erro ao buscar Colaboradores.", error)
                 }
                 
             })()
@@ -75,7 +102,7 @@ export default function Report(){
                     <label>Selecione o bloco que deseja exportar</label>
                     <select name="Filter" id="" onChange={(e) => {
                         set_FirstSelect(e.target.value)
-                        set_FilterStatus(e.target.value !== "" ? 1 : 0)
+                        set_FilterStatus(e.target.value !== "" ? 3 : 0)
                         set_SecondSelect(e.target.value === "" && "")
                         }} value={FirstSelect} required>
                         {FirstSelect === "" && ( 
@@ -107,7 +134,6 @@ export default function Report(){
                                     }} required>
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
-                                    <option value="2">Apenas meus</option>
                                     <option value="3">Cliente específico</option>
                                 </select>
                             </div>
@@ -126,11 +152,12 @@ export default function Report(){
                                 <label>Selecione o tipos de dados de processos</label>
                                 <select name="Filter" id="" onChange={(e) => {
                                     set_SecondSelect(e.target.value)
-                                    set_FilterStatus(e.target.value === "3" ? 4 : e.target.value === "1" ? 5 : 1)
+                                    set_FilterStatus(e.target.value === "3" ? 4 : e.target.value === "4" ? 4 : e.target.value === "1" ? 5 : 1)
                                     }} required>
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
                                     <option value="3">Cliente específico</option>
+                                    <option value="4">Processo Específico</option>
                                 </select>
                             </div>
                         </FilterBox>
@@ -149,18 +176,18 @@ export default function Report(){
                                 <label>Selecione o tipos de dados de colaboradores</label>
                                 <select name="Filter" id="" onChange={(e) => {
                                     set_SecondSelect(e.target.value)
-                                    set_FilterStatus(e.target.value === "2" ? 2 : e.target.value === "1" ? 5 : 1)
+                                    set_FilterStatus(e.target.value === "5" ? 4 : e.target.value === "1" ? 5 : 1)
                                     }} required>
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
-                                    <option value="2">Apenas meus</option>
+                                    <option value="5">Colaborador específico</option>
                                 </select>
                             </div>
                         </FilterBox>
                     </motion.div>
                 )}
                 {/* Terciro Filtro: Apenas CLientes selecionados */}
-                {SecondSelect === "3" && (
+                {SecondSelect === "3" ? (
                     <motion.div
                     key="client-picker"
                     layout
@@ -181,6 +208,60 @@ export default function Report(){
                                     {ClientInfo.map((client) => {
                                         return(
                                             <option key={client.cd_Cliente}>{client.nm_Cliente}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                        </FilterBox>
+                    </motion.div>
+                ) : SecondSelect === "4" ? (
+                    <motion.div
+                    key="Processo-picker"
+                    layout
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    >
+                        <FilterBox className="Processo-picker">
+                            <div className="input-group-select">
+                                <label>Processo</label>
+                                <select name="Filter" id="" onChange={(e) => {
+                                    const filterInput = e.target.value
+                                    set_ThirdSelect(filterInput)
+                                    set_FilterStatus(filterInput === '' ? 4 : 5)
+                                    }} required>
+                                    <option value="">Selecione</option>
+                                    {ProcessInfo.map((process) => {
+                                        return(
+                                            <option key={process.cd_Processo}>{process.cd_NumeroProcesso}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                        </FilterBox>
+                    </motion.div>
+                ) : SecondSelect === "5" && (
+                    <motion.div
+                    key="Worker-picker"
+                    layout
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    >
+                        <FilterBox className="Worker-picker">
+                            <div className="input-group-select">
+                                <label>Colaborador</label>
+                                <select name="Filter" id="" onChange={(e) => {
+                                    const filterInput = e.target.value
+                                    set_ThirdSelect(filterInput)
+                                    set_FilterStatus(filterInput === '' ? 4 : 5)
+                                    }} required>
+                                    <option value="">Selecione</option>
+                                    {WorkerInfo.map((worker) => {
+                                        return(
+                                            <option key={worker.cd_Colaborador}>{worker.nm_Colaborador}</option>
                                         )
                                     })}
                                 </select>

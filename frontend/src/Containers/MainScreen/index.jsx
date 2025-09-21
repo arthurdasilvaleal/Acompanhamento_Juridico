@@ -12,7 +12,9 @@ import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
   const location = useLocation()
+  const [prevOption, setPrevOption] = useState(option)
 
+  // Loading artificial --- fix that
   useEffect(() => {
     const timer = setTimeout(() =>{set_Loading(false)}, 1500)
     
@@ -50,10 +52,18 @@ export default function MainScreen() {
     
   }, [menuOpen, Exit])
 
+  useEffect(() => {
+
+    if(Exit){
+      document.body.style.overflow = "hidden"
+    }
+
+  }, [Exit])
+
   const contentMap = {
     "Visão Geral": <VisaoGeral NomeColaborador={nome} CodigoColaborador={codigo} CodigoTipoColaborador={codigoTipo}/>,
     "Processos": <Consulta_Processo CodigoColaborador={codigo} TipoColaborador={tipo} NomeColaborador={nome}/>,
-    "Clientes": <Consulta_Cliente TipoColaborador={tipo}/>,
+    "Clientes": <Consulta_Cliente TipoColaborador={tipo} active={option === "Clientes"}/>,
     "Relatórios": <Report />
   }
 
@@ -67,7 +77,7 @@ export default function MainScreen() {
   }
 
   if(contentMap !== "Processos"){document.body.style.overflow = "visible"}
-
+  document.body.style.overflowX = "hidden"
   document.body.style.backgroundColor = "#343434"
   // Debug de renderizações de componentes
   // const renderCount = useRef(0)
@@ -100,20 +110,29 @@ export default function MainScreen() {
         </Main_Menu>
 
         <Main_Content $isBlocked={menuOpen} $Exiting={Exit}>
-          <Animated_background />
-
-          <Main_Title>
-            <h1>{option}</h1>
-            {/* Adicionando o subtitulo dinamicamente */}
-            {SubTitleObject.SubTitles.map((item) => {
-              if (item.key === option) {
-                return item
-              }
-              return null
-            })}
-            <hr />
-          </Main_Title>
-          {contentMap[option]}
+          {/* <Animated_background /> */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={option} // força o AnimatePresence a animar na troca
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50}}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+            >
+              <Main_Title>
+                <h1>{option}</h1>
+                {/* Adicionando o subtitulo dinamicamente */}
+                {SubTitleObject.SubTitles.map((item) => {
+                  if (item.key === option) {
+                    return item
+                  }
+                  return null
+                })}
+                <hr />
+              </Main_Title>
+              {contentMap[option]}
+            </motion.div>
+          </AnimatePresence>
         </Main_Content>
         <Exit_card $Exiting={Exit} $Visible={Exit_Interacted}>
           <svg onClick={() => set_Exit(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">

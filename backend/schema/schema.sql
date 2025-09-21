@@ -1,5 +1,5 @@
 -- Criação do Banco de Dados
--- DROP DATABASE IF EXISTS BD_AJ;
+DROP DATABASE IF EXISTS BD_AJ;
 CREATE DATABASE BD_AJ;
 USE BD_AJ;
 
@@ -101,7 +101,7 @@ CREATE TABLE StatusTarefa(
 );
 
 CREATE TABLE TipoTarefa(
-	cd_TipoTarefa INT AUTO_INCREMENT NOT NULL,
+    cd_TipoTarefa INT AUTO_INCREMENT NOT NULL,
     nm_TipoTarefa VARCHAR(80),
     PRIMARY KEY (cd_TipoTarefa)
 );
@@ -238,7 +238,7 @@ END $$
 DELIMITER $$
 
 CREATE PROCEDURE SP_Update_Cliente (
-    IN sp_cd_Cliente int,
+	IN sp_cd_Cliente int,
 	IN sp_nm_Cliente varchar(40),
 	IN sp_cd_CPF decimal(11,0),
 	IN sp_cd_CNPJ decimal(14,0), 
@@ -281,7 +281,7 @@ BEGIN
     -- Update dos dados do cliente
     UPDATE Cliente
     SET
-    nm_Cliente = COALESCE(sp_nm_Cliente, nm_Cliente), -- COALESCE: atualiza apenas se o novo dado não for NULL
+	nm_Cliente = COALESCE(sp_nm_Cliente, nm_Cliente), -- COALESCE: atualiza apenas se o novo dado não for NULL
 	cd_CPF = sp_cd_CPF,
 	cd_CNPJ = sp_cd_CNPJ,
 	nm_Logradouro = sp_nm_Logradouro,
@@ -307,9 +307,9 @@ DELIMITER $$
 
 CREATE PROCEDURE SP_Update_Processo (
 	IN sp_cd_Processo INT,
-    IN sp_cd_ClienteAntigo INT,
-    IN sp_cd_ClienteNovo INT,
-    IN sp_cd_PosicaoAcao INT,
+	IN sp_cd_ClienteAntigo INT,
+	IN sp_cd_ClienteNovo INT,
+	IN sp_cd_PosicaoAcao INT,
 	IN sp_cd_NumeroProcesso VARCHAR(25),
 	IN sp_nm_Autor VARCHAR(40),
 	IN sp_nm_Reu VARCHAR(40),
@@ -383,11 +383,11 @@ BEGIN
     -- Verifica se há vínculo na tabela Cliente_Processo
     IF sp_cd_Cliente IN (SELECT cd_Cliente FROM Cliente_Processo)
     THEN
-		SET @mensagem = CONCAT(	'Não foi possível concluir a exclusão, pois o cliente está vinculado aos autos: ', 
-								(SELECT GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ', ')
-								FROM Processo p
-								INNER JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
-								WHERE cp.cd_Cliente = 1));
+		SET @mensagem = CONCAT(	'Não foi possível concluir a exclusão, pois o cliente está vinculado a ', 
+								(SELECT COUNT(p.cd_Processo)
+                                FROM Processo p
+                                INNER JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
+                                WHERE cp.cd_Cliente = sp_cd_Cliente), ' processo(s)');
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @mensagem;
 	ELSE
 		DELETE FROM Cliente
@@ -422,9 +422,9 @@ BEGIN
 	END IF;
     
     -- Verifica se o processo não possui intimações
-    IF NOT EXISTS (	SELECT cd_Intimacao
+    IF NOT EXISTS (SELECT cd_Intimacao
 					FROM Intimacao
-                    WHERE cd_Processo = sp_cd_Processo)
+					WHERE cd_Processo = sp_cd_Processo)
 	THEN
         DELETE FROM Cliente_Processo
         WHERE cd_Processo = sp_cd_Processo;
@@ -433,8 +433,8 @@ BEGIN
 	ELSE
 		IF EXISTS (	SELECT t.cd_Tarefa
 					FROM Tarefa t
-                    INNER JOIN Intimacao i ON i.cd_Intimacao = t.cd_Intimacao
-                    WHERE (i.cd_Processo = sp_cd_Processo) AND (t.cd_StatusTarefa <> 3)	)
+					INNER JOIN Intimacao i ON i.cd_Intimacao = t.cd_Intimacao
+					WHERE (i.cd_Processo = sp_cd_Processo) AND (t.cd_StatusTarefa <> 3)	)
 		THEN
 			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERRO: Exclusão não realizada, o processo possui tarefas pendentes';
 		ELSE
@@ -451,6 +451,123 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- ENCAPSULANDO SELECTS PARA O SERVIDOR(By jestao)
+DELIMITER $$
+
+CREATE PROCEDURE PDFDownloadCase(
+	IN Filt1 INT,
+    IN Filt2 INT,
+    IN Filt3 VARCHAR(100)
+)
+    
+BEGIN
+    CASE Filt1
+        WHEN 1 THEN
+            CASE Filt2
+				WHEN 1 THEN
+					-- INICIO DO SELECT (Processos, TODOS)
+					SELECT * FROM Processo;
+                    -- FIM DO SELECT (Processos, TODOS)
+				WHEN 3 THEN
+					-- INICIO DO SELECT (Processos, Nome do cliente)
+					SELECT *
+					FROM Processo p
+                    LEFT JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
+					LEFT JOIN Cliente c ON cp.cd_Cliente = c.cd_Cliente
+                    WHERE nm_Cliente = Filt3;
+                    -- FIM DO SELECT (Processos, TODOS)
+				WHEN 4 THEN
+					-- INICIO DO SELECT (Processos, Processo Específico)
+                    SELECT *
+					FROM Processo 
+                    WHERE cd_NumeroProcesso = Filt3;
+			END CASE;
+        WHEN 2 THEN
+            CASE Filt2
+				WHEN 1 THEN
+					-- INICIO DO SELECT (Clientes, TODOS)
+					SELECT
+						c.nm_Cliente AS 'Cliente',
+						CASE 
+							WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
+							ELSE  c.cd_CNPJ
+						END AS 'CPF/CNPJ',
+					--  CONCAT(c.nm_Logradouro, ', ', c.cd_NumeroEndereco, ', ', c.nm_Bairro, ', ', c.nm_Cidade, ', ', c.sg_Estado, ', CEP ', c.cd_CEP) AS 'Endereço',
+						c.nm_Logradouro AS 'Logradouro',
+						c.cd_NumeroEndereco AS 'Número',
+						c.nm_Bairro AS 'Bairro',
+						c.nm_Cidade AS 'Cidade',
+						c.sg_Estado AS 'Estado', 
+						c.cd_CEP AS 'CEP',
+						c.cd_Telefone AS 'Telefone',
+						c.ds_Email AS 'E-mail',
+						GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
+					FROM Cliente c
+					LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+					LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+					GROUP BY
+						c.nm_Cliente, 
+						c.cd_CPF, 
+						c.cd_CNPJ,
+						c.nm_Logradouro,
+						c.cd_NumeroEndereco,
+						c.nm_Bairro,
+						c.nm_Cidade,
+						c.sg_Estado,
+						c.cd_CEP,
+						c.cd_Telefone,
+						c.ds_Email;
+                        -- FIM DO SELECT (Clientes, TODOS)
+				WHEN 3 THEN
+					-- INICIO DO SELECT (Clientes, Selecionado)
+					SELECT
+						c.nm_Cliente AS 'Cliente',
+						CASE 
+							WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
+							ELSE  c.cd_CNPJ
+						END AS 'CPF/CNPJ',
+					--  CONCAT(c.nm_Logradouro, ', ', c.cd_NumeroEndereco, ', ', c.nm_Bairro, ', ', c.nm_Cidade, ', ', c.sg_Estado, ', CEP ', c.cd_CEP) AS 'Endereço',
+						c.nm_Logradouro AS 'Logradouro',
+						c.cd_NumeroEndereco AS 'Número',
+						c.nm_Bairro AS 'Bairro',
+						c.nm_Cidade AS 'Cidade',
+						c.sg_Estado AS 'Estado', 
+						c.cd_CEP AS 'CEP',
+						c.cd_Telefone AS 'Telefone',
+						c.ds_Email AS 'E-mail',
+						GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
+					FROM Cliente c
+					LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+					LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+                    WHERE nm_Cliente = Filt3
+					GROUP BY
+						c.nm_Cliente, 
+						c.cd_CPF, 
+						c.cd_CNPJ,
+						c.nm_Logradouro,
+						c.cd_NumeroEndereco,
+						c.nm_Bairro,
+						c.nm_Cidade,
+						c.sg_Estado,
+						c.cd_CEP,
+						c.cd_Telefone,
+						c.ds_Email;
+                        -- FIM DO SELECT (Clientes, Selecionado)
+			END CASE;
+        WHEN 3 THEN
+			CASE Filt2
+				WHEN 1 THEN
+					-- INÍCIO DO SELECT (Colaboradores, TODOS)
+					SELECT * FROM Colaborador;
+                    -- FIM DO SELECT (Colaboradores, TODOS)
+        END CASE;
+            SELECT 'Opção padrão';
+    END CASE;
+END$$
+
+DELIMITER ;
+
 
 -- INSERÇÃO DE DADOS
 
@@ -750,3 +867,89 @@ CALL Proc_Insercao_ProcessoCliente(
     35000.00                       -- Valor da causa
 );
 
+USE bd_aj;
+SELECT * FROM Processo;
+SELECT * FROM Cliente;
+SELECT * FROM Colaborador;
+SELECT * FROM Tarefa;
+SELECT * FROM Intimacao;
+SELECT COUNT(*) FROM Processo;
+SELECT * FROM TipoTarefa;
+UPDATE Colaborador SET cd_TipoColaborador = 2 WHERE nm_Colaborador = "Ana Paula";
+
+SELECT 
+    i.cd_Intimacao,
+    i.dt_Recebimento,
+    i.ds_Intimacao,
+    p.cd_NumeroProcesso,
+    p.nm_Autor,
+    p.nm_Reu
+FROM 
+    Intimacao i
+JOIN 
+    Processo p ON i.cd_Processo = p.cd_Processo
+LEFT JOIN 
+    Cliente_Processo cp ON p.cd_Processo = cp.cd_Processo
+LEFT JOIN 
+    Cliente c ON cp.cd_Cliente = c.cd_Cliente
+WHERE 
+    p.cd_NumeroProcesso = '0003333-40.2023.8.26.0003'
+    AND (
+        p.nm_Autor LIKE 'Fernando Lima' OR
+        p.nm_Reu LIKE 'Fernando Lima' OR
+        c.nm_Cliente LIKE 'Fernando Lima'
+    );
+    
+    
+SELECT 
+	c.nm_Cliente AS 'Cliente',
+    GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR '\n') AS 'Processo'
+FROM Cliente_Processo cp
+INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
+INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo
+GROUP BY c.nm_Cliente; -- Esse só traz UM UNICO processo (Não serve)
+
+SELECT c.*, p.cd_NumeroProcesso, p.cd_Processo
+FROM Cliente_Processo cp
+INNER JOIN Cliente c ON c.cd_Cliente = cp.cd_Cliente
+INNER JOIN Processo p ON p.cd_Processo = cp.cd_Processo;
+
+SELECT
+                c.cd_Cliente,
+                c.nm_Cliente,
+                c.cd_CPF,
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado, 
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email,
+                GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' @ ') AS 'cd_numProcessos'
+            FROM Cliente c
+            INNER JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+            INNER JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+            GROUP BY
+                c.cd_cliente,
+                c.nm_Cliente, 
+                c.cd_CPF, 
+                c.cd_CNPJ,
+                c.nm_Logradouro,
+                c.cd_NumeroEndereco,
+                c.nm_Bairro,
+                c.nm_Cidade,
+                c.sg_Estado,
+                c.cd_CEP,
+                c.cd_Telefone,
+                c.ds_Email;
+                
+SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProcesso, 
+                P.nm_Autor, P.nm_Reu, P.nm_Cidade, P.vl_Causa, P.ds_Juizo, P.ds_Acao, P.sg_Tribunal
+                FROM Processo P
+                JOIN Cliente_Processo CP ON CP.cd_Processo = P.cd_Processo
+                JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
+                WHERE P.nm_Autor = "Carlos Silva";
+                
+CALL PDFDownloadCase(2, 5);

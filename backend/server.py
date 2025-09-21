@@ -7,8 +7,6 @@ import mysql.connector
 from mysql.connector import pooling
 
 # Para o loop de inserção de dados automáticos
-import threading, time, random, requests
-from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app) # Resolve o erro do navegador bloquear a conexão
@@ -30,83 +28,6 @@ connection_pool = pooling.MySQLConnectionPool(
 # Se o usuário sair da aba muito rápido, causa um erro... fix that
 # cursor = db.cursor(dictionary=True) Dicionario global(DEPRECATED)
 
-# Adicionando dados automáticos(útil para o dashboard - DESATIVAR EM PRODUÇÃO!!!!!!!!)
-FillRandomDataTask = False
-MainRole = ""
-
-def Submit_Random_Task():
-
-    conn = connection_pool.get_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    query = "SELECT COUNT(*) FROM Intimacao"
-    cursor.execute(query)
-    result = cursor.fetchone()
-    total_int = result["COUNT(*)"]
-
-    query2 = "SELECT COUNT(*) FROM Colaborador"
-    cursor.execute(query2)
-    result2 = cursor.fetchone()
-    total_worker = result2["COUNT(*)"]
-
-    ultimo_estado = None
-
-    while True:
-        if FillRandomDataTask:
-            if ultimo_estado != True:
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] Envio automático ativado")
-                ultimo_estado = True
-
-            if MainRole == "task":
-                TaskData = {
-                    "idIntimacao": random.randint(1, total_int),
-                    "DataRecebimento": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    "dataPrazo": (datetime.now() + timedelta(days=random.randint(-180, 300))).strftime('%Y-%m-%d'),
-                    "idColaborador": random.randint(1, total_worker),
-                    "StatusTarefa": random.choice([1, 2, 3]),
-                    "DescricaoTarefa": f"Tarefa automática {random.randint(1000, 9999)}",
-                    "idTipoTarefa": random.randint(1, 4)
-                }
-
-                try:
-                    response = requests.post("http://192.168.100.3:5000/post_card?form=task", json=TaskData)
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] Tarefa enviada: {response.status_code} - {response.json()}")
-                except Exception as e:
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] ERRO ao enviar tarefa: {e}")
-            else:
-                IntData = {
-                    
-                }
-
-                print("MainRole diferente de task. Ignorando o envio.")
-        else:
-            if ultimo_estado != False:
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] Envio automático desativado")
-                ultimo_estado = False
-        
-        time.sleep(random.randint(10, 30))
-
-@app.route("/activate_AutoSubmit", methods=["POST"])
-def ativar_envio():
-
-    data = request.get_json()
-
-    Activate = data.get("activate")
-    role = data.get("role")
-
-    global MainRole, FillRandomDataTask
-
-    if Activate:
-        MainRole = role
-        FillRandomDataTask = True
-        return jsonify({"mensagem": "Envio automático ATIVADO", "Arg": Activate}), 200
-    else:
-        FillRandomDataTask = False
-        return jsonify({"mensagem": "Envio automático DESATIVADO", "Arg": Activate}), 200
- 
-# Adicionando dados automáticos(útil para o dashboard - DESATIVAR EM PRODUÇÃO!!!!!!!!)
-
-
 # Para o Login
 @app.route("/submit_login", methods=["POST"])
 def login():
@@ -120,18 +41,20 @@ def login():
     query = """SELECT cd_Colaborador, nm_Colaborador, nm_TipoColaborador, C.cd_TipoColaborador FROM Colaborador C
             JOIN TipoColaborador TP ON C.cd_TipoColaborador = TP.cd_TipoColaborador
             WHERE nm_Usuario = %s AND ds_Senha = SHA2(%s, 256)"""
-    
-    cursor.execute(query, (username, password))
-    user = cursor.fetchone()
+    try:
+        cursor.execute(query, (username, password))
+        user = cursor.fetchone()
+    except mysql.connector.Error as Err:
+        print(Err)
+    finally:
+        cursor.close()
+        conn.close()
 
     if user:
-        cursor.close()
-        conn.close()
         return jsonify({"success": True, "message": "Login bem-sucedido", "user": user })
     else:
-        cursor.close()
-        conn.close()
         return jsonify({"success": False, "message": "Usuário ou senha incorretos"}), 401
+    
 
 # Para Cadastro
 @app.route("/post_cadastro", methods=["POST"])
@@ -170,6 +93,25 @@ def post_clientes():
         cursor.close()
         conn.close()
 
+
+# Pegando os nomes dos colaboradores (Para relatórios)
+@app.route("/get_colaborador", methods=["GET"])
+def get_colaborador():
+    
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    query = "SELECT cd_Colaborador, nm_Colaborador FROM Colaborador"
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("Erro em 'get_colaborador'", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 # Consultar nome dos clientes
 @app.route("/get_clientes", methods=["GET"])
@@ -349,14 +291,14 @@ def get_processos():
     cursor = conn.cursor(dictionary=True)
 
     if only_numeros:
-        query = """SELECT cd_NumeroProcesso FROM Processo"""
+        query = """SELECT cd_Processo, cd_NumeroProcesso FROM Processo"""
         try:
             cursor.execute(query)
             result = cursor.fetchall()
-            numeros = [row["cd_NumeroProcesso"] for row in result]
-            return jsonify(numeros)
+            return jsonify(result)
         except mysql.connector.Error as Err:
-            return jsonify(Err)
+            print("Erro em 'get_clientes'", Err)
+            return jsonify({"error": str(Err)}), 500
         finally:
             cursor.close()
             conn.close()
@@ -843,6 +785,10 @@ def generate_pdf():
 
     cursor.execute("CALL PDFDownloadCase(%s, %s, %s)", (PrimeiroFiltro, SegundoFiltro, TerceiroFiltro))
     result = cursor.fetchall()
+    # Remove o "Lixo" da consulta, evitando o erro "MySQL not Available"
+    while cursor.nextset():
+        cursor.fetchall()
+
     cursor.close()
     conn.close()
     
@@ -861,20 +807,49 @@ def generate_pdf():
                 Title = "Relatório de todos os processos"
             elif SegundoFiltro == 3:
                 Title = f"Relatórios de processos do cliente {(TerceiroFiltro)}"
+            else:
+                Title = f"Relatório do processo N° {(TerceiroFiltro)}"
         case 2:
             if SegundoFiltro == 1:
                 Title = "Relatório de Todos os clientes"
             elif SegundoFiltro == 3:
-                Title = f"Relatório do {(TerceiroFiltro)}"
+                Title = f"Relatório de {(TerceiroFiltro)}"
+        case 3:
+            if SegundoFiltro == 1:
+                Title = "Relatório geral de todos os colaboradores"
+            elif SegundoFiltro == 5:
+                Title = f"Relatório do colaborador(a) {(TerceiroFiltro)}"
         case _:   
             Title = "Error"
 
     # Criar PDF
     pdf = PDF()
     pdf.add_page()
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, Title, ln=True, align="C")
-    pdf.ln(5)
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 9, Title, ln=True, align="C")
+    pdf.ln(10)
+
+    #Formatando o CEP
+    def format_CEP(cep: str) -> str:
+
+        # Garantindo que CEP seja string(Decimal has no length)
+        cep = str(cep)
+        return f"{cep[:5]}-{cep[5:]}"
+
+    # Formatando o N° telefone
+    def format_cell(cell: str) -> str:
+        
+        # Se vier como tuple/list, pega o primeiro valor
+        if isinstance(cell, (list, tuple, set)):
+            cell = next(iter(cell))
+
+        # Se vier como dict, pega o valor (ajustar conforme o schema)
+        if isinstance(cell, dict):
+            cell = list(cell.values())[0]
+
+        # Garantindo que cell seja string(Decimal has no length)
+        cell = str(cell)
+        return f"({cell[:2]}) {cell[2:7]}-{cell[7:]}"
 
     # Formatando o CPF/CNPJ
     def format_cpf(cpf: str) -> str:
@@ -890,6 +865,10 @@ def generate_pdf():
     def format_cpf_cnpj(doc: str) -> str:
         if not doc:
             return ""
+
+        # Garantindo que o CPF seja string(Decimal has no length)
+        doc = str(doc)
+
         if len(doc) == 11:
             return format_cpf(doc)
         if len(doc) == 14:
@@ -907,19 +886,20 @@ def generate_pdf():
             pdf.set_font("Arial", size=10)
 
             doc = format_cpf_cnpj(t.get("CPF/CNPJ"))
-            
+            cell = format_cell(t.get("Telefone"))
+
             pdf.multi_cell(0, 6,
                 f"CPF/CNPJ: {doc}\n"
                 f"Endereço: {t.get('Logradouro', '')}, {t.get('Número', '')}, {t.get('Bairro', '')}, "
                 f"{t.get('Cidade', '')} - {t.get('Estado', '')}, CEP {t.get('CEP', '')}\n"
-                f"Telefone: {t.get('Telefone', '')}\n"
+                f"Telefone: {cell}\n"
                 f"E-mail: {t.get('E-mail', '')}\n"
                 f"Processo(s): {t.get('Processo(s)') or 'Nenhum processo cadastrado'}"
             )
             pdf.ln(5)  # espaço entre cards
 
-    # (Processos, TODOS, Cliente específico)
-    elif PrimeiroFiltro == 1 and (SegundoFiltro == 1 or SegundoFiltro == 3):
+    # (Processos, TODOS, Cliente específico, Processo específico)
+    elif PrimeiroFiltro == 1:
         pdf.set_font("Arial", size=10)
         for t in result:
             pdf.set_font("Arial", style="B", size=10)
@@ -950,7 +930,26 @@ def generate_pdf():
             pdf.cell(0, 6, f"Valor da causa: R${valor}", ln=True)
 
             pdf.ln(5)  # espaço entre cards
+    
+    elif PrimeiroFiltro == 3:
+        for t in result:
+            pdf.set_font("Arial", style="B", size=10)
+            pdf.cell(0, 8, f"Colaborador: {t.get('nm_Colaborador', '')}", ln=True)
 
+            doc = format_cpf_cnpj(t.get('cd_CPF') or t.get('cd_CNPJ'))
+            cell = format_cell({t.get('cd_Telefone')})
+            cep = format_CEP(t.get('cd_CEP'))
+
+            pdf.set_font("Arial", size=10)
+            pdf.multi_cell(0, 6, 
+                f"CPF: {doc}\n"
+                f"Endereço: {t.get('nm_Logradouro', '')}, {t.get('nm_Bairro', '')}, {t.get('nm_Cidade', '')}/{t.get('sg_Estado', '')}\n"
+                f"CEP: {cep}, Nº {t.get('cd_NumeroEndereco', '')}, {t.get('ds_ComplementoEndereco', '')}\n"
+                f"Telefone:{cell}\n"
+                f"Email: {t.get('ds_Email', '')}"
+            )
+
+            pdf.ln(5)  # espaço entre cards
 
     # Salvar PDF na memória
     pdf_output = io.BytesIO()
@@ -966,8 +965,6 @@ def generate_pdf():
     )
 
 if __name__ == "__main__":
-    t = threading.Thread(target=Submit_Random_Task, daemon=True)
-    t.start()
     app.run(debug=True, port=5000, host="0.0.0.0")
 
 

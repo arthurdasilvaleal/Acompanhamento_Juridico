@@ -98,6 +98,12 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
 
     // Pesquisando o processo (por nome e/ou numero)
     const getProcessSubmit = async (e) => {
+
+        window.scrollTo({
+            top: 1,
+            behavior: "smooth"
+        })
+
         e.preventDefault()
         set_firstContact(false)
         set_Loading(true)
@@ -438,8 +444,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                 list="processes-number" $found_data={notFound} />
                             </div>
                         <datalist id="processes-number">
-                            {cd_ListNumeroProcesso.map((numero, index) => (
-                                <option key={index} value={numero}></option>
+                            {cd_ListNumeroProcesso.map((processo) => (
+                                <option key={processo.cd_Processo} value={processo.cd_NumeroProcesso}></option>
                             ))}
                         </datalist>
                     </div>

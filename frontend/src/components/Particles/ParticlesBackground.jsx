@@ -15,13 +15,13 @@ const ParticlesBG = memo(() => {
 
   const options = useMemo(
     () => ({
-      fullScreen: { enable: true },
+      fullScreen: { enable: false },
       background: {
         color: {
           value: "transparent",
         },
       },
-      fpsLimit: 120,
+      fpsLimit: 60,
       interactivity: {
         events: {
           onClick: {
@@ -87,11 +87,13 @@ const ParticlesBG = memo(() => {
 
   
     return (
+      <div style={{ position: "absolute", width: "100%", height: "100%" }}>
       <Particles
         id="tsparticles"
         // particlesLoaded={particlesLoaded} // Apenas para debug
         options={options}
       />
+      </div>
     )
   
 })
