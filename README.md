@@ -55,11 +55,11 @@ npm i axios
 npm i react-number-format
 npm i cpf-cnpj-validator
 npm i inputmask
-npm i downshift
 npm i react-spinners
 npm i @heroicons/react
 npm i @tsparticles/react
 npm i framer-motion
+npm install react-select
 ```
 
 ### Instalação do Back-end (Python + Flask)

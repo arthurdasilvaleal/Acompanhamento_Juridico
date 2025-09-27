@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from "styled-components"
+import Select from "react-select"
 
 export const Container = styled.div`
     display: flex;
@@ -46,6 +47,75 @@ export const FilterBox = styled.div`
         .label{
             text-align: end;
         }
+    }
+`
+
+export const StyledSelect = styled(Select)`
+  /* --- 1. Estilos do :control --- */
+    & .react-select__control {
+        background-color: #00000039;
+        min-height: 48px;
+        width: calc(30vw + 36px);
+        border-radius: 8px;
+        border: ${props => (props.$found_data ? '2px solid #ff4d4d' : '1px solid transparent')};
+        box-shadow: none;
+        cursor: text;
+
+    &:hover {
+        border-color: #fff;
+    }
+
+    /* Media Query para responsividade */
+    @media (max-width: 768px) {
+        width: calc(40vw + 36px);
+    }
+  }
+
+  /* Estilo para o :control quando está focado */
+    & .react-select__control--is-focused {
+        border-color: #fff;
+        box-shadow: none; /* Você tinha 'none' aqui, então removemos a sombra de foco */
+    }
+
+    /* --- 2. Estilos do :input e :singleValue (o texto dentro) --- */
+    & .react-select__input-container,
+    & .react-select__single-value {
+        color: #e0e0e0;
+    }
+
+    /* --- 3. Estilo do :placeholder --- */
+    & .react-select__placeholder {
+        color: #888;
+    }
+
+    /* --- 4. Estilo do :menu (o dropdown) --- */
+    & .react-select__menu {
+        background-color: #2c2c2c;
+        border-radius: 8px;
+        z-index: 5;
+    }
+
+    /* --- 5. Estilo da :option (cada item da lista) --- */
+    & .react-select__option {
+        background-color: transparent;
+        color: #e0e0e0;
+        cursor: pointer;
+
+        &:active {
+        background-color: #CDAF6F;
+        }
+    }
+    
+    /* Estilo da :option quando está com hover/foco */
+    & .react-select__option--is-focused {
+        background-color: #4f4f6a;
+    }
+
+    /* Estilo da :option quando já está selecionada */
+    & .react-select__option--is-selected {
+        background-color: #CDAF6F;
+        color: #1a1a1a;
+        font-weight: 500;
     }
 `
 

@@ -7,6 +7,7 @@ export const H_align = styled.div`
     height: 100vh;
     @media (max-width: 1366px) and (max-height: 644px) {
       height: auto;
+      padding: 40px 0;
     }
     @media (max-width: 768px) {
       padding: 20px 0 20px;

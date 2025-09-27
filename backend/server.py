@@ -14,7 +14,7 @@ CORS(app) # Resolve o erro do navegador bloquear a conexão
 dbconfig = {
     "host": "localhost",
     "user": "root",
-    "password": "root",
+    "password": "fatec#2025",
     "database": "BD_AJ"
 }
 
@@ -945,7 +945,7 @@ def generate_pdf():
                 f"CPF: {doc}\n"
                 f"Endereço: {t.get('nm_Logradouro', '')}, {t.get('nm_Bairro', '')}, {t.get('nm_Cidade', '')}/{t.get('sg_Estado', '')}\n"
                 f"CEP: {cep}, Nº {t.get('cd_NumeroEndereco', '')}, {t.get('ds_ComplementoEndereco', '')}\n"
-                f"Telefone:{cell}\n"
+                f"Telefone: {cell}\n"
                 f"Email: {t.get('ds_Email', '')}"
             )
 

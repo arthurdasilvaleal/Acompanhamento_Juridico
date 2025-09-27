@@ -1,9 +1,59 @@
+// ===================================================================
+// ALTERAÇÃO 1: Importar o componente Select e o useMemo
+// ===================================================================
 import { Process_Form, Process_button, FixedBox, Process_back_button } from "./style"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+import Select from 'react-select'; // <-- ADICIONADO
 import { NumericFormat } from 'react-number-format'
 import Modal from '../../../../../components/Modal/Modal'
 import Loading_Form from "../../../../../components/Loading_Form/Loading"
 import axios from "axios"
+
+// ===================================================================
+// ALTERAÇÃO 2: Adicionar os estilos customizados para o Select
+// (Coloquei fora do componente para não ser recriado a cada renderização)
+// ===================================================================
+const customSelectStyles = {
+    control: (provided, state) => ({
+        ...provided,
+        backgroundColor: '#00000039', // Cor de fundo do input (ajuste se necessário)
+        minHeight: '48px',
+        width: 'calc(30vw + 36px)',
+        borderColor: state.isFocused ? '#CDAF6F' : 'transparent', // Cor da borda
+        borderRadius: '8px',
+        
+        boxShadow: state.isFocused ? '0 0 0 1px #CDAF6F' : 'none',
+        '&:hover': {
+            borderColor: '#CDAF6F',
+        },
+    }),
+    input: (provided) => ({
+        ...provided,
+        color: '#ffffff', // Cor do texto digitado
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: '#ffffff', // Cor do valor selecionado
+    }),
+    menu: (provided) => ({
+        ...provided,
+        backgroundColor: '#3a3a4a', // Cor de fundo do dropdown
+        borderRadius: '8px',
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isFocused ? '#4f4f6a' : 'transparent', // Cor da opção com hover
+        color: '#e0e0e0',
+        '&:active': {
+            backgroundColor: '#7f5ad5',
+        }
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: '#a0a0a0', // Cor do placeholder
+    }),
+};
+
 
 export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, setShowEditWindow, editInfo, setAddedProcess, setEditedProcess }){
 
@@ -32,7 +82,16 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
     const [isModalOpen, set_ModalOpen] = useState(false)
     const [formStatusMessage, set_FormStatusMessage] = useState("")
     const [fromStatusErrorMessage, set_fromStatusErrorMessage] = useState("")
-    const [deleteMessage, set_deleteMessage] = useState(false) // Caso tenha função de deletar
+    const [deleteMessage, set_deleteMessage] = useState(false)
+
+    // ===================================================================
+    // ALTERAÇÃO 3: Transformar sua lista de clientes para o formato que o react-select espera
+    // useMemo otimiza a performance, evitando que a lista seja recriada a cada renderização
+    // ===================================================================
+    const clienteOptions = useMemo(() => ListCliente.map(cliente => ({
+        value: cliente.cd_Cliente,
+        label: cliente.nm_Cliente
+    })), [ListCliente]);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -128,8 +187,8 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
                 console.error("Erro ao editar processo:", error)
                 set_FormStatusMessage("Erro ao editar Processo.")
                 set_fromStatusErrorMessage(error.response.data.error ===
-                     "1048 (23000): Column 'cd_Cliente' cannot be null" ? 
-                     "Cliente novo não encontrado" : error.response.data.error)
+                        "1048 (23000): Column 'cd_Cliente' cannot be null" ? 
+                        "Cliente novo não encontrado" : error.response.data.error)
                 set_ModalOpen(true)
                 set_Loading(false)
                 
@@ -160,7 +219,7 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
         }
         if(ShowEditWindow) set_firstEditRender(true)
     }, [blockCamp, nm_Cliente])
-      
+        
     // Quando editar um processo, as informações são preenchidas nos inputs, porém resetadas ao adicionar
     useEffect(() => {
         if(ShowWindow){
@@ -194,7 +253,10 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
 
     // Pega o cliente. Se o Nome do cliente for igual aos dados da API, é atribuido o código
     useEffect(() => {
-        if(!nm_Cliente || ListCliente.length === 0) return
+        if(!nm_Cliente || ListCliente.length === 0) {
+            set_cdCliente(null) // Garante que o cd_Cliente seja nulo se o nome for limpo
+            return
+        }
         
         const finded = ListCliente.find((pessoa) => 
             pessoa.nm_Cliente.toLowerCase() === nm_Cliente.toLowerCase()
@@ -240,17 +302,30 @@ export default function Processo({ ShowWindow, setShowWindow, ShowEditWindow, se
                         const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
                         set_NumProcesso(ParsedInteger)}} autoComplete="off" name="nm_Processo" id="nm_Processo" className="input" type="text" value={cd_NumProcesso} maxLength={25} required/>
                 </div>
+                {/* =================================================================== */}
+                {/* ALTERAÇÃO 4: Substituir o input e datalist pelo componente Select */}
+                {/* =================================================================== */}
                 <div className="input-group">
                     <label className="label" htmlFor="nm_Cliente">Nome do Cliente</label>
-                    <input onChange={(e) => {
-                        const ParsedString = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
-                        set_nmCliente(ParsedString)}} list="process-client" autoComplete="off" name="nm_Cliente" id="nm_Cliente" className="input" type="text" value={nm_Cliente} required/>
-                    <datalist id="process-client">
-                        {ListCliente.map((nome) => (
-                            <option key={nome.cd_Cliente} value={nome.nm_Cliente}></option>
-                        ))}
-                    </datalist>
+                    <Select
+                        id="nm_Cliente"
+                        name="nm_Cliente"
+                        options={clienteOptions}
+                        styles={customSelectStyles}
+                        // O 'value' agora precisa ser o objeto completo da opção, não apenas o texto
+                        value={clienteOptions.find(option => option.label === nm_Cliente) || null}
+                        // O 'onChange' retorna o objeto selecionado. Pegamos o 'label' para o seu estado 'nm_Cliente'
+                        onChange={(selectedOption) => {
+                            set_nmCliente(selectedOption ? selectedOption.label : "");
+                        }}
+                        placeholder="Digite ou selecione um cliente..."
+                        noOptionsMessage={() => "Nenhum cliente encontrado"}
+                        isClearable // Permite que o usuário limpe o campo
+                        required
+                    />
                 </div>
+                {/* FIM DA ALTERAÇÃO */}
+                
                 <div className="input-group-select-mid">
                     <label className="label" htmlFor="opcaoCliente">Selecione a posição desse cliente</label>
                     <select onChange={(e) => {set_OpacaoCliente(e.target.value)}} name="opcaoCliente" id="opcaoCliente" className="input-select" value={opcaoCliente} required>

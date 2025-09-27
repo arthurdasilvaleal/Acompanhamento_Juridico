@@ -3,7 +3,7 @@ import styled from "styled-components"
 export const FixedBox = styled.div`
     position: absolute;
     width: calc(100vw - 220px);
-    top: 140px;
+    top: 150px;
     opacity: ${({ $Show, $ShowEdit }) => $Show || $ShowEdit ? "1" : "0"};
     
     z-index: 1;
@@ -53,7 +53,7 @@ export const Process_Form = styled.form`
         color: #fff;
         border-radius: .5rem;
         padding: 0 1rem;
-        border: 2px solid transparent;
+        border: 1px solid transparent;
         font-size: 1rem;
         transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
     }
@@ -68,7 +68,7 @@ export const Process_Form = styled.form`
 
     .input:hover, .input:focus, .input-group:hover .input, select:focus  {
         outline: none;
-        border-color: #fff;
+        border-color: #CDAF6F;
     }
 
     .left-form{
@@ -113,8 +113,8 @@ export const Process_back_button = styled.button`
     position: absolute;
     display: flex;
     align-items: center;
-    top: 13px;
-    left: 30px;
+    top: 18px;
+    left: 20px;
     width: 40px;
     height: 40px;
     color: #fff;

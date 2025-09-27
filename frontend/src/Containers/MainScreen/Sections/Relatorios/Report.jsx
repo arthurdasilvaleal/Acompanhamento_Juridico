@@ -1,39 +1,54 @@
-import { Download_Button, Container, FilterBox, Charge_bar } from "./style.jsx"
-import { useState, useEffect } from "react"
+import { Download_Button, Container, FilterBox, Charge_bar, StyledSelect } from "./style.jsx"
+import { useState, useEffect, useMemo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import axios from "axios"
-import { option } from "framer-motion/client"
 
 export default function Report(){
 
     // Variáveis dos filtros
     const [FirstSelect, set_FirstSelect] = useState("")
     const [SecondSelect, set_SecondSelect] = useState("")
-    const [ThirdSelect, set_ThirdSelect] = useState("")
+    const [selectedClient, set_SelectedClient] = useState(null)
+    const [selectedWorker, set_SelectedWorker] = useState(null)
+    const [selectedProcess, set_SelectedProcess] = useState(null)
 
     // Variáveis de estado
-    const [FilterStatus, set_FilterStatus] = useState("") // Barra de progresso ao continuar com os filtros
+    const [FilterStatus, set_FilterStatus] = useState("")
     const [ClientInfo, set_ClientInfo] = useState([])
     const [ProcessInfo, set_ProcessInfo] = useState([])
     const [WorkerInfo, set_WorkerInfo] = useState([])
 
-
-    // Extrair os dados do banco 
+    // Função de envio
     const handleSubmit = async () => {
-
-        // 1 = "Processos"
-        // 2 = "Clientes"
-        // 3 = "Colaboradores"
-
+        
         const filterData = {
             FilterOne: parseInt(FirstSelect),
             FilterTwo: parseInt(SecondSelect),
-            FilterThree: ThirdSelect
-        }
+            FilterThree: (() => {
+              if (FirstSelect === "2") {
+                return ClientInfo.find(c => c.cd_Cliente === selectedClient)?.nm_Cliente || ""
+              }
+              if (FirstSelect === "1") {
+                if (SecondSelect === "3") {
+                  // 🔥 Processo -> Cliente específico
+                  return ClientInfo.find(c => c.cd_Cliente === selectedClient)?.nm_Cliente || ""
+                }
+                if (SecondSelect === "4") {
+                  // Processo -> Processo específico
+                  return ProcessInfo.find(p => p.cd_Processo === selectedProcess)?.cd_NumeroProcesso || ""
+                }
+                return "" // Processo -> Todos
+              }
+              if (FirstSelect === "3") {
+                return WorkerInfo.find(w => w.cd_Colaborador === selectedWorker)?.nm_Colaborador || ""
+              }
+              return ""
+            })()
+          }
 
         console.log(filterData)
 
-        try{
+        try {
             const response = await axios.post("http://localhost:5000/generate_pdf", filterData, {
                 responseType: 'blob'
             })
@@ -44,67 +59,82 @@ export default function Report(){
             document.body.appendChild(link)
             link.click()
             link.remove()
-            console.log(response)
-
-        }catch (error){
+        } catch (error) {
             console.log("Erro ao gerar PDF:", error)
         }
     }
 
-    // Pegar os nomes e códigos de clientes
+    // Pegar dados do banco
     useEffect(() => {
-
         if(SecondSelect === "3" && ClientInfo.length === 0){
             (async() => {
-                try{
+                try {
                     const response = await axios.get("http://localhost:5000/get_clientes")
                     set_ClientInfo(response.data)
-                    // console.log(response)
-                }catch(error){
+                } catch(error){
                     console.log("Erro ao buscar clientes.", error)
                 }
-                
             })()
         }
-        
+
         if(SecondSelect === "4" && ProcessInfo.length === 0){
             (async() => {
-                try{
+                try {
                     const response = await axios.get("http://localhost:5000/get_processos?only=id")
                     set_ProcessInfo(response.data)
-                    // console.log(response)
-                }catch(error){
-                    console.log("Erro ao buscar Processos.", error)
+                } catch(error){
+                    console.log("Erro ao buscar processos.", error)
                 }
-                
             })()
         }
 
         if(SecondSelect === "5" && WorkerInfo.length === 0){
             (async() => {
-                try{
+                try {
                     const response = await axios.get("http://localhost:5000/get_colaborador")
                     set_WorkerInfo(response.data)
-                    console.log(response)
-                }catch(error){
-                    console.log("Erro ao buscar Colaboradores.", error)
+                } catch(error){
+                    console.log("Erro ao buscar colaboradores.", error)
                 }
-                
             })()
         }
     }, [SecondSelect])
 
-    return(
+    // Options
+    const ClientOptions = useMemo(() => ClientInfo.map(client => ({
+        value: client.cd_Cliente,
+        label: client.nm_Cliente
+    })), [ClientInfo])
+
+    const ProcessOptions = useMemo(() => ProcessInfo.map(process => ({
+        value: process.cd_Processo,
+        label: process.cd_NumeroProcesso
+    })), [ProcessInfo])
+
+    const WorkerOptions = useMemo(() => WorkerInfo.map(worker => ({
+        value: worker.cd_Colaborador,
+        label: worker.nm_Colaborador
+    })), [WorkerInfo])
+
+    return (
         <Container>
-            {/* Filtro um: Escolhendo o bloco de dados */}
+            {/* Filtro um */}
             <FilterBox className="filter-one">
                 <div className="input-group-select">
                     <label>Selecione o bloco que deseja exportar</label>
-                    <select name="Filter" id="" onChange={(e) => {
-                        set_FirstSelect(e.target.value)
-                        set_FilterStatus(e.target.value !== "" ? 3 : 0)
-                        set_SecondSelect(e.target.value === "" && "")
-                        }} value={FirstSelect} required>
+                    <select 
+                        value={FirstSelect}
+                        onChange={(e) => {
+                            const value = e.target.value
+                            set_FirstSelect(value)
+                            set_SecondSelect("") 
+                            set_SelectedClient(null)
+                            set_SelectedProcess(null)
+                            set_SelectedWorker(null)
+                            set_FilterStatus(value !== "" ? 3 : 0)
+                        }}
+                        required
+                    >
                         {FirstSelect === "" && ( 
                             <option value="">Selecione</option>
                         )}
@@ -114,24 +144,30 @@ export default function Report(){
                     </select>
                 </div>
             </FilterBox>
+
             <AnimatePresence mode="popLayout">
-                {/* Filtro dois: Fazendo a filtragem dos dados do bloco escolhido */}
+                {/* Filtro dois */}
                 {FirstSelect === "2" ? (
                     <motion.div
-                    key="clients-filter"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
+                        key="clients-filter"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <FilterBox className="clients-filter">
                             <div className="input-group-select">
-                                <label>Selecione o tipos de dados de clientes</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    const filterInput = e.target.value
-                                    set_SecondSelect(filterInput)
-                                    set_FilterStatus(filterInput === "2" ? 2 : filterInput === "3" ? 4 : filterInput === "1" ? 5 : 1)
-                                    }} required>
+                                <label>Selecione o tipo de dados de clientes</label>
+                                <select 
+                                    value={SecondSelect}
+                                    onChange={(e) => {
+                                        const filterInput = e.target.value
+                                        set_SecondSelect(filterInput)
+                                        set_SelectedClient(null) // 🔥 reset
+                                        set_FilterStatus(filterInput === "3" ? 4 : filterInput === "1" ? 5 : 3)
+                                    }} 
+                                    required
+                                >
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
                                     <option value="3">Cliente específico</option>
@@ -141,19 +177,25 @@ export default function Report(){
                     </motion.div>
                 ) : FirstSelect === "1" ? (
                     <motion.div
-                    key="process-filter"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
+                        key="process-filter"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <FilterBox className="process-filter">
                             <div className="input-group-select">
-                                <label>Selecione o tipos de dados de processos</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    set_SecondSelect(e.target.value)
-                                    set_FilterStatus(e.target.value === "3" ? 4 : e.target.value === "4" ? 4 : e.target.value === "1" ? 5 : 1)
-                                    }} required>
+                                <label>Selecione o tipo de dados de processos</label>
+                                <select 
+                                    value={SecondSelect}
+                                    onChange={(e) => {
+                                        const filterInput = e.target.value
+                                        set_SecondSelect(filterInput)
+                                        set_SelectedProcess(null) // 🔥 reset
+                                        set_FilterStatus(filterInput === "3" ? 4 : filterInput === "4" ? 4 : filterInput === "1" ? 5 : 3)
+                                    }}
+                                    required
+                                >
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
                                     <option value="3">Cliente específico</option>
@@ -164,20 +206,25 @@ export default function Report(){
                     </motion.div>
                 ) : FirstSelect === "3" && (
                     <motion.div
-                    key="client-filter"
-                    layout
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
+                        key="worker-filter"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        <FilterBox className="client-filter">
+                        <FilterBox className="worker-filter">
                             <div className="input-group-select">
-                                <label>Selecione o tipos de dados de colaboradores</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    set_SecondSelect(e.target.value)
-                                    set_FilterStatus(e.target.value === "5" ? 4 : e.target.value === "1" ? 5 : 1)
-                                    }} required>
+                                <label>Selecione o tipo de dados de colaboradores</label>
+                                <select 
+                                    value={SecondSelect}
+                                    onChange={(e) => {
+                                        const filterInput = e.target.value
+                                        set_SecondSelect(filterInput)
+                                        set_SelectedWorker(null) // 🔥 reset
+                                        set_FilterStatus(filterInput === "5" ? 4 : filterInput === "1" ? 5 : 3)
+                                    }} 
+                                    required
+                                >
                                     <option value="">Selecione</option>
                                     <option value="1">Todos</option>
                                     <option value="5">Colaborador específico</option>
@@ -186,95 +233,66 @@ export default function Report(){
                         </FilterBox>
                     </motion.div>
                 )}
-                {/* Terciro Filtro: Apenas CLientes selecionados */}
-                {SecondSelect === "3" ? (
-                    <motion.div
-                    key="client-picker"
-                    layout
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    >
+
+                {/* Terceiro filtro */}
+                {SecondSelect === "3" && (
+                    <motion.div key="client-picker" layout {...anim}>
                         <FilterBox className="client-picker">
-                            <div className="input-group-select">
-                                <label>Cliente</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    const filterInput = e.target.value
-                                    set_ThirdSelect(filterInput)
-                                    set_FilterStatus(filterInput === "" ? 4 : 5)
-                                    }} required>
-                                    <option value="">Selecione</option>
-                                    {ClientInfo.map((client) => {
-                                        return(
-                                            <option key={client.cd_Cliente}>{client.nm_Cliente}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
+                            <StyledSelect
+                                options={ClientOptions}
+                                value={ClientOptions.find(option => option.value === selectedClient) || null}
+                                onChange={(selectedOption) => {
+                                    set_SelectedClient(selectedOption ? selectedOption.value : null)
+                                    set_FilterStatus(selectedOption ? 5 : 4)
+                                }}
+                                placeholder="Nome do cliente..."
+                                isClearable
+                                classNamePrefix="react-select"
+                            />
                         </FilterBox>
                     </motion.div>
-                ) : SecondSelect === "4" ? (
-                    <motion.div
-                    key="Processo-picker"
-                    layout
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    >
-                        <FilterBox className="Processo-picker">
-                            <div className="input-group-select">
-                                <label>Processo</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    const filterInput = e.target.value
-                                    set_ThirdSelect(filterInput)
-                                    set_FilterStatus(filterInput === '' ? 4 : 5)
-                                    }} required>
-                                    <option value="">Selecione</option>
-                                    {ProcessInfo.map((process) => {
-                                        return(
-                                            <option key={process.cd_Processo}>{process.cd_NumeroProcesso}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
+                )}
+                {SecondSelect === "4" && (
+                    <motion.div key="process-picker" layout {...anim}>
+                        <FilterBox className="process-picker">
+                            <StyledSelect
+                                options={ProcessOptions}
+                                value={ProcessOptions.find(option => option.value === selectedProcess) || null}
+                                onChange={(selectedOption) => {
+                                    set_SelectedProcess(selectedOption ? selectedOption.value : null)
+                                    set_FilterStatus(selectedOption ? 5 : 4)
+                                }}
+                                placeholder="Nº Processo..."
+                                isClearable
+                                classNamePrefix="react-select"
+                            />
                         </FilterBox>
                     </motion.div>
-                ) : SecondSelect === "5" && (
-                    <motion.div
-                    key="Worker-picker"
-                    layout
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    >
-                        <FilterBox className="Worker-picker">
-                            <div className="input-group-select">
-                                <label>Colaborador</label>
-                                <select name="Filter" id="" onChange={(e) => {
-                                    const filterInput = e.target.value
-                                    set_ThirdSelect(filterInput)
-                                    set_FilterStatus(filterInput === '' ? 4 : 5)
-                                    }} required>
-                                    <option value="">Selecione</option>
-                                    {WorkerInfo.map((worker) => {
-                                        return(
-                                            <option key={worker.cd_Colaborador}>{worker.nm_Colaborador}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
+                )}
+                {SecondSelect === "5" && (
+                    <motion.div key="worker-picker" layout {...anim}>
+                        <FilterBox className="worker-picker">
+                            <StyledSelect
+                                options={WorkerOptions}
+                                value={WorkerOptions.find(option => option.value === selectedWorker) || null}
+                                onChange={(selectedOption) => {
+                                    set_SelectedWorker(selectedOption ? selectedOption.value : null)
+                                    set_FilterStatus(selectedOption ? 5 : 4)
+                                }}
+                                placeholder="Nome do colaborador..."
+                                isClearable
+                                classNamePrefix="react-select"
+                            />
                         </FilterBox>
                     </motion.div>
                 )}
             </AnimatePresence>
-            <motion.div layout key="charge-bar"> {/* Para animar mudança do charge bar conforme a mudança do layout */}
+
+            {/* Botão de download */}
+            <motion.div layout key="charge-bar">
                 <Charge_bar $Status={FilterStatus}>
                     <AnimatePresence mode="popLayout">
                         {FilterStatus === 5 && (
-                        <div className="charge-bar">
                             <motion.div
                                 style={{ display: "flex", alignItems: "center", flexDirection: "column"}}
                                 key="Download"
@@ -282,15 +300,24 @@ export default function Report(){
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
-                                >
-                                    <p>Seu download esta pronto!</p>
-                                    <Download_Button className="Download" onClick={() => handleSubmit()}>Gerar pdf</Download_Button>
+                            >
+                                <p>Seu download está pronto!</p>
+                                <Download_Button className="Download" onClick={handleSubmit}>
+                                    Gerar PDF
+                                </Download_Button>
                             </motion.div>
-                        </div>
                         )}
                     </AnimatePresence>
                 </Charge_bar>
             </motion.div>
         </Container>
     )
+}
+
+// Props do motion
+const anim = {
+  initial: { opacity: 0, y: -20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.3 }
 }

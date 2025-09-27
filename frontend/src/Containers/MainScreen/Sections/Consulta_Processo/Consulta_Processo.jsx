@@ -1,18 +1,14 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Consult_form, Consult_button, Twin_Button, NotFound_Error, InputError } from "./style"
 import { Process_Cards, Card, Card_Title, First_info, Consult_IntForm, Consult_TaskForm } from "./style"
-import { Intimacao_card, Task_card, Edit_taskForm } from "./style"
+import { Intimacao_card, Task_card, Edit_taskForm, StyledSelect } from "./style"
 import Processo from "./Add_Processos/Processo"
 import Modal from "../../../../components/Modal/Modal"
 import Loading_Form from "../../../../components/Loading_Form/Loading"
 import axios from "axios"
-import { AnimatePresence } from "framer-motion"
-import { useCombobox } from "downshift"
 import { PencilSquareIcon } from "@heroicons/react/20/solid"
 import { PlusIcon } from "@heroicons/react/24/outline"
-import { color } from "chart.js/helpers"
-import { select } from "framer-motion/client"
-
+import { useMediaQuery } from "react-responsive"
 
 export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, NomeColaborador }){
 
@@ -42,6 +38,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
     const [deleteProcess, set_DeleteProcess] = useState(null) // Para armazenar o código do processo e mandá-lo para exclusão
     const [editTaskSvg, set_editTaskSvg] = useState(false) // Controla a ação de editar um card de tarefa
     const [selectTypeTask, set_selectTypeTask] = useState("") // Controla o tipo de tarefa que aparece no select seguinte
+    const isMobile = useMediaQuery({ maxWidth: 768 })
 
     // Para o formulario de edição de cada tarefa
     const [edit_dtPrazo, set_edit_dtPrazo] = useState("")
@@ -428,6 +425,11 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         setConfirmation: set_deleteConfirm
     }
 
+    const processoOptions = useMemo(() => cd_ListNumeroProcesso.map(processo => ({
+        value: processo.cd_NumeroProcesso, // O valor que seu estado usa
+        label: processo.cd_NumeroProcesso  // O que será exibido na tela
+    })), [cd_ListNumeroProcesso])
+
     return(
         <>
             <Processo {...ProcessProps}/>
@@ -436,18 +438,20 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                 <div className="GroupBy">
                     <div className="input-group">
                         <label className="label" htmlFor="cd_NumeroProcesso">Número do Processo</label>
-                        <div>
-                            <InputError onChange={(e) => {
-                                    const ParsedInteger = e.target.value.replace(/[^0-9-.]/g, "")
-                                    set_cdNumeroEndereco(ParsedInteger)}}
-                                autoComplete="off" name="cd_NumeroProcesso" id="cd_NumeroProcesso" className="input" type="text" value={cd_NumeroProcesso} 
-                                list="processes-number" $found_data={notFound} />
-                            </div>
-                        <datalist id="processes-number">
-                            {cd_ListNumeroProcesso.map((processo) => (
-                                <option key={processo.cd_Processo} value={processo.cd_NumeroProcesso}></option>
-                            ))}
-                        </datalist>
+                        <StyledSelect
+                            id="cd_NumeroProcesso"
+                            options={processoOptions}
+                            value={processoOptions.find(option => option.value === cd_NumeroProcesso) || null}
+                            onChange={(selectedOption) => {
+                                set_cdNumeroEndereco(selectedOption ? selectedOption.value : "");
+                            }}
+                            placeholder={ isMobile ? "Processo..." : "Digite o número do processo..."}
+                            isClearable
+                            
+                            // Lembre-se destas duas props importantes:
+                            classNamePrefix="react-select"
+                            $found_data={notFound}
+                        />
                     </div>
                     <div className="input-group">
                         <label className="label" htmlFor="nm_Cliente">Nome da parte</label>
