@@ -14,7 +14,7 @@ CORS(app) # Resolve o erro do navegador bloquear a conexão
 dbconfig = {
     "host": "localhost",
     "user": "root",
-    "password": "fatec#2025",
+    "password": "root",
     "database": "BD_AJ"
 }
 
@@ -629,101 +629,469 @@ def get_MainInfo():
     colaborador = request.args.get("colaborador")
 
     query = """
-        SELECT
-            (SELECT COUNT(*) FROM Processo) AS qtd_Processo,
-            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 1) AS Conhecimento,
-            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 2) AS Recursal,
-            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 3) AS Execução,
-            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 4) AS Finalizado,
-            (SELECT COUNT(*) FROM Processo WHERE cd_FaseProcesso = 5) AS Cancelado,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 1) AS Aguardando,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 2) AS Em_andamento,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_StatusTarefa = 3) AS Concluido,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1) AS qtd_MyTaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2) AS qtd_MyTaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3) AS qtd_MyTaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4) AS qtd_MyTaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5) AS qtd_MyTaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6) AS qtd_MyTaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7) AS qtd_MyTaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8) AS qtd_MyTaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9) AS qtd_MyTaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10) AS qtd_MyTaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11) AS qtd_MyTaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12) AS qtd_MyTaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12 AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 1 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 2 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 3 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 4 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 5 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 6 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 7 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 8 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 9 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 10 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 11 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND MONTH(dt_Registro) = 12 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1) AS qtd_TaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2) AS qtd_TaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3) AS qtd_TaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4) AS qtd_TaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5) AS qtd_TaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6) AS qtd_TaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7) AS qtd_TaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8) AS qtd_TaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9) AS qtd_TaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10) AS qtd_TaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11) AS qtd_TaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12) AS qtd_TaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12 AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 1 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth1,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 2 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth2,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 3 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth3,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 4 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth4,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 5 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth5,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 6 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth6,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 7 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth7,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 8 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth8,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 9 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth9,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 10 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth10,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 11 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth11,
-            (SELECT COUNT(*) FROM Tarefa WHERE MONTH(dt_Registro) = 12 AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth12,
-            (SELECT COUNT(*) FROM Tarefa WHERE cd_Colaborador = %s AND cd_StatusTarefa = 3) AS qtd_MyTaskFinished;
-        """
+                SELECT
+                    -- =========================
+                    -- 📂 Dados gerais de Processos
+                    -- =========================
+                    p.qtd_Processo,
+                    p.Conhecimento,
+                    p.Recursal,
+                    p.Execucao,
+                    p.Finalizado,
+                    p.Cancelado,
+
+                    -- =========================
+                    -- 📋 Dados gerais de Tarefas
+                    -- =========================
+                    t.Aguardando,
+                    t.Em_andamento,
+                    t.Concluido,
+                    t.qtd_MyTaskFinished,
+
+                    -- =========================
+                    -- 📆 Tarefas do colaborador por mês
+                    -- =========================
+                    mt.qtd_MyTaskByMonth1,
+                    mt.qtd_MyTaskByMonth2,
+                    mt.qtd_MyTaskByMonth3,
+                    mt.qtd_MyTaskByMonth4,
+                    mt.qtd_MyTaskByMonth5,
+                    mt.qtd_MyTaskByMonth6,
+                    mt.qtd_MyTaskByMonth7,
+                    mt.qtd_MyTaskByMonth8,
+                    mt.qtd_MyTaskByMonth9,
+                    mt.qtd_MyTaskByMonth10,
+                    mt.qtd_MyTaskByMonth11,
+                    mt.qtd_MyTaskByMonth12,
+
+                    -- =========================
+                    -- 📆 Tarefas gerais por mês
+                    -- =========================
+                    tt.qtd_TaskByMonth1,
+                    tt.qtd_TaskByMonth2,
+                    tt.qtd_TaskByMonth3,
+                    tt.qtd_TaskByMonth4,
+                    tt.qtd_TaskByMonth5,
+                    tt.qtd_TaskByMonth6,
+                    tt.qtd_TaskByMonth7,
+                    tt.qtd_TaskByMonth8,
+                    tt.qtd_TaskByMonth9,
+                    tt.qtd_TaskByMonth10,
+                    tt.qtd_TaskByMonth11,
+                    tt.qtd_TaskByMonth12,
+
+                    -- =========================
+                    -- ✅ Tarefas concluídas (geral e por colaborador)
+                    -- =========================
+                    ttf.qtdF_TaskByMonth1,
+                    ttf.qtdF_TaskByMonth2,
+                    ttf.qtdF_TaskByMonth3,
+                    ttf.qtdF_TaskByMonth4,
+                    ttf.qtdF_TaskByMonth5,
+                    ttf.qtdF_TaskByMonth6,
+                    ttf.qtdF_TaskByMonth7,
+                    ttf.qtdF_TaskByMonth8,
+                    ttf.qtdF_TaskByMonth9,
+                    ttf.qtdF_TaskByMonth10,
+                    ttf.qtdF_TaskByMonth11,
+                    ttf.qtdF_TaskByMonth12,
+
+                    ttfm.qtdF_MyTaskByMonth1,
+                    ttfm.qtdF_MyTaskByMonth2,
+                    ttfm.qtdF_MyTaskByMonth3,
+                    ttfm.qtdF_MyTaskByMonth4,
+                    ttfm.qtdF_MyTaskByMonth5,
+                    ttfm.qtdF_MyTaskByMonth6,
+                    ttfm.qtdF_MyTaskByMonth7,
+                    ttfm.qtdF_MyTaskByMonth8,
+                    ttfm.qtdF_MyTaskByMonth9,
+                    ttfm.qtdF_MyTaskByMonth10,
+                    ttfm.qtdF_MyTaskByMonth11,
+                    ttfm.qtdF_MyTaskByMonth12,
+
+                    -- =========================
+                    -- ⏳ Tarefas não finalizadas (geral e por colaborador)
+                    -- =========================
+                    tunf.qtdUNF_TaskByMonth1,
+                    tunf.qtdUNF_TaskByMonth2,
+                    tunf.qtdUNF_TaskByMonth3,
+                    tunf.qtdUNF_TaskByMonth4,
+                    tunf.qtdUNF_TaskByMonth5,
+                    tunf.qtdUNF_TaskByMonth6,
+                    tunf.qtdUNF_TaskByMonth7,
+                    tunf.qtdUNF_TaskByMonth8,
+                    tunf.qtdUNF_TaskByMonth9,
+                    tunf.qtdUNF_TaskByMonth10,
+                    tunf.qtdUNF_TaskByMonth11,
+                    tunf.qtdUNF_TaskByMonth12,
+
+                    tunfm.qtdUNF_MyTaskByMonth1,
+                    tunfm.qtdUNF_MyTaskByMonth2,
+                    tunfm.qtdUNF_MyTaskByMonth3,
+                    tunfm.qtdUNF_MyTaskByMonth4,
+                    tunfm.qtdUNF_MyTaskByMonth5,
+                    tunfm.qtdUNF_MyTaskByMonth6,
+                    tunfm.qtdUNF_MyTaskByMonth7,
+                    tunfm.qtdUNF_MyTaskByMonth8,
+                    tunfm.qtdUNF_MyTaskByMonth9,
+                    tunfm.qtdUNF_MyTaskByMonth10,
+                    tunfm.qtdUNF_MyTaskByMonth11,
+                    tunfm.qtdUNF_MyTaskByMonth12
+
+                FROM
+                    (
+                        SELECT
+                            COUNT(*) AS qtd_Processo,
+                            SUM(cd_FaseProcesso = 1) AS Conhecimento,
+                            SUM(cd_FaseProcesso = 2) AS Recursal,
+                            SUM(cd_FaseProcesso = 3) AS Execucao,
+                            SUM(cd_FaseProcesso = 4) AS Finalizado,
+                            SUM(cd_FaseProcesso = 5) AS Cancelado
+                        FROM Processo
+                    ) p
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            SUM(cd_StatusTarefa = 1) AS Aguardando,
+                            SUM(cd_StatusTarefa = 2) AS Em_andamento,
+                            SUM(cd_StatusTarefa = 3) AS Concluido,
+                            SUM(cd_Colaborador = %s AND cd_StatusTarefa = 3) AS qtd_MyTaskFinished
+                        FROM Tarefa
+                    ) t
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i} AND cd_Colaborador = %s) AS qtd_MyTaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) mt
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i}) AS qtd_TaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) tt
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i} AND cd_StatusTarefa = 3) AS qtdF_TaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) ttf
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i} AND cd_Colaborador = %s AND cd_StatusTarefa = 3) AS qtdF_MyTaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) ttfm
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i} AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_TaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) tunf
+
+                CROSS JOIN
+                    (
+                        SELECT
+                            """ + ",\n            ".join([
+                                f"SUM(MONTH(dt_Registro) = {i} AND cd_Colaborador = %s AND (cd_StatusTarefa = 1 OR cd_StatusTarefa = 2)) AS qtdUNF_MyTaskByMonth{i}" for i in range(1, 13)
+                            ]) + """
+                        FROM Tarefa
+                    ) tunfm;
+                """
     try:
-        cursor.execute(query, (colaborador, colaborador, colaborador, colaborador, colaborador, 
-            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
-            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
-            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador,
-            colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, colaborador, 
-            colaborador, colaborador, colaborador, colaborador,))
+        cursor.execute(query, tuple([colaborador] * 37))
         result = cursor.fetchone()
         return jsonify(result)
     except mysql.connector.Error as Err:
         print("\n\nErro em 'get_MainInfo':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# Novos endpoints para gráficos adicionais
+@app.route("/get_performance_data", methods=["GET"])
+def get_performance_data():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            c.nm_Colaborador,
+            COUNT(t.cd_Tarefa) as total_tarefas,
+            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as tarefas_concluidas,
+            ROUND(
+                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
+            ) as taxa_conclusao,
+            AVG(CASE 
+                WHEN t.cd_StatusTarefa = 3 AND t.dt_Registro IS NOT NULL AND t.dt_Prazo IS NOT NULL 
+                THEN DATEDIFF(t.dt_Registro, t.dt_Prazo) 
+                ELSE NULL 
+            END) as tempo_medio_resolucao
+        FROM Colaborador c
+        LEFT JOIN Tarefa t ON c.cd_Colaborador = t.cd_Colaborador
+        WHERE c.cd_TipoColaborador IN (2, 3, 4)  -- Advogados, Assistentes, Estagiários
+        GROUP BY c.cd_Colaborador, c.nm_Colaborador
+        HAVING COUNT(t.cd_Tarefa) > 0
+        ORDER BY taxa_conclusao DESC
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_performance_data':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_workload_data", methods=["GET"])
+def get_workload_data():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            c.nm_Colaborador,
+            SUM(CASE WHEN t.cd_StatusTarefa = 1 THEN 1 ELSE 0 END) as tarefas_aguardando,
+            SUM(CASE WHEN t.cd_StatusTarefa = 2 THEN 1 ELSE 0 END) as tarefas_em_andamento,
+            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as tarefas_concluidas,
+            COUNT(t.cd_Tarefa) as total_tarefas
+        FROM Colaborador c
+        LEFT JOIN Tarefa t ON c.cd_Colaborador = t.cd_Colaborador
+        WHERE c.cd_TipoColaborador IN (2, 3, 4)
+        GROUP BY c.cd_Colaborador, c.nm_Colaborador
+        ORDER BY total_tarefas DESC
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_workload_data':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_process_value_data", methods=["GET"])
+def get_process_value_data():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            p.sg_Tribunal,
+            fp.nm_FaseProcesso,
+            COUNT(p.cd_Processo) as quantidade_processos,
+            SUM(p.vl_Causa) as valor_total,
+            AVG(p.vl_Causa) as valor_medio
+        FROM Processo p
+        JOIN FaseProcesso fp ON p.cd_FaseProcesso = fp.cd_FaseProcesso
+        GROUP BY p.sg_Tribunal, fp.nm_FaseProcesso, fp.cd_FaseProcesso
+        ORDER BY valor_total DESC
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_process_value_data':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_deadline_data", methods=["GET"])
+def get_deadline_data():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            CASE 
+                WHEN t.dt_Prazo < CURDATE() AND t.cd_StatusTarefa != 3 THEN 'Atrasadas'
+                WHEN t.dt_Prazo BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY) AND t.cd_StatusTarefa != 3 THEN 'Próximas do Vencimento'
+                WHEN t.dt_Prazo > DATE_ADD(CURDATE(), INTERVAL 3 DAY) AND t.cd_StatusTarefa != 3 THEN 'No Prazo'
+                WHEN t.cd_StatusTarefa = 3 THEN 'Concluídas'
+                ELSE 'Outras'
+            END as status_prazo,
+            COUNT(*) as quantidade
+        FROM Tarefa t
+        GROUP BY status_prazo
+        ORDER BY 
+            CASE status_prazo
+                WHEN 'Atrasadas' THEN 1
+                WHEN 'Próximas do Vencimento' THEN 2
+                WHEN 'No Prazo' THEN 3
+                WHEN 'Concluídas' THEN 4
+                ELSE 5
+            END
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_deadline_data':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_task_type_data", methods=["GET"])
+def get_task_type_data():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            tt.nm_TipoTarefa,
+            COUNT(t.cd_Tarefa) as quantidade,
+            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as concluidas,
+            ROUND(
+                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
+            ) as taxa_conclusao
+        FROM TipoTarefa tt
+        LEFT JOIN Tarefa t ON tt.cd_TipoTarefa = t.cd_TipoTarefa
+        GROUP BY tt.cd_TipoTarefa, tt.nm_TipoTarefa
+        HAVING COUNT(t.cd_Tarefa) > 0
+        ORDER BY quantidade DESC
+        LIMIT 10
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_task_type_data':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_efficiency_trends", methods=["GET"])
+def get_efficiency_trends():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = """
+        SELECT 
+            MONTH(t.dt_Registro) as mes,
+            YEAR(t.dt_Registro) as ano,
+            COUNT(t.cd_Tarefa) as total_tarefas,
+            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as tarefas_concluidas,
+            ROUND(
+                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
+            ) as taxa_conclusao,
+            AVG(CASE 
+                WHEN t.cd_StatusTarefa = 3 AND t.dt_Registro IS NOT NULL AND t.dt_Prazo IS NOT NULL 
+                THEN DATEDIFF(t.dt_Registro, t.dt_Prazo) 
+                ELSE NULL 
+            END) as tempo_medio_resolucao
+        FROM Tarefa t
+        WHERE t.dt_Registro >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        GROUP BY YEAR(t.dt_Registro), MONTH(t.dt_Registro)
+        ORDER BY ano, mes
+    """
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_efficiency_trends':", Err)
+        return jsonify({"error": str(Err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route("/get_personal_stats", methods=["GET"])
+def get_personal_stats():
+    conn = connection_pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
+    colaborador = request.args.get("colaborador")
+    
+    query = """
+        SELECT 
+            -- Total de tarefas do colaborador
+            COUNT(t.cd_Tarefa) as total_tarefas,
+            
+            -- Tarefas por status
+            SUM(CASE WHEN t.cd_StatusTarefa = 1 THEN 1 ELSE 0 END) as aguardando,
+            SUM(CASE WHEN t.cd_StatusTarefa = 2 THEN 1 ELSE 0 END) as em_andamento,
+            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as concluidas,
+            
+            -- Análise de prazos
+            SUM(CASE 
+                WHEN t.dt_Prazo < CURDATE() AND t.cd_StatusTarefa != 3 THEN 1 
+                ELSE 0 
+            END) as tarefas_vencidas,
+            
+            SUM(CASE 
+                WHEN t.dt_Prazo BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY) 
+                AND t.cd_StatusTarefa != 3 THEN 1 
+                ELSE 0 
+            END) as tarefas_proximas_vencimento,
+            
+            SUM(CASE 
+                WHEN t.dt_Prazo > DATE_ADD(CURDATE(), INTERVAL 3 DAY) 
+                AND t.cd_StatusTarefa != 3 THEN 1 
+                ELSE 0 
+            END) as tarefas_no_prazo,
+            
+            -- Taxa de conclusão
+            ROUND(
+                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
+            ) as taxa_conclusao,
+            
+            -- Tarefas deste mês
+            SUM(CASE 
+                WHEN MONTH(t.dt_Registro) = MONTH(CURDATE()) 
+                AND YEAR(t.dt_Registro) = YEAR(CURDATE()) THEN 1 
+                ELSE 0 
+            END) as tarefas_este_mes,
+            
+            -- Tarefas concluídas este mês
+            SUM(CASE 
+                WHEN MONTH(t.dt_Registro) = MONTH(CURDATE()) 
+                AND YEAR(t.dt_Registro) = YEAR(CURDATE()) 
+                AND t.cd_StatusTarefa = 3 THEN 1 
+                ELSE 0 
+            END) as tarefas_concluidas_este_mes
+            
+        FROM Tarefa t
+        WHERE t.cd_Colaborador = %s
+    """
+    
+    try:
+        cursor.execute(query, (colaborador,))
+        result = cursor.fetchone()
+        return jsonify(result)
+    except mysql.connector.Error as Err:
+        print("\n\nErro em 'get_personal_stats':", Err)
         return jsonify({"error": str(Err)}), 500
     finally:
         cursor.close()

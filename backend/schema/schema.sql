@@ -452,117 +452,98 @@ END $$
 
 DELIMITER ;
 
--- ENCAPSULANDO SELECTS PARA O SERVIDOR(By jestao)
+-- ENCAPSULANDO SELECTS PARA O SERVIDOR (By jestao)
 DELIMITER $$
 
 CREATE PROCEDURE PDFDownloadCase(
-	IN Filt1 INT,
+    IN Filt1 INT,
     IN Filt2 INT,
     IN Filt3 VARCHAR(100)
 )
-    
 BEGIN
     CASE Filt1
+        -- ================== Bloco de PROCESSOS ==================
         WHEN 1 THEN
             CASE Filt2
-				WHEN 1 THEN
-					-- INICIO DO SELECT (Processos, TODOS)
-					SELECT * FROM Processo;
-                    -- FIM DO SELECT (Processos, TODOS)
-				WHEN 3 THEN
-					-- INICIO DO SELECT (Processos, Nome do cliente)
-					SELECT *
-					FROM Processo p
+                WHEN 1 THEN
+                    -- (Processos, TODOS)
+                    SELECT * FROM Processo;
+                
+                WHEN 3 THEN
+                    -- (Processos, por Nome do cliente)
+                    SELECT p.*
+                    FROM Processo p
                     LEFT JOIN Cliente_Processo cp ON cp.cd_Processo = p.cd_Processo
-					LEFT JOIN Cliente c ON cp.cd_Cliente = c.cd_Cliente
-                    WHERE nm_Cliente = Filt3;
-                    -- FIM DO SELECT (Processos, TODOS)
-				WHEN 4 THEN
-					-- INICIO DO SELECT (Processos, Processo Específico)
+                    LEFT JOIN Cliente c ON cp.cd_Cliente = c.cd_Cliente
+                    WHERE c.nm_Cliente = Filt3;
+                
+                WHEN 4 THEN
+                    -- (Processos, por Número do Processo)
                     SELECT *
-					FROM Processo 
+                    FROM Processo 
                     WHERE cd_NumeroProcesso = Filt3;
-			END CASE;
+            END CASE;
+            
+        -- ================== Bloco de CLIENTES ==================
         WHEN 2 THEN
             CASE Filt2
-				WHEN 1 THEN
-					-- INICIO DO SELECT (Clientes, TODOS)
-					SELECT
-						c.nm_Cliente AS 'Cliente',
-						CASE 
-							WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
-							ELSE  c.cd_CNPJ
-						END AS 'CPF/CNPJ',
-					--  CONCAT(c.nm_Logradouro, ', ', c.cd_NumeroEndereco, ', ', c.nm_Bairro, ', ', c.nm_Cidade, ', ', c.sg_Estado, ', CEP ', c.cd_CEP) AS 'Endereço',
-						c.nm_Logradouro AS 'Logradouro',
-						c.cd_NumeroEndereco AS 'Número',
-						c.nm_Bairro AS 'Bairro',
-						c.nm_Cidade AS 'Cidade',
-						c.sg_Estado AS 'Estado', 
-						c.cd_CEP AS 'CEP',
-						c.cd_Telefone AS 'Telefone',
-						c.ds_Email AS 'E-mail',
-						GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
-					FROM Cliente c
-					LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
-					LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
-					GROUP BY
-						c.nm_Cliente, 
-						c.cd_CPF, 
-						c.cd_CNPJ,
-						c.nm_Logradouro,
-						c.cd_NumeroEndereco,
-						c.nm_Bairro,
-						c.nm_Cidade,
-						c.sg_Estado,
-						c.cd_CEP,
-						c.cd_Telefone,
-						c.ds_Email;
-                        -- FIM DO SELECT (Clientes, TODOS)
-				WHEN 3 THEN
-					-- INICIO DO SELECT (Clientes, Selecionado)
-					SELECT
-						c.nm_Cliente AS 'Cliente',
-						CASE 
-							WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
-							ELSE  c.cd_CNPJ
-						END AS 'CPF/CNPJ',
-					--  CONCAT(c.nm_Logradouro, ', ', c.cd_NumeroEndereco, ', ', c.nm_Bairro, ', ', c.nm_Cidade, ', ', c.sg_Estado, ', CEP ', c.cd_CEP) AS 'Endereço',
-						c.nm_Logradouro AS 'Logradouro',
-						c.cd_NumeroEndereco AS 'Número',
-						c.nm_Bairro AS 'Bairro',
-						c.nm_Cidade AS 'Cidade',
-						c.sg_Estado AS 'Estado', 
-						c.cd_CEP AS 'CEP',
-						c.cd_Telefone AS 'Telefone',
-						c.ds_Email AS 'E-mail',
-						GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
-					FROM Cliente c
-					LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
-					LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
-                    WHERE nm_Cliente = Filt3
-					GROUP BY
-						c.nm_Cliente, 
-						c.cd_CPF, 
-						c.cd_CNPJ,
-						c.nm_Logradouro,
-						c.cd_NumeroEndereco,
-						c.nm_Bairro,
-						c.nm_Cidade,
-						c.sg_Estado,
-						c.cd_CEP,
-						c.cd_Telefone,
-						c.ds_Email;
-                        -- FIM DO SELECT (Clientes, Selecionado)
-			END CASE;
+                WHEN 1 THEN
+                    -- (Clientes, TODOS)
+                    SELECT
+                        c.nm_Cliente AS 'Cliente',
+                        CASE 
+                            WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
+                            ELSE c.cd_CNPJ
+                        END AS 'CPF/CNPJ',
+                        c.nm_Logradouro AS 'Logradouro',
+                        c.cd_NumeroEndereco AS 'Número',
+                        c.nm_Bairro AS 'Bairro',
+                        c.nm_Cidade AS 'Cidade',
+                        c.sg_Estado AS 'Estado', 
+                        c.cd_CEP AS 'CEP',
+                        c.cd_Telefone AS 'Telefone',
+                        c.ds_Email AS 'E-mail',
+                        GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
+                    FROM Cliente c
+                    LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+                    LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+                    GROUP BY c.cd_Cliente;
+
+                WHEN 3 THEN
+                    -- (Clientes, Selecionado por nome)
+                    SELECT
+                        c.nm_Cliente AS 'Cliente',
+                        CASE 
+                            WHEN c.cd_CPF IS NOT NULL THEN c.cd_CPF
+                            ELSE c.cd_CNPJ
+                        END AS 'CPF/CNPJ',
+                        c.nm_Logradouro AS 'Logradouro',
+                        c.cd_NumeroEndereco AS 'Número',
+                        c.nm_Bairro AS 'Bairro',
+                        c.nm_Cidade AS 'Cidade',
+                        c.sg_Estado AS 'Estado', 
+                        c.cd_CEP AS 'CEP',
+                        c.cd_Telefone AS 'Telefone',
+                        c.ds_Email AS 'E-mail',
+                        GROUP_CONCAT(p.cd_NumeroProcesso SEPARATOR ' - ') AS 'Processo(s)'
+                    FROM Cliente c
+                    LEFT JOIN Cliente_Processo cp ON cp.cd_Cliente = c.cd_Cliente
+                    LEFT JOIN Processo p ON cp.cd_Processo = p.cd_Processo
+                    WHERE c.nm_Cliente = Filt3
+                    GROUP BY c.cd_Cliente;
+            END CASE;
+
+        -- ================== Bloco de COLABORADORES ==================
         WHEN 3 THEN
-			CASE Filt2
-				WHEN 1 THEN
-					-- INÍCIO DO SELECT (Colaboradores, TODOS)
-					SELECT * FROM Colaborador;
-                    -- FIM DO SELECT (Colaboradores, TODOS)
-        END CASE;
-            SELECT 'Opção padrão';
+            CASE Filt2
+                WHEN 1 THEN
+                    -- (Colaboradores, TODOS)
+                    SELECT * FROM Colaborador;
+				WHEN 5 THEN
+                    -- (Colaboradores, TODOS)
+                    SELECT * FROM Colaborador
+                    WHERE nm_Colaborador = Filt3;
+            END CASE;
     END CASE;
 END$$
 
@@ -608,7 +589,8 @@ INSERT INTO StatusTarefa (cd_StatusTarefa, nm_StatusTarefa)
 VALUES
 (1, 'Aguardando'),
 (2, 'Em andamento'),
-(3, 'Concluído');
+(3, 'Concluído'),
+(4, 'Cancelado');
 
 INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
 -- Petições e atos processuais
@@ -875,7 +857,6 @@ SELECT * FROM Tarefa;
 SELECT * FROM Intimacao;
 SELECT COUNT(*) FROM Processo;
 SELECT * FROM TipoTarefa;
-UPDATE Colaborador SET cd_TipoColaborador = 2 WHERE nm_Colaborador = "Ana Paula";
 
 SELECT 
     i.cd_Intimacao,
@@ -952,4 +933,86 @@ SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProces
                 JOIN Cliente C ON C.cd_Cliente = CP.cd_Cliente
                 WHERE P.nm_Autor = "Carlos Silva";
                 
-CALL PDFDownloadCase(2, 5);
+CALL PDFDownloadCase(3, 1, "");
+
+-- TESTE DE "STRESS"
+
+-- Inserção de 100 clientes de teste
+INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_CNPJ, nm_Logradouro, nm_Bairro, nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email)
+SELECT 
+    CONCAT('Cliente Teste ', n) AS nm_Cliente,
+    10000000000 + n AS cd_CPF,
+    NULL AS cd_CNPJ,
+    CONCAT('Rua ', n) AS nm_Logradouro,
+    'Centro' AS nm_Bairro,
+    'Santos' AS nm_Cidade,
+    'SP' AS sg_Estado,
+    11000000 + n AS cd_CEP,
+    n AS cd_NumeroEndereco,
+    'Apto 10' AS ds_ComplementoEndereco,
+    CONCAT('1399', LPAD(n, 7, '0')) AS cd_Telefone,
+    CONCAT('cliente', n, '@teste.com') AS ds_Email
+FROM (
+    SELECT @rownum := @rownum + 1 AS n FROM 
+    (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
+     UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL 
+     SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a,
+    (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
+     UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL 
+     SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b,
+    (SELECT @rownum := 0) r
+) t
+LIMIT 100;
+
+-- Cada cliente recebe 3 processos
+INSERT INTO Processo (cd_NumeroProcesso, nm_Autor, nm_Reu, ds_Juizo, ds_Acao, nm_Cidade, sg_Tribunal, vl_Causa, cd_FaseProcesso)
+SELECT 
+    CONCAT(LPAD(c.cd_Cliente, 6, '0'), '-', LPAD(p, 2, '0'), '.2025.8.26.0001'),
+    c.nm_Cliente,
+    CONCAT('Réu Empresa ', p),
+    'Vara Cível',
+    'Ação de Teste',
+    c.nm_Cidade,
+    'TJSP',
+    1000 * p,
+    FLOOR(1 + RAND() * 4)
+FROM Cliente c
+JOIN (SELECT 1 AS p UNION ALL SELECT 2 UNION ALL SELECT 3) x;
+
+-- Vincula cada cliente aos seus 3 processos
+INSERT INTO Cliente_Processo (cd_Cliente, cd_Processo, cd_PosicaoAcao)
+SELECT 
+    c.cd_Cliente,
+    p.cd_Processo,
+    1
+FROM Cliente c
+JOIN Processo p ON LEFT(p.cd_NumeroProcesso, 6) = LPAD(c.cd_Cliente, 6, '0');
+
+-- Gera 2 intimações por processo
+INSERT INTO Intimacao (dt_Recebimento, cd_Processo, ds_Intimacao)
+SELECT 
+    DATE_ADD('2025-01-01', INTERVAL FLOOR(RAND() * 200) DAY),
+    p.cd_Processo,
+    CONCAT('Intimação automática para o processo ', p.cd_NumeroProcesso)
+FROM Processo p
+JOIN (SELECT 1 AS n UNION ALL SELECT 2) x;
+
+-- Cria 4 tarefas para cada intimação (aleatórias)
+INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa)
+SELECT 
+    i.cd_Intimacao,
+    DATE_ADD(i.dt_Recebimento, INTERVAL FLOOR(RAND() * 10) DAY),
+    DATE_ADD(i.dt_Recebimento, INTERVAL 15 DAY),
+    FLOOR(1 + RAND() * 8),       -- Colaborador entre 1 e 8
+    FLOOR(1 + RAND() * 3),       -- Status entre 1 e 3
+    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),  -- 🔥 seleciona um tipo válido aleatoriamente
+    CONCAT('Tarefa automática para intimação ', i.cd_Intimacao)
+FROM Intimacao i
+JOIN (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) x;
+
+
+-- RESULTADO ESPERADO
+SELECT COUNT(*) FROM Cliente;        -- ~110 (10 originais + 100 novos)
+SELECT COUNT(*) FROM Processo;       -- ~310 (10 originais + 300 novos)
+SELECT COUNT(*) FROM Intimacao;      -- ~620 (2 por processo)
+SELECT COUNT(*) FROM Tarefa;         -- ~2480 (4 por intimação)

@@ -2,6 +2,7 @@ import { Download_Button, Container, FilterBox, Charge_bar, StyledSelect } from 
 import { useState, useEffect, useMemo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import axios from "axios"
+import { DocumentArrowDownIcon, ChartBarIcon, UserGroupIcon, DocumentTextIcon } from "@heroicons/react/24/outline"
 
 export default function Report(){
 
@@ -301,7 +302,7 @@ export default function Report(){
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <p>Seu download está pronto!</p>
+                                <p style={{ textAlign: 'center' }}>Seu download está pronto!</p>
                                 <Download_Button className="Download" onClick={handleSubmit}>
                                     Gerar PDF
                                 </Download_Button>
@@ -310,6 +311,191 @@ export default function Report(){
                     </AnimatePresence>
                 </Charge_bar>
             </motion.div>
+
+            {/* Seção de informações e estatísticas */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key="info-section"
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -30, scale: 0.95 }}
+                    transition={{ 
+                        duration: 0.6, 
+                        delay: 0.2,
+                        ease: "easeOut"
+                    }}
+                    layout
+                    style={{
+                        marginTop: "40px",
+                        padding: "30px",
+                        background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
+                        borderRadius: "16px",
+                        border: "1px solid #333",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.3)"
+                    }}
+                >
+                <motion.div 
+                    layout
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                        gap: "30px",
+                        marginBottom: "30px"
+                    }}
+                >
+                    {/* Card de Informações do Relatório */}
+                    <motion.div
+                        key="report-info-card"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                        transition={{ 
+                            duration: 0.5, 
+                            delay: 0.3,
+                            ease: "easeOut"
+                        }}
+                        whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                        }}
+                        layout
+                        style={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            padding: "25px",
+                            borderRadius: "12px",
+                            color: "white",
+                            textAlign: "center",
+                            boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)"
+                        }}
+                    >
+                        <DocumentTextIcon style={{ width: "40px", height: "40px", margin: "0 auto 15px" }} />
+                        <h3 style={{ margin: "0 0 10px 0", fontSize: "18px" }}>Relatório Personalizado</h3>
+                        <p style={{ margin: "0", opacity: 0.9, fontSize: "14px" }}>
+                            {FirstSelect === "1" ? "Dados de Processos" : 
+                             FirstSelect === "2" ? "Dados de Clientes" : 
+                             FirstSelect === "3" ? "Dados de Colaboradores" : "Selecione um tipo"}
+                        </p>
+                    </motion.div>
+
+                    {/* Card de Filtros Aplicados */}
+                    <motion.div
+                        key="filters-card"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                        transition={{ 
+                            duration: 0.5, 
+                            delay: 0.4,
+                            ease: "easeOut"
+                        }}
+                        whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                        }}
+                        layout
+                        style={{
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            padding: "25px",
+                            borderRadius: "12px",
+                            color: "white",
+                            textAlign: "center",
+                            boxShadow: "0 4px 15px rgba(240, 147, 251, 0.3)"
+                        }}
+                    >
+                        <ChartBarIcon style={{ width: "40px", height: "40px", margin: "0 auto 15px" }} />
+                        <h3 style={{ margin: "0 0 10px 0", fontSize: "18px" }}>Filtros Aplicados</h3>
+                        <p style={{ margin: "0", opacity: 0.9, fontSize: "14px" }}>
+                            {SecondSelect === "1" ? "Todos os registros" :
+                             SecondSelect === "3" ? "Cliente específico" :
+                             SecondSelect === "4" ? "Processo específico" :
+                             SecondSelect === "5" ? "Colaborador específico" : "Nenhum filtro"}
+                        </p>
+                    </motion.div>
+
+                    {/* Card de Estatísticas */}
+                    <motion.div
+                        key="stats-card"
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                        transition={{ 
+                            duration: 0.5, 
+                            delay: 0.5,
+                            ease: "easeOut"
+                        }}
+                        whileHover={{ 
+                            scale: 1.05,
+                            transition: { duration: 0.2 }
+                        }}
+                        layout
+                        style={{
+                            background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                            padding: "25px",
+                            borderRadius: "12px",
+                            color: "white",
+                            textAlign: "center",
+                            boxShadow: "0 4px 15px rgba(79, 172, 254, 0.3)"
+                        }}
+                    >
+                        <UserGroupIcon style={{ width: "40px", height: "40px", margin: "0 auto 15px" }} />
+                        <h3 style={{ margin: "0 0 10px 0", fontSize: "18px" }}>Dados Disponíveis</h3>
+                        <p style={{ margin: "0", opacity: 0.9, fontSize: "14px" }}>
+                            {ClientInfo.length > 0 && `Clientes: ${ClientInfo.length}`}
+                            {ProcessInfo.length > 0 && ` | Processos: ${ProcessInfo.length}`}
+                            {WorkerInfo.length > 0 && ` | Colaboradores: ${WorkerInfo.length}`}
+                            {ClientInfo.length === 0 && ProcessInfo.length === 0 && WorkerInfo.length === 0 && "Carregando dados..."}
+                        </p>
+                    </motion.div>
+                </motion.div>
+
+                {/* Seção de Dicas */}
+                <motion.div
+                    key="tips-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ 
+                        duration: 0.6, 
+                        delay: 0.8,
+                        ease: "easeOut"
+                    }}
+                    layout
+                    style={{
+                        background: "rgba(255,255,255,0.05)",
+                        padding: "20px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255,255,255,0.1)"
+                    }}
+                >
+                    <h4 style={{ 
+                        margin: "0 0 15px 0", 
+                        color: "#CDAF6F", 
+                        fontSize: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px"
+                    }}>
+                        <DocumentArrowDownIcon style={{ width: "20px", height: "20px" }} />
+                        Dicas para Relatórios
+                    </h4>
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                        gap: "15px"
+                    }}>
+                        <div style={{ fontSize: "14px", opacity: 0.8 }}>
+                            <strong>📊 Processos:</strong> Inclui dados completos de processos, intimações e tarefas
+                        </div>
+                        <div style={{ fontSize: "14px", opacity: 0.8 }}>
+                            <strong>👥 Clientes:</strong> Informações de contato e processos vinculados
+                        </div>
+                        <div style={{ fontSize: "14px", opacity: 0.8 }}>
+                            <strong>👨‍💼 Colaboradores:</strong> Dados de performance e tarefas atribuídas
+                        </div>
+                    </div>
+                </motion.div>
+                </motion.div>
+            </AnimatePresence>
         </Container>
     )
 }

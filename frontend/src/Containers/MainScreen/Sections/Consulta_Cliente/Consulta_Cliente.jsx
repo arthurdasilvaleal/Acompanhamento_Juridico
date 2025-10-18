@@ -1,4 +1,4 @@
-import { Grid_Box, Search_box, Consult_button, Card_Cliente, ShowClientes } from "./style"
+import { Grid_Box, Search_box, Consult_button, Card_Cliente, ShowClientes, PaginationContainer, PaginationInfo, PaginationControls, PaginationButton, PaginationNumbers, PaginationNumber } from "./style"
 import { useState, useEffect } from "react"
 import { UserPlusIcon } from "@heroicons/react/20/solid"
 import { motion, AnimatePresence } from "framer-motion"
@@ -14,6 +14,16 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
     const [allClientes, set_allClientes] = useState([]) 
     const [filterClientes, set_filterClientes] = useState("")
     const filter = allClientes.filter(cliente => cliente.nm_Cliente.toLowerCase().includes(filterClientes.toLocaleLowerCase()))
+
+    // Estados para paginação
+    const [currentPage, set_currentPage] = useState(1)
+    const [itemsPerPage] = useState(20)
+    const totalPages = Math.ceil(filter.length / itemsPerPage)
+    
+    // Calcular clientes da página atual
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const currentClientes = filter.slice(startIndex, endIndex)
 
     // Variáveis de Estado
     const [firstRender, set_firstRender] = useState(false)
@@ -62,9 +72,14 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
         }
     }, [firstRender, addedCliente])
 
+    // Resetar página quando filtro mudar
+    useEffect(() => {
+        set_currentPage(1)
+    }, [filterClientes])
+
 
     // Ordena os cards pelo que foi clicado em "ver mais detalhes"
-    const orderedClientes = [...filter].sort((e) => {
+    const orderedClientes = [...currentClientes].sort((e) => {
         if(e.cd_Cliente === cardVeryDetailed) 
             return -1 // a Vem antes
         return 0 // Mantem a ordem
@@ -114,9 +129,27 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
         setConfirmation: set_deleteConfirm
     }
 
+    // Funções de navegação da paginação
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            set_currentPage(currentPage + 1)
+        }
+    }
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            set_currentPage(currentPage - 1)
+        }
+    }
+
+    const goToPage = (page) => {
+        set_currentPage(page)
+    }
+
     return(
         <>
             <ShowClientes $addClientes={addCliente} $editClientes={editCliente}>
+            <Particles />
                 {Loading_clientes && (<Loading setDOM={true} />)}
                 <Search_box>
                     <label htmlFor="input" id="desktopLabel">Nome do cliente</label>
@@ -129,9 +162,7 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
                 </Search_box>
                 
                 <Grid_Box>
-                    <div className="onlyDesktop"> { /* Muito pesado para mobile, retirado até aumentar performance */}
-                        <Particles />
-                    </div>
+                    
                     <AnimatePresence>
                         {orderedClientes.map((cliente) => {
 
@@ -173,10 +204,10 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
                                         if(!veryDetailed) set_cardOpen(isOpen ? null : cliente.cd_Cliente)
                                         }}>
                                         <div className="card-Content">
-                                            <p><strong>{cliente.nm_Cliente}</strong></p>
+                                            <p className="title"><strong>{cliente.nm_Cliente}</strong></p>
                                             <p>{codigoParte()}</p>
                                             <p>{formatedPhone}</p>
-                                            <p>{cliente.ds_Email}</p>
+                                            <p className="email">{cliente.ds_Email}</p>
                                             <hr />
                                             <p>{cliente.nm_Logradouro}, Nº {cliente.cd_NumeroEndereco}</p>
                                             <p>{cliente.nm_Bairro}</p>
@@ -242,6 +273,43 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
                         })}
                     </AnimatePresence>
                 </Grid_Box>
+
+                {/* Controles de Paginação */}
+                {totalPages > 1 && (
+                    <PaginationContainer>
+                        <PaginationInfo>
+                            Página {currentPage} de {totalPages} ({filter.length} clientes)
+                        </PaginationInfo>
+                        
+                        <PaginationControls>
+                            <PaginationButton 
+                                onClick={goToPreviousPage} 
+                                disabled={currentPage === 1}
+                            >
+                                Anterior
+                            </PaginationButton>
+                            
+                            <PaginationNumbers>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                    <PaginationNumber
+                                        key={page}
+                                        $active={currentPage === page}
+                                        onClick={() => goToPage(page)}
+                                    >
+                                        {page}
+                                    </PaginationNumber>
+                                ))}
+                            </PaginationNumbers>
+                            
+                            <PaginationButton 
+                                onClick={goToNextPage} 
+                                disabled={currentPage === totalPages}
+                            >
+                                Próximo
+                            </PaginationButton>
+                        </PaginationControls>
+                    </PaginationContainer>
+                )}
             </ShowClientes>
             <Clientes {...clienteWindowProps}/>
             <Modal {...clienteModalProps}/>

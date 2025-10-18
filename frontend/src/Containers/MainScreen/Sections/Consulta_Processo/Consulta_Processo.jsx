@@ -370,7 +370,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
         }catch (error){
             console.log("Erro ao editar tarefa:", error)
             set_ModalOpen(true)
-            set_FormStatusMessage("Tarefa editada com sucesso!")
+            set_FormStatusMessage("Erro ao editar tarefa.")
             set_formStatusErrorMessage(error.response.data.error)
         }
         set_Loading(false)
@@ -729,6 +729,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                                             1: { color: "yellow" },
                                                                             2: { color: "orange" },
                                                                             3: { color: "green" },
+                                                                            4: { color: "red" },
                                                                         }
 
                                                                         if(task.cd_Intimacao === intimacao.cd_Intimacao){
@@ -744,7 +745,8 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                                                         <div className="Task-Title" onClick={() => set_openTaskId(taskOpen ? null : task.cd_Tarefa)}>
                                                                                             <h4>{task.nm_TipoTarefa}</h4>
                                                                                             <p style={statusStyle[task.cd_StatusTarefa]}><strong>{task.cd_StatusTarefa === 1 ? "Aguardando" :
-                                                                                                task.cd_StatusTarefa === 2 ? "Em andamento" : "Concluído"}</strong>
+                                                                                                task.cd_StatusTarefa === 2 ? "Em andamento" : 
+                                                                                                task.cd_StatusTarefa === 3 ? "Concluído" : "Cancelado"}</strong>
                                                                                             </p>
                                                                                             {/* Os estagiários podem apenas editar tarefas que eles mesmos criaram */}
                                                                                             {(TipoColaborador !== "Estagiário" || task.nm_Colaborador === NomeColaborador) && (
@@ -788,6 +790,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                                                                                                 <option value="1">Aguardando</option>
                                                                                                 <option value="2">Em andamento</option>
                                                                                                 <option value="3">Concluído</option>
+                                                                                                <option value="4">Cancelado</option>
                                                                                             </select>
                                                                                         </div>
                                                                                         <div className="input-group-select">

@@ -123,24 +123,31 @@ export const Consult_button = styled.button`
 `
 
 export const Grid_Box = styled.div`
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    justify-items: stretch;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
     padding: 10px;
+    box-sizing: border-box;
 
-    @media (max-width: 768px) {
-        justify-content: space-around;
-
-        .onlyDesktop{
-            display: none;
-            position: relative;
-        }
+    .onlyDesktop{
+        position: fixed; /* Mantém fixo na viewport */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh; /* sempre altura total da janela */
+        z-index: -1; /* Fica atrás de tudo */
+        pointer-events: none; /* não bloqueia cliques */
+        overflow: hidden;
     }
 `
 
 export const Card_Cliente = styled.div`
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
     border-radius: 12px;
     box-shadow: 0px 11px 73px 0px rgba(0,0,0,0.3);
     cursor: pointer;
@@ -151,11 +158,7 @@ export const Card_Cliente = styled.div`
     overflow: hidden;
     opacity: ${({ $fullDetailed }) => $fullDetailed ? "1" : "0"};
     pointer-events: ${({ $fullDetailed }) => $fullDetailed ? "" : "none"};
-    
-    /* 🔹 Largura fixa e responsiva */
-    flex: 1 1 250px;   /* ocupa no mínimo 250px */
-    max-width: 300px;  /* nunca passa de 300px */
-    min-width: 250px;  /* garante largura igual */
+    z-index: 1;
 
     max-height: ${({ $detailed, $fullDetailed }) => {
         if($detailed && !$fullDetailed){return "260px"}
@@ -173,6 +176,15 @@ export const Card_Cliente = styled.div`
         white-space: normal;
         overflow-wrap: break-word;
         word-break: break-word;
+    }
+
+    .email, .title{
+        white-space: ${({ $detailed }) => ($detailed ? "normal" : "nowrap")};
+        overflow: ${({ $detailed }) => ($detailed ? "visible" : "hidden")};
+        text-overflow: ${({ $detailed }) => ($detailed ? "clip" : "ellipsis")};
+        display: block;
+        transition: all 0.3s ease;
+        cursor: pointer;
     }
 
     hr{
@@ -254,5 +266,94 @@ export const Card_Cliente = styled.div`
         &::after{
             height: 100%;
         }
+    }
+`
+
+// Componentes de Paginação
+export const PaginationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    background-color: #2b2b2b;
+    border: #adadad solid;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    margin-top: 10px;
+`
+
+export const PaginationInfo = styled.div`
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+`
+
+export const PaginationControls = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+`
+
+export const PaginationButton = styled.button`
+    padding: 8px 16px;
+    background-color: #CDAF6F;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:hover:not(:disabled) {
+        background-color: #b89a5a;
+        transform: translateY(-1px);
+    }
+    
+    &:disabled {
+        background-color: #666;
+        color: #999;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+`
+
+export const PaginationNumbers = styled.div`
+    display: flex;
+    gap: 5px;
+    align-items: center;
+`
+
+export const PaginationNumber = styled.button`
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: ${({ $active }) => $active ? '#CDAF6F' : '#444'};
+    color: ${({ $active }) => $active ? '#000' : '#fff'};
+    
+    &:hover {
+        background-color: ${({ $active }) => $active ? '#b89a5a' : '#555'};
+        transform: translateY(-1px);
+    }
+    
+    &:active {
+        transform: translateY(0);
     }
 `

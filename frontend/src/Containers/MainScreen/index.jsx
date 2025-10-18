@@ -1,4 +1,4 @@
-import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card, Animated_background } from './style.jsx'
+import { Container, Main_Menu, Main_Content, Main_Title, Main_ToggleButton, Exit_card } from './style.jsx'
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -12,7 +12,6 @@ import Loading_page from '../../components/Loading_Pages/Loading.jsx'
 export default function MainScreen() {
   const [option, setOption] = useState("Visão Geral")
   const location = useLocation()
-  const [prevOption, setPrevOption] = useState(option)
 
   // Loading artificial --- fix that
   useEffect(() => {

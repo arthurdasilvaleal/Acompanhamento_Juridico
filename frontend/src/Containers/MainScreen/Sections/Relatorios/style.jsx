@@ -22,6 +22,10 @@ export const FilterBox = styled.div`
         gap: 20px;
         padding-bottom: 10px;
 
+        @media (max-width: 768px){
+            flex-direction: column;
+        }
+
         select{
             width: calc(20vw + 36px);
             height: 44px;
@@ -32,6 +36,10 @@ export const FilterBox = styled.div`
             border: 2px solid transparent;
             font-size: 1rem;
             transition: border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s;
+            
+            @media (max-width: 768px){
+                width: auto;
+            }
         }
 
         select:hover, select:focus{

@@ -197,26 +197,11 @@ export const Main_Content = styled.section`
     }
 `
 
-export const Animated_background = styled.div`
-    position: fixed;
-    min-height: 950px;
-    width: 100%;
-    z-index: -1;
-    background: linear-gradient(270deg, #405357, #928DAB, #634331);
-    background-size: 600% 600%;
-    animation: gradientAnimation 30s ease infinite;
-
-    @keyframes gradientAnimation {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-`
-
 export const Main_Title = styled.header`
     text-align: center;
     padding: 1rem 0 0 0;
     background-color: #343434;
+    position: relative;
     z-index: 1; // Bloquear o TsParticles
     
     hr{
