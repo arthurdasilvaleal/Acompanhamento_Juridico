@@ -30,14 +30,19 @@ export default function Login(){
             
             if(response.data.success){
                 localStorage.setItem("logado", "true")
+                
+                // Armazenar dados do usuário no localStorage para persistência
+                const userData = {
+                    nome: response.data.user.nm_Colaborador,
+                    tipo: response.data.user.nm_TipoColaborador,
+                    codigo: response.data.user.cd_Colaborador,
+                    codigoTipo: response.data.user.cd_TipoColaborador
+                }
+                localStorage.setItem("userData", JSON.stringify(userData))
+                
                 set_Loading(false)
                 navigate("/main", {
-                    state: {
-                        nome: response.data.user.nm_Colaborador,
-                        tipo: response.data.user.nm_TipoColaborador,
-                        codigo: response.data.user.cd_Colaborador,
-                        codigoTipo: response.data.user.cd_TipoColaborador
-                    }
+                    state: userData
                 })
             } 
         }
@@ -72,8 +77,8 @@ export default function Login(){
                         <input type="text" id="input-user" onChange={(e) => {
                             const MinimunLenght = e.target
                             set_Login(MinimunLenght.value)
-                            if(MinimunLenght.value.length < 6){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 6 caracteres.')}
-                            else{MinimunLenght.setCustomValidity('')}
+                            // if(MinimunLenght.value.length < 6){MinimunLenght.setCustomValidity('O campo deve ter no mínimo 6 caracteres.')}
+                            // else{MinimunLenght.setCustomValidity('')}
                         }} autoComplete='off' required value={Login} />
                         <label htmlFor="input-user" className="label">Usuário</label>
                         <div className="underline" />

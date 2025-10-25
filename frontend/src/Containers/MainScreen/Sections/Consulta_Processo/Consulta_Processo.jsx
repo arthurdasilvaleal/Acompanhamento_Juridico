@@ -447,7 +447,23 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
                             }}
                             placeholder={ isMobile ? "Processo..." : "Digite o número do processo..."}
                             isClearable
-                            
+                            // Render the menu in a portal appended to document.body to avoid stacking/context issues
+                            menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                            menuPosition="fixed"
+                            // Ensure the portal menu appears above other elements and keep background consistent
+                            styles={{
+                                menuPortal: base => ({ ...base, zIndex: 9999 }),
+                                menu: base => ({ ...base, zIndex: 9999, backgroundColor: '#2c2c2c' }),
+                                menuList: base => ({ ...base, backgroundColor: '#2c2c2c', color: '#e0e0e0' }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused ? '#4f4f6a' : 'transparent',
+                                    color: '#e0e0e0'
+                                }),
+                                singleValue: base => ({ ...base, color: '#e0e0e0' }),
+                                input: base => ({ ...base, color: '#e0e0e0' }),
+                                placeholder: base => ({ ...base, color: '#888' })
+                            }}
                             // Lembre-se destas duas props importantes:
                             classNamePrefix="react-select"
                             $found_data={notFound}

@@ -20,7 +20,26 @@ export default function MainScreen() {
     return () => clearTimeout(timer)
   }, [])
 
-  const {nome, tipo, codigo, codigoTipo} = location.state || {} // Se location.state for vazio, usará um objeto vazio
+  // Tenta obter dados do location.state, se não houver, usa localStorage como fallback
+  const getStateData = () => {
+    if (location.state && Object.keys(location.state).length > 0) {
+      return location.state
+    }
+    
+    // Fallback para localStorage
+    const userData = localStorage.getItem("userData")
+    if (userData) {
+      try {
+        return JSON.parse(userData)
+      } catch (error) {
+        console.error("Erro ao parsear dados do usuário do localStorage:", error)
+      }
+    }
+    
+    return {}
+  }
+  
+  const {nome, tipo, codigo, codigoTipo} = getStateData()
   const unSex = () => {
     if(tipo === "Estagiário" || tipo === "Advogado"){
       return "(a)"

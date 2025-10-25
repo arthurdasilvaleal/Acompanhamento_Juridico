@@ -3,6 +3,7 @@ import Login from './Tela_Login/Index'
 import Cadastro from './Tela_Cadastro'
 import MainScreen from './MainScreen'
 import PrivateRoute from './PrivateRoute'
+import AdminRoute from './AdminRoute'
 
 export default function App() {
   
@@ -10,7 +11,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
           <Route path='/' element={<Login/>} />
-          <Route path='/cadastro' element={<Cadastro/>} />
+          <Route path='/cadastro' element={
+            <AdminRoute>
+              <Cadastro/>
+            </AdminRoute>
+          } />
           <Route path='/main' element={
             <PrivateRoute>
               <MainScreen/>

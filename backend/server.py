@@ -262,7 +262,7 @@ def put_cliente():
     finally:
         cursor.close()
         conn.close()
-    
+
 # Para deletar um cliente
 @app.route("/delete_cliente", methods=["DELETE"])
 def delete_cliente(): 
@@ -893,35 +893,6 @@ def get_workload_data():
         cursor.close()
         conn.close()
 
-@app.route("/get_process_value_data", methods=["GET"])
-def get_process_value_data():
-    conn = connection_pool.get_connection()
-    cursor = conn.cursor(dictionary=True)
-    
-    query = """
-        SELECT 
-            p.sg_Tribunal,
-            fp.nm_FaseProcesso,
-            COUNT(p.cd_Processo) as quantidade_processos,
-            SUM(p.vl_Causa) as valor_total,
-            AVG(p.vl_Causa) as valor_medio
-        FROM Processo p
-        JOIN FaseProcesso fp ON p.cd_FaseProcesso = fp.cd_FaseProcesso
-        GROUP BY p.sg_Tribunal, fp.nm_FaseProcesso, fp.cd_FaseProcesso
-        ORDER BY valor_total DESC
-    """
-    
-    try:
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return jsonify(result)
-    except mysql.connector.Error as Err:
-        print("\n\nErro em 'get_process_value_data':", Err)
-        return jsonify({"error": str(Err)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-
 @app.route("/get_deadline_data", methods=["GET"])
 def get_deadline_data():
     conn = connection_pool.get_connection()
@@ -955,74 +926,6 @@ def get_deadline_data():
         return jsonify(result)
     except mysql.connector.Error as Err:
         print("\n\nErro em 'get_deadline_data':", Err)
-        return jsonify({"error": str(Err)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.route("/get_task_type_data", methods=["GET"])
-def get_task_type_data():
-    conn = connection_pool.get_connection()
-    cursor = conn.cursor(dictionary=True)
-    
-    query = """
-        SELECT 
-            tt.nm_TipoTarefa,
-            COUNT(t.cd_Tarefa) as quantidade,
-            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as concluidas,
-            ROUND(
-                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
-            ) as taxa_conclusao
-        FROM TipoTarefa tt
-        LEFT JOIN Tarefa t ON tt.cd_TipoTarefa = t.cd_TipoTarefa
-        GROUP BY tt.cd_TipoTarefa, tt.nm_TipoTarefa
-        HAVING COUNT(t.cd_Tarefa) > 0
-        ORDER BY quantidade DESC
-        LIMIT 10
-    """
-    
-    try:
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return jsonify(result)
-    except mysql.connector.Error as Err:
-        print("\n\nErro em 'get_task_type_data':", Err)
-        return jsonify({"error": str(Err)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-
-@app.route("/get_efficiency_trends", methods=["GET"])
-def get_efficiency_trends():
-    conn = connection_pool.get_connection()
-    cursor = conn.cursor(dictionary=True)
-    
-    query = """
-        SELECT 
-            MONTH(t.dt_Registro) as mes,
-            YEAR(t.dt_Registro) as ano,
-            COUNT(t.cd_Tarefa) as total_tarefas,
-            SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) as tarefas_concluidas,
-            ROUND(
-                (SUM(CASE WHEN t.cd_StatusTarefa = 3 THEN 1 ELSE 0 END) / COUNT(t.cd_Tarefa)) * 100, 2
-            ) as taxa_conclusao,
-            AVG(CASE 
-                WHEN t.cd_StatusTarefa = 3 AND t.dt_Registro IS NOT NULL AND t.dt_Prazo IS NOT NULL 
-                THEN DATEDIFF(t.dt_Registro, t.dt_Prazo) 
-                ELSE NULL 
-            END) as tempo_medio_resolucao
-        FROM Tarefa t
-        WHERE t.dt_Registro >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-        GROUP BY YEAR(t.dt_Registro), MONTH(t.dt_Registro)
-        ORDER BY ano, mes
-    """
-    
-    try:
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return jsonify(result)
-    except mysql.connector.Error as Err:
-        print("\n\nErro em 'get_efficiency_trends':", Err)
         return jsonify({"error": str(Err)}), 500
     finally:
         cursor.close()

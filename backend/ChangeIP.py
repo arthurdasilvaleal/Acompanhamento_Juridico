@@ -3,7 +3,7 @@ import re
 
 # Configurações
 diretorio_raiz = '../frontend'  # Pode ser alterado para o caminho desejado
-ip_antigo = '192.168.100.3'
+ip_antigo = '172.31.80.1'
 ip_novo = 'localhost'
 padrao_regex = re.compile(rf'http://{re.escape(ip_antigo)}(:\d+)?')
 

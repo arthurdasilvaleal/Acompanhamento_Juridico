@@ -108,7 +108,7 @@ export default function Cadastro(){
                 
                 <Container onSubmit={handleSubmit}>
                     <Header>
-                        <Link to={"/"}>
+                        <Link to={"/main"}>
                             <div className="styled-wrapper">
                                 <button type="button" className="button">
                                     <div className="button-box">

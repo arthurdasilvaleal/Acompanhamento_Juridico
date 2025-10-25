@@ -2,10 +2,10 @@ import { useState, useEffect } from "react"
 import { CountProcesses, Info_Container, WorkerInfo, MainWorker_Count, AdmOnly_Button } from "./style"
 import { Doughnut, Line, Bar } from "react-chartjs-2"
 import { motion, AnimatePresence } from "framer-motion"
+import { Link } from "react-router-dom"
 import {
   Chart as ChartJS,
   CategoryScale,
-  defaults,
   LinearScale,
   BarElement,
   Title,
@@ -43,8 +43,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
     const [countProcess, set_countProcess] = useState(null) // Contador de processos
     // Da pra otimizar
     const [countFasesAll, set_countFasesAll] = useState([]) // Contador de fases de processos
-    const [countStatusAll, set_countStatusAll] = useState([]) // Contador Status de tarefas
-    const [countMyTasks, set_countMyTasks] = useState(null) // Contador das minha tarefas
     const [countMyTasksByMonth, set_countMyTasksByMonth] = useState([]) // Array Contador de tarefas minhas
     const [countMyFinTasksByMonth, set_countMyFinTasksByMonth] = useState([]) // Array Contador de tarefas finalizadas minhas
     const [countMyUNFinTasksByMonth, set_countMyUNFinTaskByMonth] = useState([]) // Array Contador de tarefas não finalizadas minhas
@@ -58,10 +56,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
     // Novas variáveis para gráficos adicionais
     const [performanceData, set_performanceData] = useState(null)
     const [workloadData, set_workloadData] = useState(null)
-    const [processValueData, set_processValueData] = useState(null)
     const [deadlineData, set_deadlineData] = useState(null)
-    const [taskTypeData, set_taskTypeData] = useState(null)
-    const [efficiencyTrendsData, set_efficiencyTrendsData] = useState(null)
     const [personalStats, set_personalStats] = useState(null)
 
     // Inserindo os dados nas variáveis
@@ -75,7 +70,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                 const fase = response.data
                 set_countProcess(response.data.qtd_Processo)
                 set_countFasesAll([fase.Conhecimento, fase.Recursal, fase.Execução, fase.Finalizado, fase.Cancelado])
-                set_countStatusAll([fase.Aguardando, fase.Em_andamento, fase.Concluido])
 
                 // Contador de tarefas para todos
                 set_countMyTasksByMonth([fase.qtd_MyTaskByMonth1, fase.qtd_MyTaskByMonth2, fase.qtd_MyTaskByMonth3,
@@ -110,8 +104,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                     fase.qtdUNF_TaskByMonth8, fase.qtdUNF_TaskByMonth9, fase.qtdUNF_TaskByMonth10, fase.qtdUNF_TaskByMonth11,   
                     fase.qtdUNF_TaskByMonth12
                 ])
-
-                set_countMyTasks(fase.qtd_MyTask)
             }
             catch(error){
                 console.log("Erro ao incluir gráficos: " + error)
@@ -131,21 +123,9 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                 const workloadResponse = await axios.get("http://localhost:5000/get_workload_data")
                 set_workloadData(workloadResponse.data)
 
-                // Análise de valor dos processos
-                const processValueResponse = await axios.get("http://localhost:5000/get_process_value_data")
-                set_processValueData(processValueResponse.data)
-
                 // Análise de prazos
                 const deadlineResponse = await axios.get("http://localhost:5000/get_deadline_data")
                 set_deadlineData(deadlineResponse.data)
-
-                // Tipos de tarefas
-                const taskTypeResponse = await axios.get("http://localhost:5000/get_task_type_data")
-                set_taskTypeData(taskTypeResponse.data)
-
-                // Tendências de eficiência
-                const efficiencyTrendsResponse = await axios.get("http://localhost:5000/get_efficiency_trends")
-                set_efficiencyTrendsData(efficiencyTrendsResponse.data)
 
                 // Estatísticas pessoais do colaborador
                 const personalStatsResponse = await axios.get("http://localhost:5000/get_personal_stats", {
@@ -159,28 +139,78 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
         })()
     }, [])
 
-    const AdminOnly_Submit = async (role) => {
-        const ArgsSubmit = {
-            role,
-            activate: submit
-        }
-        await axios.post("http://localhost:5000/activate_AutoSubmit", ArgsSubmit)
-
-    }
-
     return(
         <div style={{ padding: "20px"}}>
             <WorkerInfo $submitButton={submit}>
                 <h1>{NomeColaborador}</h1>
                 <hr />
                 <p>Bem Vindo(a) ao sistema Acompanhamento Jurídico!</p>
-                {CodigoTipoColaborador === 1 && (
-                    <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
-                        <AdmOnly_Button className="taskButton" onClick={() => {AdminOnly_Submit("task"); set_submit(e => !e)}}>Ativar auto Task Submit</AdmOnly_Button>
-                        <AdmOnly_Button className="intButton" onClick={() => {AdminOnly_Submit("int"); set_submit(e => !e)}}>Ativar auto Int Submit</AdmOnly_Button>
-                    </div>
-                )}
             </WorkerInfo>
+            
+            {/* Botão de Cadastro - Apenas para Administradores */}
+            {CodigoTipoColaborador === 1 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        margin: "20px 0",
+                        padding: "0 10px"
+                    }}
+                >
+                    <Link 
+                        to="/cadastro" 
+                        state={{ 
+                            nome: NomeColaborador, 
+                            codigo: CodigoColaborador, 
+                            codigoTipo: CodigoTipoColaborador 
+                        }} 
+                        style={{ textDecoration: "none" }}
+                    >
+                        <motion.button
+                            whileHover={{ 
+                                scale: 1.05,
+                                boxShadow: "0 8px 25px rgba(0,0,0,0.2)"
+                            }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{
+                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "12px",
+                                padding: "15px 30px",
+                                fontSize: "16px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                                transition: "all 0.3s ease",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px"
+                            }}
+                        >
+                            <svg 
+                                width="20" 
+                                height="20" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"
+                            >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                            Cadastrar Novo Usuário
+                        </motion.button>
+                    </Link>
+                </motion.div>
+            )}
             
             {/* Cards de Estatísticas Pessoais */}
             <div style={{ 
@@ -203,7 +233,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                                 display: "contents"
                             }}
                         >
-                            {[...Array(7)].map((_, index) => (
+                            {[...Array(4)].map((_, index) => (
                                 <motion.div
                                     key={index}
                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -250,7 +280,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                                         animation: "pulse 1.5s infinite"
                                     }}></div>
                                     
-                                    <style jsx>{`
+                                    <style>{`
                                         @keyframes shimmer {
                                             0% { left: -100%; }
                                             100% { left: 100%; }
@@ -277,7 +307,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                                 display: "contents"
                             }}
                         >
-                    {/* Card Total de Tarefas */}
+                    {/* Card total de Tarefas
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -309,9 +339,9 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                         >
                             {personalStats.total_tarefas || 0}
                         </motion.div>
-                    </motion.div>
+                    </motion.div> */}
 
-                    {/* Card Tarefas Concluídas */}
+                    {/* Card Tarefas Concluídas
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -343,7 +373,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                         >
                             {personalStats.concluidas || 0}
                         </motion.div>
-                    </motion.div>
+                    </motion.div> */}
 
                     {/* Card Tarefas Vencidas */}
                     <motion.div
@@ -463,7 +493,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                         </motion.div>
                     </motion.div>
 
-                    {/* Card Taxa de Conclusão */}
+                    {/* Card Taxa de Conclusão
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -495,7 +525,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                         >
                             {personalStats.taxa_conclusao || 0}%
                         </motion.div>
-                    </motion.div>
+                    </motion.div> */}
 
                     {/* Card Este Mês */}
                     <motion.div
@@ -707,41 +737,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
             </MainWorker_Count>
             <Info_Container>
                 <CountProcesses>
-                    <Bar
-                        data={{ 
-                            labels: ["Aguardando", "Em andamento", "Concluído"],
-                            datasets: [
-                                {
-                                    label: "Situação",
-                                    data: [countStatusAll[0], countStatusAll[1], countStatusAll[2]],
-                                    backgroundColor: [
-                                        "rgba(255, 205, 86, 0.6)",
-                                        "rgba(255, 159, 64, 0.6)",
-                                        "rgba(75, 192, 192, 0.6)",
-                                    ],
-                                    borderColor: [
-                                        "rgb(255, 205, 86)",
-                                        "rgb(255, 159, 64)",
-                                        "rgb(75, 192, 192)",
-                                    ],
-                                    borderWidth: 3,
-                                    borderRadius: 5,
-                                    
-                                },
-                            ],
-                        }}
-                        options={{
-                            plugins:{
-                                legend: { position: "top" },
-                                title: {
-                                    display: true,
-                                    text: "Situação das Tarefas de intimações"
-                                }
-                            }
-                        }}
-                    />
-                </CountProcesses>
-                <CountProcesses>
                     <Doughnut
                         data={{ 
                             labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Cancelado"],
@@ -771,10 +766,51 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                         }}
                     />
                 </CountProcesses>
+                {/* Análise de Prazos das Tarefas - agora junto ao container de status */}
+                {(CodigoTipoColaborador === 1 || CodigoTipoColaborador === 2) && deadlineData && deadlineData.length > 0 && (
+                    <CountProcesses>
+                        <Doughnut
+                            data={{
+                                labels: deadlineData.map(item => item.status_prazo),
+                                datasets: [
+                                    {
+                                        label: "Status dos Prazos",
+                                        data: deadlineData.map(item => item.quantidade),
+                                        backgroundColor: [
+                                            "rgba(255, 99, 132, 0.8)",   // Atrasadas - Vermelho
+                                            "rgba(255, 205, 86, 0.8)",  // Próximas do Vencimento - Amarelo
+                                            "rgba(75, 192, 192, 0.8)",  // No Prazo - Verde
+                                            "rgba(54, 162, 235, 0.8)",  // Concluídas - Azul
+                                            "rgba(153, 102, 255, 0.8)"  // Outras - Roxo
+                                        ],
+                                        borderColor: [
+                                            "rgb(255, 99, 132)",
+                                            "rgb(255, 205, 86)",
+                                            "rgb(75, 192, 192)",
+                                            "rgb(54, 162, 235)",
+                                            "rgb(153, 102, 255)"
+                                        ],
+                                        borderWidth: 2,
+                                    }
+                                ]
+                            }}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: { position: "top" },
+                                    title: {
+                                        display: true,
+                                        text: "Análise de Prazos das Tarefas"
+                                    }
+                                }
+                            }}
+                        />
+                    </CountProcesses>
+                )}
             </Info_Container>
             
-            {/* Novos gráficos adicionais */}
-            {performanceData && performanceData.length > 0 && (
+            {/* Novos gráficos adicionais - Apenas para Administradores */}
+            {CodigoTipoColaborador === 1 && performanceData && performanceData.length > 0 && (
                 <MainWorker_Count>
                     <Bar
                         data={{
@@ -815,7 +851,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                 </MainWorker_Count>
             )}
 
-            {workloadData && workloadData.length > 0 && (
+            {CodigoTipoColaborador === 1 && workloadData && workloadData.length > 0 && (
                 <MainWorker_Count>
                     <Bar
                         data={{
@@ -854,189 +890,6 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                                 y: {
                                     stacked: true,
                                     beginAtZero: true
-                                }
-                            }
-                        }}
-                    />
-                </MainWorker_Count>
-            )}
-
-            {deadlineData && deadlineData.length > 0 && (
-                <Info_Container>
-                    <CountProcesses>
-                        <Doughnut
-                            data={{
-                                labels: deadlineData.map(item => item.status_prazo),
-                                datasets: [
-                                    {
-                                        label: "Status dos Prazos",
-                                        data: deadlineData.map(item => item.quantidade),
-                                        backgroundColor: [
-                                            "rgba(255, 99, 132, 0.8)",   // Atrasadas - Vermelho
-                                            "rgba(255, 205, 86, 0.8)",  // Próximas do Vencimento - Amarelo
-                                            "rgba(75, 192, 192, 0.8)",  // No Prazo - Verde
-                                            "rgba(54, 162, 235, 0.8)",  // Concluídas - Azul
-                                            "rgba(153, 102, 255, 0.8)"  // Outras - Roxo
-                                        ],
-                                        borderColor: [
-                                            "rgb(255, 99, 132)",
-                                            "rgb(255, 205, 86)",
-                                            "rgb(75, 192, 192)",
-                                            "rgb(54, 162, 235)",
-                                            "rgb(153, 102, 255)"
-                                        ],
-                                        borderWidth: 2,
-                                    }
-                                ]
-                            }}
-                            options={{
-                                responsive: true,
-                                plugins: {
-                                    legend: { position: "top" },
-                                    title: {
-                                        display: true,
-                                        text: "Análise de Prazos das Tarefas"
-                                    }
-                                }
-                            }}
-                        />
-                    </CountProcesses>
-                    <CountProcesses>
-                        <Bar
-                            data={{
-                                labels: taskTypeData ? taskTypeData.map(item => item.nm_TipoTarefa.length > 20 ? item.nm_TipoTarefa.substring(0, 20) + "..." : item.nm_TipoTarefa) : [],
-                                datasets: [
-                                    {
-                                        label: "Quantidade",
-                                        data: taskTypeData ? taskTypeData.map(item => item.quantidade) : [],
-                                        backgroundColor: "rgba(54, 162, 235, 0.6)",
-                                        borderColor: "rgba(54, 162, 235, 1)",
-                                        borderWidth: 1,
-                                    }
-                                ]
-                            }}
-                            options={{
-                                responsive: true,
-                                plugins: {
-                                    legend: { position: "top" },
-                                    title: {
-                                        display: true,
-                                        text: "Top 10 Tipos de Tarefas Mais Comuns"
-                                    }
-                                },
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
-                                    }
-                                }
-                            }}
-                        />
-                    </CountProcesses>
-                </Info_Container>
-            )}
-
-            {processValueData && processValueData.length > 0 && (
-                <MainWorker_Count>
-                    <Bar
-                        data={{
-                            labels: processValueData.map(item => `${item.sg_Tribunal} - ${item.nm_FaseProcesso}`),
-                            datasets: [
-                                {
-                                    label: "Valor Total (R$)",
-                                    data: processValueData.map(item => item.valor_total),
-                                    backgroundColor: "rgba(75, 192, 192, 0.6)",
-                                    borderColor: "rgba(75, 192, 192, 1)",
-                                    borderWidth: 2,
-                                }
-                            ]
-                        }}
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                legend: { position: "top" },
-                                title: {
-                                    display: true,
-                                    text: "Valor dos Processos por Tribunal e Fase"
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return 'R$ ' + value.toLocaleString('pt-BR');
-                                        }
-                                    }
-                                }
-                            }
-                        }}
-                    />
-                </MainWorker_Count>
-            )}
-
-            {efficiencyTrendsData && efficiencyTrendsData.length > 0 && (
-                <MainWorker_Count>
-                    <Line
-                        data={{
-                            labels: efficiencyTrendsData.map(item => {
-                                const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
-                                return `${meses[item.mes - 1]}/${item.ano}`
-                            }),
-                            datasets: [
-                                {
-                                    label: "Taxa de Conclusão (%)",
-                                    data: efficiencyTrendsData.map(item => item.taxa_conclusao),
-                                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                    borderColor: "rgba(75, 192, 192, 1)",
-                                    borderWidth: 3,
-                                    fill: true,
-                                    tension: 0.4,
-                                    yAxisID: 'y'
-                                },
-                                {
-                                    label: "Total de Tarefas",
-                                    data: efficiencyTrendsData.map(item => item.total_tarefas),
-                                    backgroundColor: "rgba(54, 162, 235, 0.2)",
-                                    borderColor: "rgba(54, 162, 235, 1)",
-                                    borderWidth: 3,
-                                    fill: false,
-                                    tension: 0.4,
-                                    yAxisID: 'y1'
-                                }
-                            ]
-                        }}
-                        options={{
-                            responsive: true,
-                            plugins: {
-                                legend: { position: "top" },
-                                title: {
-                                    display: true,
-                                    text: "Tendências de Eficiência ao Longo do Tempo"
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    type: 'linear',
-                                    display: true,
-                                    position: 'left',
-                                    title: {
-                                        display: true,
-                                        text: 'Taxa de Conclusão (%)'
-                                    },
-                                    min: 0,
-                                    max: 100
-                                },
-                                y1: {
-                                    type: 'linear',
-                                    display: true,
-                                    position: 'right',
-                                    title: {
-                                        display: true,
-                                        text: 'Total de Tarefas'
-                                    },
-                                    grid: {
-                                        drawOnChartArea: false,
-                                    },
                                 }
                             }
                         }}
