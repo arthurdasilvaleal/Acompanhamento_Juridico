@@ -278,8 +278,6 @@ export const PaginationContainer = styled.div`
     padding: 20px;
     position: relative;
     z-index: 1;
-    background-color: #2b2b2b;
-    border: #adadad solid;
     border-top: 0;
     border-left: 0;
     border-right: 0;

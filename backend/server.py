@@ -88,7 +88,18 @@ def post_clientes():
         return jsonify({"message": "Colaborador cadastrado"}), 201
     except mysql.connector.Error as err:
         print("Erro em '/post_cadastro': ", err)
-        return jsonify({"error": str(err)}), 500
+        # Detect duplicate entry (unique constraint) and return a friendly message
+        try:
+            errno = err.errno
+        except Exception:
+            errno = None
+
+        if errno == 1062 or "Duplicate entry" in str(err):
+            # Attempt to extract the duplicated value (CPF) for a clearer message
+            msg = "CPF já cadastrado no sistema. Verifique se o CPF informado pertence a outro colaborador."
+            return jsonify({"error": msg}), 409
+        else:
+            return jsonify({"error": str(err)}), 500
     finally:
         cursor.close()
         conn.close()

@@ -82,7 +82,7 @@ export default function MainScreen() {
     "Visão Geral": <VisaoGeral NomeColaborador={nome} CodigoColaborador={codigo} CodigoTipoColaborador={codigoTipo}/>,
     "Processos": <Consulta_Processo CodigoColaborador={codigo} TipoColaborador={tipo} NomeColaborador={nome}/>,
     "Clientes": <Consulta_Cliente TipoColaborador={tipo} active={option === "Clientes"}/>,
-    "Relatórios": <Report />
+    "Relatórios": <Report TipoColaborador={tipo}/>
   }
 
   const SubTitleObject = {

@@ -96,7 +96,7 @@ export default function Cadastro(){
             console.error("Erro ao cadastrar:", error)
             set_FormStatusMessage("Erro ao adicionar colaborador")
             set_ModalOpen(true)
-            if(error.message === "Network Error"){set_fromStatusErrorMessage("Erro de network")}
+            if(error.message === "Network Error"){set_fromStatusErrorMessage("Erro de rede")}
             else{set_fromStatusErrorMessage(error.response.data.error)}
         }
     }
@@ -237,8 +237,15 @@ export default function Cadastro(){
                     <Twin_input>
                         <Inputs_box>
                             <div className="input-container">
-                                <input type="text" className="input" value={NumeroEndereco} onChange={(e) => set_NumeroEndereco(e.target.value)} required />
-                                <label htmlFor="input" className="label">Numero</label>
+                                <input type="text" inputMode="numeric" pattern="\d*" className="input" value={NumeroEndereco}
+                                    onChange={(e) => {
+                                        // Allow only integer digits
+                                        const onlyDigits = e.target.value.replace(/\D/g, "");
+                                        set_NumeroEndereco(onlyDigits);
+                                    }} 
+                                    required
+                                />
+                                <label htmlFor="input" className="label">Número</label>
                                 <div className="underline" />
                             </div>
                         </Inputs_box>

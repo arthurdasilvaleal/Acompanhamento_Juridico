@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import axios from "axios"
 import { DocumentArrowDownIcon, ChartBarIcon, UserGroupIcon, DocumentTextIcon } from "@heroicons/react/24/outline"
 
-export default function Report(){
+export default function Report({ TipoColaborador }){
 
     // Variáveis dos filtros
     const [FirstSelect, set_FirstSelect] = useState("")
@@ -67,7 +67,7 @@ export default function Report(){
 
     // Pegar dados do banco
     useEffect(() => {
-        if(SecondSelect === "3" && ClientInfo.length === 0){
+        if(ClientInfo.length === 0){
             (async() => {
                 try {
                     const response = await axios.get("http://localhost:5000/get_clientes")
@@ -78,7 +78,7 @@ export default function Report(){
             })()
         }
 
-        if(SecondSelect === "4" && ProcessInfo.length === 0){
+        if(ProcessInfo.length === 0){
             (async() => {
                 try {
                     const response = await axios.get("http://localhost:5000/get_processos?only=id")
@@ -89,7 +89,7 @@ export default function Report(){
             })()
         }
 
-        if(SecondSelect === "5" && WorkerInfo.length === 0){
+        if(WorkerInfo.length === 0){
             (async() => {
                 try {
                     const response = await axios.get("http://localhost:5000/get_colaborador")
@@ -99,7 +99,7 @@ export default function Report(){
                 }
             })()
         }
-    }, [SecondSelect])
+    }, [])
 
     // Options
     const ClientOptions = useMemo(() => ClientInfo.map(client => ({
@@ -141,7 +141,9 @@ export default function Report(){
                         )}
                         <option value="1">Processos</option>
                         <option value="2">Clientes</option>
-                        <option value="3">Colaboradores</option>
+                        {TipoColaborador === "Administrador do Sistema" && (
+                            <option value="3">Colaboradores</option>
+                        )}
                     </select>
                 </div>
             </FilterBox>
@@ -373,7 +375,7 @@ export default function Report(){
                         <p style={{ margin: "0", opacity: 0.9, fontSize: "14px" }}>
                             {FirstSelect === "1" ? "Dados de Processos" : 
                              FirstSelect === "2" ? "Dados de Clientes" : 
-                             FirstSelect === "3" ? "Dados de Colaboradores" : "Selecione um tipo"}
+                             FirstSelect === "3" && TipoColaborador === "Administrador do Sistema" ? "Dados de Colaboradores" : "Selecione um tipo"}
                         </p>
                     </motion.div>
 
@@ -442,7 +444,7 @@ export default function Report(){
                         <p style={{ margin: "0", opacity: 0.9, fontSize: "14px" }}>
                             {ClientInfo.length > 0 && `Clientes: ${ClientInfo.length}`}
                             {ProcessInfo.length > 0 && ` | Processos: ${ProcessInfo.length}`}
-                            {WorkerInfo.length > 0 && ` | Colaboradores: ${WorkerInfo.length}`}
+                            {WorkerInfo.length > 0 && TipoColaborador === "Administrador do Sistema" && ` | Colaboradores: ${WorkerInfo.length}`}
                             {ClientInfo.length === 0 && ProcessInfo.length === 0 && WorkerInfo.length === 0 && "Carregando dados..."}
                         </p>
                     </motion.div>
@@ -490,7 +492,7 @@ export default function Report(){
                             <strong>👥 Clientes:</strong> Informações de contato e processos vinculados
                         </div>
                         <div style={{ fontSize: "14px", opacity: 0.8 }}>
-                            <strong>👨‍💼 Colaboradores:</strong> Dados de performance e tarefas atribuídas
+                            <strong>👨‍💼 Colaboradores:</strong> Dados gerais de colaboradores da equipe
                         </div>
                     </div>
                 </motion.div>

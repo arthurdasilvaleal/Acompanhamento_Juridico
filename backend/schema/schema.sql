@@ -550,9 +550,9 @@ END$$
 DELIMITER ;
 
 
--- INSERÇÃO DE DADOS
+-- INSERÇÃO DE DADOS BÁSICOS (Tabelas de domínio)
 
--- Inserção de Tribunais
+-- Tribunais
 INSERT INTO Tribunal (sg_Tribunal, nm_Tribunal) 
 VALUES  ('TJSP', 'Tribunal de Justiça de São Paulo'),
         ('TRT2', 'Tribunal Regional do Trabalho da 2ª Região'),
@@ -560,8 +560,8 @@ VALUES  ('TJSP', 'Tribunal de Justiça de São Paulo'),
         ('TST', 'Superior Tribunal do Trabalho'),
         ('STJ', 'Superior Tribunal de Justiça'),
         ('STF', 'Supremo Tribunal Federal');
-	
--- Inserção de Fases de Processo
+
+-- Fases de Processo
 INSERT INTO FaseProcesso (cd_FaseProcesso, nm_FaseProcesso)
 VALUES	(1, 'Conhecimento'),
         (2, 'Recursal'),
@@ -569,7 +569,7 @@ VALUES	(1, 'Conhecimento'),
         (4, 'Finalizado'),
         (5, 'Cancelado');
 
--- Inserção de tipo de Colaborador
+-- Tipos de Colaborador
 INSERT INTO TipoColaborador (cd_TipoColaborador, nm_TipoColaborador) 
 VALUES
 (1, 'Administrador do Sistema'),
@@ -577,14 +577,14 @@ VALUES
 (3, 'Assistente'),
 (4, 'Estagiário');
 
--- Inserção de tipos de participação do cliente no processo
+-- Tipos de participação do cliente no processo
 INSERT INTO Posicao_na_Acao (cd_PosicaoAcao, nm_PosicaoAcao)
 VALUES
     (1, 'Autor'),
     (2, 'Réu'),
     (3, 'Terceiro');    
 
--- Inserção de Status da Tarefa
+-- Status da Tarefa
 INSERT INTO StatusTarefa (cd_StatusTarefa, nm_StatusTarefa) 
 VALUES
 (1, 'Aguardando'),
@@ -592,8 +592,9 @@ VALUES
 (3, 'Concluído'),
 (4, 'Cancelado');
 
+-- Tipos de tarefa (mantidos para referência de cd_TipoTarefa utilizados nas tarefas)
 INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
--- Petições e atos processuais
+-- Petições e atos processuais (1-7)
 ('Despachar com Juízo'),
 ('Diligência externa'),
 ('Incidente de Desconsideração PJ'),
@@ -602,20 +603,20 @@ INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
 ('Petição Inicial'),
 ('Protocolar petição'),
 
--- Provas
+-- Provas (8-9)
 ('Arrolar testemunhas'),
 ('Especificação de provas'),
 
--- Custas e cálculos
+-- Custas e cálculos (10-13)
 ('Comprovar pagamento'),
 ('Comprovar recolhimento de custas'),
 ('Elaborar cálculo'),
 ('Recolher custas'),
 
--- Execução
+-- Execução (14)
 ('Cumprimento de Sentença'),
 
--- Comunicação com cliente
+-- Comunicação com cliente (15-21)
 ('Agendar reunião com cliente'),
 ('Reporte ao cliente'),
 ('Solicitar cumprimento de obrigação (cliente)'),
@@ -624,11 +625,11 @@ INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
 ('Solicitar pagamento (cliente)'),
 ('Comprovar cumprimento de obrigação'),
 
--- Administração
+-- Administração (22-23)
 ('Organização de documentos'),
 ('Análise de intimação'),
 
--- Recursos
+-- Recursos (24-44)
 ('Recurso - Agravo de Instrumento'),
 ('Recurso - Agravo em Execução Penal'),
 ('Recurso - Agravo em Recurso Especial/Extraordinário'),
@@ -651,7 +652,7 @@ INSERT INTO TipoTarefa (nm_TipoTarefa) VALUES
 ('Recurso - em Sentido Estrito'),
 ('Recurso - Outros');
         
--- Inserção Colaborador
+-- Inserção de Colaboradores (mantidos para testes do sistema)
 INSERT INTO Colaborador (
     nm_Colaborador, cd_CPF, nm_Logradouro, nm_Bairro, 
     nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
@@ -666,30 +667,76 @@ VALUES
 ('Renata Xavier', 12309876543, 'Alameda Dino Bueno', 'Ponta da Praia', 'Santos', 'SP', 11030000, 8, 'Apto 302', '11911118888', 'renata@email.com', 'renata_x', SHA2('123', 256), 3),
 ('Amanda Lopes', 34509876543, 'Rua Oswaldo Cruz', 'José Menino', 'Santos', 'SP', 11065050, 63, 'Casa dos fundos', '11999997777', 'amanda@email.com', 'amanda_l', SHA2('123', 256), 4);
 
--- Inserção Clientes
+-- Inserção massiva de Clientes (PF e PJ)
 INSERT INTO Cliente 
     (nm_Cliente, cd_CPF, cd_CNPJ, nm_Logradouro, nm_Bairro, 
     nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, 
     cd_Telefone, ds_Email) 
 VALUES
-('Carlos Silva', 12345678901, NULL, 'Rua João Pessoa', 'Vila Belmiro', 'Santos', 'SP', 11055030, 63, 'Apto 12', '11999990000', 'carlos@email.com'),
-('Maria Souza', 23456789012, NULL, 'Avenida Bernardino de Campos', 'Boqueirão', 'Santos', 'SP', 11060002, 48, 'Sala 3', '11988881111', 'maria@email.com'),
-('Fernando Lima', 34567890123, NULL, 'Rua Brás Cubas', 'Centro', 'Guarujá', 'SP', 11410000, 28, NULL, '13999992222', 'fernando@email.com'),
-('Juliana Costa', 45678901234, NULL, 'Praça Mauá', 'Valongo', 'Santos', 'SP', 11010000, 91, 'Loja 5', '13977773333', 'juliana@email.com'),
-('Roberto Almeida', 56789012345, NULL, 'Rua do Comércio', 'Encruzilhada', 'Santos', 'SP', 11055040, 37, 'Apto 45', '13966665555', 'roberto@email.com'),
-('Tatiane Rocha', 67890123456, NULL, 'Avenida Washington Luiz', 'Piratininga', 'São Vicente', 'SP', 11330000, 28, 'Casa 7', '13955557777', 'tatiane@email.com'),
-('Marcos Ribeiro', 78901234567, NULL, 'Alameda Ari Barroso', 'Marapé', 'Santos', 'SP', 11055050, 11, 'Apto 201', '13944449999', 'marcos@email.com'),
-('Vanessa Martins', 89012345678, NULL, 'Rua da Constituição', 'Gonzaga', 'Santos', 'SP', 11055010, 64, NULL, '13933338888', 'vanessa@email.com'),
-('Luciano Carvalho', 90123456789, NULL, 'Avenida Pinheiro Machado', 'Vila Nova', 'Santos', 'SP', 11065030, 73, 'Sala 10', '13922221111', 'luciano@email.com'),
-('Priscila Ferreira', 12309876543, NULL, 'Rua São Bento', 'Centro', 'Praia Grande', 'SP', 11700000, 82, 'Apto 33', '13911116666', 'priscila@email.com'),
-('Tech Solutions LTDA', NULL, 12345678000195, 'Rua das Inovações', 'Centro', 'São Paulo', 'SP', 01000000, 100, 'Andar 5', '1133221100', 'contato@techsolutions.com.br'),
-('Comercial Andrade ME', NULL, 23456789000166, 'Avenida Industrial', 'Distrito', 'Campinas', 'SP', 13000000, 245, 'Sala 2', '1923456789', 'vendas@andrademe.com.br'),
-('Construtora Ideal S/A', NULL, 34567890000177, 'Rua das Obras', 'Engenho Velho', 'Santos', 'SP', 11075200, 80, NULL, '1334455566', 'suporte@construtoraideal.com.br'),
-('Green Market Alimentos LTDA', NULL, 45678901000188, 'Alameda das Palmeiras', 'Jardins', 'São Vicente', 'SP', 11340000, 51, 'Loja A', '13988776655', 'sac@greenmarket.com.br'),
-('Fast Courier Transportes', NULL, 56789012000199, 'Rodovia dos Bandeirantes', 'Polo Industrial', 'Guarujá', 'SP', 11420000, 3000, 'Galpão 3', '13999887766', 'logistica@fastcourier.com.br');
+-- Clientes PF (1-40)
+('Carlos Silva', 12345678901, NULL, 'Rua João Pessoa', 'Vila Belmiro', 'Santos', 'SP', 11055030, 63, 'Apto 12', 11999990000, 'carlos.silva@example.com'),
+('Maria Souza', 23456789012, NULL, 'Av. Bernardino de Campos', 'Boqueirão', 'Santos', 'SP', 11060002, 48, 'Sala 3', 11988881111, 'maria.souza@example.com'),
+('Fernando Lima', 34567890123, NULL, 'Rua Brás Cubas', 'Centro', 'Guarujá', 'SP', 11410000, 28, NULL, 13999992222, 'fernando.lima@example.com'),
+('Juliana Costa', 45678901234, NULL, 'Praça Mauá', 'Valongo', 'Santos', 'SP', 11010000, 91, 'Loja 5', 13977773333, 'juliana.costa@example.com'),
+('Roberto Almeida', 56789012345, NULL, 'Rua do Comércio', 'Encruzilhada', 'Santos', 'SP', 11055040, 37, 'Apto 45', 13966665555, 'roberto.almeida@example.com'),
+('Tatiane Rocha', 67890123456, NULL, 'Av. Washington Luiz', 'Piratininga', 'São Vicente', 'SP', 11330000, 28, 'Casa 7', 13955557777, 'tatiane.rocha@example.com'),
+('Marcos Ribeiro', 78901234567, NULL, 'Alameda Ari Barroso', 'Marapé', 'Santos', 'SP', 11055050, 11, 'Apto 201', 13944449999, 'marcos.ribeiro@example.com'),
+('Vanessa Martins', 89012345678, NULL, 'Rua da Constituição', 'Gonzaga', 'Santos', 'SP', 11055010, 64, NULL, 13933338888, 'vanessa.martins@example.com'),
+('Luciano Carvalho', 90123456789, NULL, 'Av. Pinheiro Machado', 'Vila Nova', 'Santos', 'SP', 11065030, 73, 'Sala 10', 13922221111, 'luciano.carvalho@example.com'),
+('Priscila Ferreira', 12309876543, NULL, 'Rua São Bento', 'Centro', 'Praia Grande', 'SP', 11700000, 82, 'Apto 33', 13911116666, 'priscila.ferreira@example.com'),
+('André Gomes', 11122233344, NULL, 'Rua das Flores', 'Centro', 'São Paulo', 'SP', 01001000, 120, 'Apto 101', 11987654321, 'andre.gomes@example.com'),
+('Beatriz Nunes', 22233344455, NULL, 'Av. Paulista', 'Bela Vista', 'São Paulo', 'SP', 01310923, 1578, 'Sala 1201', 11976543210, 'beatriz.nunes@example.com'),
+('Caio Santos', 33344455566, NULL, 'Rua Augusta', 'Consolação', 'São Paulo', 'SP', 01304901, 350, NULL, 11965432109, 'caio.santos@example.com'),
+('Daniela Prado', 44455566677, NULL, 'Rua Vergueiro', 'Liberdade', 'São Paulo', 'SP', 01504001, 950, 'Casa 2', 11954321098, 'daniela.prado@example.com'),
+('Eduardo Faria', 55566677788, NULL, 'Rua Haddock Lobo', 'Cerqueira César', 'São Paulo', 'SP', 01414001, 250, 'Cobertura', 11943210987, 'eduardo.faria@example.com'),
+('Fernanda Alves', 66677788899, NULL, 'Av. Ipiranga', 'República', 'São Paulo', 'SP', 01045907, 678, 'Apto 23', 11932109876, 'fernanda.alves@example.com'),
+('Gustavo Teles', 77788899900, NULL, 'Rua da Consolação', 'Consolação', 'São Paulo', 'SP', 01302000, 432, 'Apto 801', 11921098765, 'gustavo.teles@example.com'),
+('Helena Ramos', 88899900011, NULL, 'Rua Frei Caneca', 'Consolação', 'São Paulo', 'SP', 01307001, 98, NULL, 11910987654, 'helena.ramos@example.com'),
+('Igor Cardoso', 99900011122, NULL, 'Rua Treze de Maio', 'Bela Vista', 'São Paulo', 'SP', 01327000, 675, 'Casa 5', 11990876543, 'igor.cardoso@example.com'),
+('Jéssica Moraes', 10111213141, NULL, 'Rua Dom Pedro II', 'Centro', 'Campinas', 'SP', 13010010, 15, 'Apto 34', 19999998888, 'jessica.moraes@example.com'),
+('Luana Vieira', 12131415161, NULL, 'Av. Francisco Glicério', 'Centro', 'Campinas', 'SP', 13010030, 220, 'Sala 3', 19988887777, 'luana.vieira@example.com'),
+('Marcelo Cunha', 13141516171, NULL, 'Rua Barão de Jaguara', 'Centro', 'Campinas', 'SP', 13015000, 74, NULL, 19977776666, 'marcelo.cunha@example.com'),
+('Nathalia Rocha', 14151617181, NULL, 'Rua General Osório', 'Centro', 'Campinas', 'SP', 13010050, 300, 'Loja 1', 19966665555, 'nathalia.rocha@example.com'),
+('Otávio Pires', 15161718191, NULL, 'Av. Brasil', 'Jardim Guanabara', 'Campinas', 'SP', 13073000, 890, 'Casa 1', 19955554444, 'otavio.pires@example.com'),
+('Patrícia Ramos', 16171819201, NULL, 'Rua Boa Vista', 'Centro', 'Santo André', 'SP', 09010100, 60, 'Apto 502', 11444443333, 'patricia.ramos@example.com'),
+('Rafael Dias', 17181920211, NULL, 'Av. Portugal', 'Centro', 'Santo André', 'SP', 09040100, 450, 'Sala 7', 11433332222, 'rafael.dias@example.com'),
+('Simone Freitas', 18192021221, NULL, 'Rua das Figueiras', 'Jardim', 'Santo André', 'SP', 09080300, 300, 'Cobertura', 11422221111, 'simone.freitas@example.com'),
+('Thiago Barros', 19102122231, NULL, 'Av. Atlântica', 'Guilhermina', 'Praia Grande', 'SP', 11702000, 101, 'Apto 701', 13987651234, 'thiago.barros@example.com'),
+('Ursula Neves', 20212223241, NULL, 'Rua Jaú', 'Boqueirão', 'Santos', 'SP', 11045020, 140, 'Casa 3', 13976542345, 'ursula.neves@example.com'),
+('Victor Lima', 21222324251, NULL, 'Rua Goiás', 'Gonzaga', 'Santos', 'SP', 11055040, 50, 'Apto 402', 13965433456, 'victor.lima@example.com'),
+('Wesley Duarte', 22232425261, NULL, 'Rua Ceará', 'Marapé', 'Santos', 'SP', 11025060, 90, NULL, 13954324567, 'wesley.duarte@example.com'),
+('Xênia Carvalho', 23242526271, NULL, 'Rua Pará', 'Campo Grande', 'Santos', 'SP', 11075100, 34, 'Casa 1', 13943215678, 'xenia.carvalho@example.com'),
+('Yuri Antunes', 24252627281, NULL, 'Rua Bahia', 'Ponta da Praia', 'Santos', 'SP', 11030040, 78, 'Apto 201', 13932106789, 'yuri.antunes@example.com'),
+('Zilda Campos', 25262728291, NULL, 'Rua Amazonas', 'Centro', 'São Vicente', 'SP', 11310050, 12, NULL, 13921097890, 'zilda.campos@example.com'),
+('Henrique Monteiro', 26272829301, NULL, 'Rua Ceará', 'Centro', 'Guarujá', 'SP', 11410030, 40, 'Casa 4', 13919876543, 'henrique.monteiro@example.com'),
+('Isabela Furtado', 27282930311, NULL, 'Av. Ademar de Barros', 'Centro', 'Guarujá', 'SP', 11410040, 80, 'Loja 2', 13918765432, 'isabela.furtado@example.com'),
+('Jonas Azevedo', 28293031321, NULL, 'Rua Venezuela', 'Boqueirão', 'Santos', 'SP', 11045100, 55, 'Casa 6', 13917654321, 'jonas.azevedo@example.com'),
+('Kelly Moraes', 29303132331, NULL, 'Rua México', 'Boqueirão', 'Santos', 'SP', 11045200, 65, 'Apto 305', 13916543210, 'kelly.moraes@example.com'),
+('Lucas Peixoto', 30313233341, NULL, 'Rua Colômbia', 'Gonzaga', 'Santos', 'SP', 11055300, 75, 'Apto 807', 13915432109, 'lucas.peixoto@example.com'),
+('Mariana Tavares', 31323334351, NULL, 'Rua Peru', 'Gonzaga', 'Santos', 'SP', 11055400, 85, 'Casa 8', 13914321098, 'mariana.tavares@example.com'),
+
+-- Clientes PJ (41-60)
+('Tech Solutions LTDA', NULL, 12345678000195, 'Rua das Inovações', 'Centro', 'São Paulo', 'SP', 01000000, 100, 'Andar 5', 1133221100, 'contato@techsolutions.com.br'),
+('Comercial Andrade ME', NULL, 23456789000166, 'Av. Industrial', 'Distrito', 'Campinas', 'SP', 13000000, 245, 'Sala 2', 1923456789, 'vendas@andrademe.com.br'),
+('Construtora Ideal S/A', NULL, 34567890000177, 'Rua das Obras', 'Engenho Velho', 'Santos', 'SP', 11075200, 80, NULL, 1334455566, 'suporte@construtoraideal.com.br'),
+('Green Market Alimentos LTDA', NULL, 45678901000188, 'Alameda das Palmeiras', 'Jardins', 'São Vicente', 'SP', 11340000, 51, 'Loja A', 13988776655, 'sac@greenmarket.com.br'),
+('Fast Courier Transportes', NULL, 56789012000199, 'Rodovia dos Bandeirantes', 'Polo Industrial', 'Guarujá', 'SP', 11420000, 3000, 'Galpão 3', 13999887766, 'logistica@fastcourier.com.br'),
+('Sigma Tech Corp', NULL, 60708090000110, 'Rua do Progresso', 'Tecno Park', 'São Paulo', 'SP', 02000000, 500, 'Bloco A', 1133445566, 'contato@sigmatech.com'),
+('Alpha Jurídico S/S', NULL, 61718192000121, 'Av. das Nações', 'Centro', 'Campinas', 'SP', 13000050, 350, 'Conj. 501', 1933556677, 'contato@alphajuridico.com.br'),
+('Beta Financeira S/A', NULL, 62728293000132, 'Rua do Comércio', 'Centro', 'Santos', 'SP', 11015010, 200, 'Andar 10', 1333667788, 'relacionamento@betafinanceira.com.br'),
+('Gamma Indústria LTDA', NULL, 63738394000143, 'Av. das Indústrias', 'Distrito Industrial', 'São Vicente', 'SP', 11350000, 800, NULL, 1344778899, 'contato@gammaind.com'),
+('Delta Serviços ME', NULL, 64748596000154, 'Rua Projetada', 'Bairro Novo', 'Praia Grande', 'SP', 11703000, 45, 'Loja 4', 13912345678, 'contato@deltaservicos.com'),
+('Epsilon Logística LTDA', NULL, 65758697000165, 'Rod. Anchieta', 'Polo Logístico', 'Santos', 'SP', 11080000, 9000, 'Galpão 1', 13923456789, 'operacoes@epsilonlog.com'),
+('Omega Comercial S/A', NULL, 66768798000176, 'Rua Central', 'Centro', 'Guarujá', 'SP', 11411000, 60, 'Casa 10', 13934567890, 'contato@omegacomercial.com'),
+('Nova Energia LTDA', NULL, 67778899000187, 'Av. Solar', 'Parque Verde', 'Campinas', 'SP', 13090000, 1000, 'Torre 2', 19345678901, 'contato@novaenergia.com'),
+('Prime Saúde S/A', NULL, 68788991000198, 'Rua Vital', 'Jardim Saúde', 'São Paulo', 'SP', 04000000, 320, 'Bloco B', 11456789012, 'contato@primesaude.com'),
+('Global Turismo ME', NULL, 69799002000109, 'Av. das Viagens', 'Centro', 'Santos', 'SP', 11020000, 40, 'Loja 10', 13367890123, 'contato@globalturismo.com'),
+('Oceanic Navegações LTDA', NULL, 70709103000110, 'Porto Marítimo', 'Zona Portuária', 'Santos', 'SP', 11030000, 1, 'Cais 2', 13378901234, 'contato@oceanicnav.com'),
+('Atlântica Seguros S/A', NULL, 71719204000121, 'Rua das Garantias', 'Centro', 'São Paulo', 'SP', 01002000, 210, 'Andar 12', 11389012345, 'contato@atlanticaseguros.com'),
+('Vita Plano de Saúde', NULL, 72729305000132, 'Av. da Saúde', 'Vila Nova', 'Santos', 'SP', 11065060, 70, 'Bloco C', 13390123456, 'contato@vitaplan.com');
 
 
--- Inserção de Processos
+-- Inserção massiva de Processos
 INSERT INTO Processo (cd_NumeroProcesso, nm_Autor, nm_Reu, ds_Juizo, ds_Acao, nm_Cidade, sg_Tribunal, vl_Causa) 
 VALUES 
 ('0001111-20.2023.8.26.0001', 'Carlos Silva', 'Empresa XYZ Ltda', 'Vara Cível', 'Danos Morais', 'São Paulo', 'TJSP', 50000.00),
@@ -701,82 +748,99 @@ VALUES
 ('0007777-80.2023.8.26.0007', 'Marcos Ribeiro', 'Construtora ABC', 'Vara Cível', 'Rescisão Contratual', 'Guarujá', 'TJSP', 185000.00),
 ('0008888-90.2023.8.26.0008', 'Vanessa Martins', 'Operadora Móvel Telecom', 'Vara Cível', 'Cobrança Indevida', 'Guarujá', 'TJSP', 15000.00),
 ('0009999-00.2023.8.26.0009', 'Luciano Carvalho', 'Comércio de Veículos AutoCar', 'Vara Cível', 'Vício Oculto em Veículo', 'Praia Grande', 'TJSP', 45000.00),
-('0010000-10.2023.8.26.0010', 'Priscila Ferreira', 'Faculdade Universitas', 'Vara do Consumidor', 'Cobrança Indevida de Mensalidade', 'Praia Grande', 'TJSP', 8000.00);
+('0010000-10.2023.8.26.0010', 'Priscila Ferreira', 'Faculdade Universitas', 'Vara do Consumidor', 'Cobrança Indevida de Mensalidade', 'Praia Grande', 'TJSP', 8000.00),
+('0011000-11.2023.8.26.0011', 'André Gomes', 'Tech Solutions LTDA', 'Vara Cível', 'Cobrança de Serviços', 'São Paulo', 'TJSP', 150000.00),
+('0012000-12.2023.8.26.0012', 'Beatriz Nunes', 'Banco XYZ S/A', 'Vara Cível', 'Revisão de Financiamento', 'São Paulo', 'TJSP', 200000.00),
+('0013000-13.2023.8.26.0013', 'Caio Santos', 'Construtora Ideal S/A', 'Vara Cível', 'Rescisão Contratual', 'Santos', 'TJSP', 180000.00),
+('0014000-14.2023.8.26.0014', 'Eduardo Faria', 'Fast Courier Transportes', 'Vara Cível', 'Indenização por Extravio de Encomenda', 'Guarujá', 'TJSP', 30000.00),
+('0015000-15.2023.8.26.0015', 'Fernanda Alves', 'Prime Saúde S/A', 'Vara do Consumidor', 'Cobertura de Exame Médico', 'São Paulo', 'TJSP', 25000.00),
+('0016000-16.2023.8.26.0016', 'Gustavo Teles', 'Vita Plano de Saúde', 'Vara do Consumidor', 'Reembolso de Despesa Médica', 'Santos', 'TJSP', 18000.00),
+('0017000-17.2023.8.26.0017', 'Helena Ramos', 'Atlântica Seguros S/A', 'Vara Cível', 'Indenização Securitária', 'São Paulo', 'TJSP', 220000.00),
+('0018000-18.2023.8.26.0018', 'Igor Cardoso', 'Gamma Indústria LTDA', 'Vara do Trabalho', 'Verbas Rescisórias', 'São Vicente', 'TRT2', 75000.00),
+('0019000-19.2023.8.26.0019', 'Jéssica Moraes', 'Comercial Andrade ME', 'Vara Cível', 'Cobrança de Comissão', 'Campinas', 'TJSP', 40000.00),
+('0020000-20.2023.8.26.0020', 'Luana Vieira', 'Nova Energia LTDA', 'Vara Cível', 'Responsabilidade Civil', 'Campinas', 'TJSP', 600000.00);
 
+-- Associação Cliente_Processo
 INSERT INTO Cliente_Processo (cd_Cliente, cd_Processo, cd_PosicaoAcao)
 VALUES
-    (1, 1, 1),
-    (2, 2, 1),
-    (3, 3, 1),
-    (4, 4, 1),
-    (5, 5, 1),
-    (6, 6, 1),
-    (7, 7, 1),
-    (8, 8, 1),
-    (9, 9, 1),
-    (10, 10, 1);
+    (1, 1, 1), (2, 2, 1), (3, 3, 1), (4, 4, 1),
+    (5, 5, 1), (6, 6, 1), (7, 7, 1), (8, 8, 1),
+    (9, 9, 1), (10, 10, 1), (11, 11, 1), (12, 12, 1),
+    (13, 13, 1), (14, 14, 1), (15, 15, 1), (16, 16, 1),
+    (17, 17, 1), (18, 18, 1), (19, 19, 1), (20, 20, 1);
 
--- Inserção de Intimações
+-- Intimações distribuídas no tempo (passadas, recentes, futuras)
 INSERT INTO Intimacao (dt_Recebimento, cd_Processo, ds_Intimacao) 
 VALUES 
-('2024-02-01', 1, 'Intimação para apresentação de contestação no prazo de 15 dias.'),
-('2024-02-03', 2, 'Intimação para juntada de documentos comprobatórios.'),
-('2024-02-05', 3, 'Intimação para audiência de conciliação agendada para 15/06/2025.'),
-('2024-02-08', 4, 'Intimação para manifestação sobre o laudo pericial.'),
-('2024-02-10', 5, 'Intimação sobre deferimento de pedido de tutela antecipada.'),
-('2024-02-12', 6, 'Intimação para comparecimento à audiência preliminar em 20/07/2025.'),
-('2024-02-15', 7, 'Intimação sobre abertura de prazo para razões finais.'),
-('2024-02-18', 8, 'Intimação para apresentação de provas periciais até 01/06/2025.'),
-('2024-02-20', 9, 'Intimação para responder ao recurso interposto pela parte ré.'),
-('2024-02-22', 10, 'Intimação sobre despacho saneador e designação de audiência de instrução.'),
-('2024-02-25', 1, 'Intimação para apresentação de contrarrazões ao agravo de instrumento.'),
-('2024-02-28', 2, 'Intimação sobre decisão de improcedência do pedido e abertura de prazo recursal.'),
-('2024-03-01', 3, 'Intimação para esclarecimento de pontos obscuros na petição inicial.'),
-('2024-03-03', 4, 'Intimação para cumprimento de sentença no prazo de 30 dias.'),
-('2024-03-05', 5, 'Intimação para retirada de alvará judicial expedido em favor do cliente.');
+-- Antigas
+('2024-02-01 00:00:00', 1, 'Intimação para apresentação de contestação no prazo de 15 dias.'),
+('2024-05-15 00:00:00', 5, 'Intimação para juntada de documentos médicos.'),
+('2024-09-10 00:00:00', 10, 'Intimação para manifestação sobre proposta de acordo.'),
+('2025-01-20 00:00:00', 15, 'Intimação para apresentação de réplica.'),
+('2025-03-05 00:00:00', 20, 'Intimação de designação de audiência de instrução.'),
 
--- Inserção de Tarefas
+-- 2025 em meses variados
+('2025-06-10 00:00:00', 5, 'Intimação para especificação de provas.'),
+('2025-08-22 00:00:00', 10, 'Intimação para apresentação de memoriais.'),
+('2025-10-10 00:00:00', 15, 'Intimação para cumprimento de sentença.'),
+
+-- Recentes (novembro/2025)
+('2025-11-20 00:00:00', 1, 'Intimação para apresentar documentos complementares.'),
+('2025-11-25 00:00:00', 2, 'Intimação para manifestação sobre laudo pericial.'),
+('2025-11-28 00:00:00', 3, 'Intimação para apresentar rol de testemunhas.'),
+
+-- Intimações com foco em tarefas a vencer (próxima semana)
+('2025-12-01 00:00:00', 4, 'Intimação para contestação com prazo de 15 dias.'),
+('2025-12-03 00:00:00', 6, 'Intimação para juntada de documentos em 5 dias.'),
+
+-- Futuras em 2026
+('2026-01-15 00:00:00', 7, 'Intimação para audiência de conciliação designada.'),
+('2026-03-10 00:00:00', 8, 'Intimação para apresentação de cálculos de liquidação.'),
+('2026-06-05 00:00:00', 9, 'Intimação para manifestação sobre impugnação ao cumprimento de sentença.');
+
+-- Inserção de Tarefas (passadas, futuras e "a vencer")
 INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa) VALUES
-(15, '2025-06-06 00:00:00', '2025-06-25', 8, 3, 10, 'Tarefa relacionada ao tipo 10.'),
-(9, '2025-05-31 00:00:00', '2025-06-07', 7, 3, 21, 'Tarefa relacionada ao tipo 21.'),
-(2, '2025-05-08 00:00:00', '2025-05-28', 3, 2, 11, 'Tarefa relacionada ao tipo 11.'),
-(8, '2025-06-10 00:00:00', '2025-06-22', 1, 3, 26, 'Tarefa relacionada ao tipo 26.'),
-(11, '2025-09-14 00:00:00', '2025-09-30', 5, 2, 33, 'Tarefa relacionada ao tipo 33.'),
-(7, '2025-08-05 00:00:00', '2025-08-25', 6, 1, 17, 'Tarefa relacionada ao tipo 17.'),
-(14, '2025-07-11 00:00:00', '2025-07-28', 2, 1, 5, 'Tarefa relacionada ao tipo 5.'),
-(1, '2025-04-18 00:00:00', '2025-04-30', 8, 2, 8, 'Tarefa relacionada ao tipo 8.'),
-(3, '2025-03-25 00:00:00', '2025-04-10', 4, 3, 40, 'Tarefa relacionada ao tipo 40.'),
-(10, '2025-07-20 00:00:00', '2025-07-31', 7, 2, 19, 'Tarefa relacionada ao tipo 19.'),
-(13, '2025-05-01 00:00:00', '2025-05-15', 7, 1, 6, 'Tarefa relacionada ao tipo 6.'),
-(5, '2025-06-03 00:00:00', '2025-06-15', 5, 2, 4, 'Tarefa relacionada ao tipo 4.'),
-(6, '2025-08-18 00:00:00', '2025-09-05', 3, 1, 28, 'Tarefa relacionada ao tipo 28.'),
-(4, '2025-02-10 00:00:00', '2025-02-20', 2, 3, 13, 'Tarefa relacionada ao tipo 13.'),
-(12, '2025-06-25 00:00:00', '2025-07-01', 6, 2, 23, 'Tarefa relacionada ao tipo 23.'),
-(1, '2025-04-02 00:00:00', '2025-04-18', 1, 3, 30, 'Tarefa relacionada ao tipo 30.'),
-(2, '2025-05-15 00:00:00', '2025-06-05', 4, 1, 1, 'Tarefa relacionada ao tipo 1.'),
-(3, '2025-06-08 00:00:00', '2025-06-20', 6, 2, 14, 'Tarefa relacionada ao tipo 14.'),
-(4, '2025-06-29 00:00:00', '2025-07-10', 8, 1, 35, 'Tarefa relacionada ao tipo 35.'),
-(5, '2025-05-12 00:00:00', '2025-05-25', 7, 3, 9, 'Tarefa relacionada ao tipo 9.'),
-(6, '2025-07-05 00:00:00', '2025-07-19', 6, 2, 32, 'Tarefa relacionada ao tipo 32.'),
-(7, '2025-08-10 00:00:00', '2025-08-22', 5, 1, 2, 'Tarefa relacionada ao tipo 2.'),
-(8, '2025-09-01 00:00:00', '2025-09-15', 4, 3, 24, 'Tarefa relacionada ao tipo 24.'),
-(9, '2025-06-01 00:00:00', '2025-06-10', 3, 1, 39, 'Tarefa relacionada ao tipo 39.'),
-(10, '2025-07-12 00:00:00', '2025-07-26', 2, 2, 12, 'Tarefa relacionada ao tipo 12.'),
-(11, '2025-08-15 00:00:00', '2025-08-31', 1, 1, 7, 'Tarefa relacionada ao tipo 7.'),
-(12, '2025-07-18 00:00:00', '2025-07-30', 5, 2, 20, 'Tarefa relacionada ao tipo 20.'),
-(13, '2025-05-09 00:00:00', '2025-05-20', 8, 3, 34, 'Tarefa relacionada ao tipo 34.'),
-(14, '2025-09-10 00:00:00', '2025-09-25', 7, 2, 3, 'Tarefa relacionada ao tipo 3.'),
-(15, '2025-06-17 00:00:00', '2025-06-27', 6, 3, 25, 'Tarefa relacionada ao tipo 25.'),
-(1, '2025-03-12 00:00:00', '2025-03-28', 5, 1, 15, 'Tarefa relacionada ao tipo 15.'),
-(2, '2025-05-28 00:00:00', '2025-06-08', 4, 2, 22, 'Tarefa relacionada ao tipo 22.'),
-(3, '2025-07-01 00:00:00', '2025-07-12', 3, 3, 29, 'Tarefa relacionada ao tipo 29.'),
-(4, '2025-06-11 00:00:00', '2025-06-30', 2, 1, 16, 'Tarefa relacionada ao tipo 16.'),
-(5, '2025-08-03 00:00:00', '2025-08-18', 1, 3, 18, 'Tarefa relacionada ao tipo 18.'),
-(6, '2025-07-14 00:00:00', '2025-07-24', 4, 2, 36, 'Tarefa relacionada ao tipo 36.'),
-(7, '2025-08-06 00:00:00', '2025-08-20', 8, 1, 27, 'Tarefa relacionada ao tipo 27.'),
-(8, '2025-09-05 00:00:00', '2025-09-15', 7, 2, 37, 'Tarefa relacionada ao tipo 37.'),
-(9, '2025-07-22 00:00:00', '2025-08-01', 6, 3, 31, 'Tarefa relacionada ao tipo 31.'),
-(10, '2025-06-07 00:00:00', '2025-06-21', 5, 1, 38, 'Tarefa relacionada ao tipo 38.');
+-- 1) Prazos já vencidos
+(1, '2024-02-01 09:00:00', '2024-02-16', 1, 3, 6, 'Protocolar contestação dentro do prazo legal.'),
+(1, '2024-02-01 10:30:00', '2024-02-18', 2, 3, 10, 'Comprovar pagamento de custas iniciais.'),
+(2, '2024-05-15 14:00:00', '2024-05-25', 3, 3, 5, 'Elaborar petição de juntada de documentos médicos.'),
+(2, '2024-05-16 09:15:00', '2024-05-28', 4, 3, 9, 'Organizar laudos médicos recebidos do cliente.'),
+(3, '2024-09-10 11:00:00', '2024-09-20', 5, 3, 15, 'Agendar reunião com cliente para avaliar proposta.'),
+(3, '2024-09-11 16:00:00', '2024-09-25', 6, 3, 21, 'Reporte ao cliente sobre andamento da negociação.'),
+(4, '2025-01-20 09:30:00', '2025-02-05', 7, 3, 5, 'Elaborar réplica detalhada.'),
+(4, '2025-01-21 10:00:00', '2025-02-10', 8, 3, 11, 'Especificar provas a serem produzidas.'),
+(5, '2025-03-05 13:00:00', '2025-03-25', 1, 3, 8, 'Arrolar testemunhas para audiência de instrução.'),
+(5, '2025-03-06 09:45:00', '2025-03-28', 2, 3, 24, 'Analisar intimação e preparar estratégia para audiência.'),
+
+-- 2) Tarefas futuras (prazos bem distantes)
+(6, '2025-06-10 10:00:00', '2026-01-10', 3, 1, 9, 'Organizar documentos e definir provas adicionais.'),
+(6, '2025-06-11 15:30:00', '2026-02-01', 4, 1, 22, 'Organização de documentos físicos do processo.'),
+(7, '2025-08-22 09:00:00', '2026-03-15', 5, 1, 2, 'Preparar minuta de memoriais.'),
+(7, '2025-08-23 11:30:00', '2026-03-20', 6, 2, 18, 'Solicitar pagamento (cliente) referente a honorários complementares.'),
+(8, '2025-10-10 08:30:00', '2026-04-10', 7, 1, 14, 'Acompanhar cumprimento de sentença.'),
+(8, '2025-10-11 16:45:00', '2026-04-20', 8, 2, 25, 'Comprovar cumprimento de obrigação pelo cliente.'),
+
+-- 3) Tarefas recentes (novembro/2025)
+(9, '2025-11-20 09:15:00', '2025-11-28', 1, 2, 4, 'Recolher custas complementares.'),
+(9, '2025-11-21 10:00:00', '2025-11-30', 2, 2, 3, 'Incidente de desconsideração de personalidade jurídica.'),
+(10, '2025-11-25 14:20:00', '2025-12-10', 3, 1, 13, 'Elaborar cálculo de liquidação.'),
+(10, '2025-11-26 15:10:00', '2025-12-12', 4, 1, 20, 'Solicitar informações (cliente) para conferência dos cálculos.'),
+(11, '2025-11-28 11:00:00', '2025-12-05', 5, 1, 17, 'Especificação de provas testemunhais.'),
+(11, '2025-11-29 09:50:00', '2025-12-07', 6, 1, 19, 'Reporte ao cliente sobre estratégia probatória.'),
+
+-- 4) Tarefas "a vencer" (até 2025-12-06, considerando 2025-12-03)
+(12, '2025-12-01 09:00:00', '2025-12-04', 7, 1, 1, 'Analisar intimação e iniciar minuta de contestação.'),
+(12, '2025-12-01 15:30:00', '2025-12-06', 8, 1, 6, 'Concluir e protocolar contestação.'),
+(13, '2025-12-03 08:45:00', '2025-12-05', 1, 1, 5, 'Elaborar petição de juntada de documentos.'),
+(13, '2025-12-03 10:15:00', '2025-12-06', 2, 1, 16, 'Cumprimento de sentença parcial relacionado aos documentos.'),
+
+-- 5) Mais tarefas futuras para volume
+(14, '2026-01-15 09:00:00', '2026-02-01', 3, 1, 7, 'Protocolar petição inicial de execução.'),
+(14, '2026-01-16 10:30:00', '2026-02-10', 4, 1, 23, 'Análise de intimação e documentos anexos.'),
+(15, '2026-03-10 11:40:00', '2026-03-25', 5, 1, 26, 'Despachar com juízo sobre cálculos apresentados.'),
+(15, '2026-03-11 16:00:00', '2026-03-28', 6, 1, 27, 'Organizar documentos contábeis enviados pelo perito.'),
+(16, '2026-06-05 09:20:00', '2026-06-20', 7, 1, 28, 'Preparar impugnação ao cumprimento de sentença.'),
+(16, '2026-06-06 15:45:00', '2026-06-30', 8, 1, 29, 'Recurso - Apelação em caso de improcedência.');
 
 -- Inserção de novos processos com a utilização da Stored Procedure
 -- 1. Processo com Cliente 1 como Réu
@@ -935,84 +999,155 @@ SELECT C.nm_Cliente, C.cd_Telefone, C.ds_Email, P.cd_Processo, P.cd_NumeroProces
                 
 CALL PDFDownloadCase(3, 1, "");
 
--- TESTE DE "STRESS"
+-- TESTE DE "STRESS" (ATUALIZADO)
+-- Objetivo: gerar grande volume de dados com datas coerentes em torno de 2025-11-30
 
--- Inserção de 100 clientes de teste
+-- 1) Inserir 200 clientes de teste adicionais (PF)
 INSERT INTO Cliente (nm_Cliente, cd_CPF, cd_CNPJ, nm_Logradouro, nm_Bairro, nm_Cidade, sg_Estado, cd_CEP, cd_NumeroEndereco, ds_ComplementoEndereco, cd_Telefone, ds_Email)
 SELECT 
-    CONCAT('Cliente Teste ', n) AS nm_Cliente,
-    10000000000 + n AS cd_CPF,
+    CONCAT('Cliente ', n) AS nm_Cliente,
+    80000000000 + n AS cd_CPF,
     NULL AS cd_CNPJ,
-    CONCAT('Rua ', n) AS nm_Logradouro,
+    CONCAT('Rua Teste ', n) AS nm_Logradouro,
     'Centro' AS nm_Bairro,
-    'Santos' AS nm_Cidade,
+    CASE WHEN n % 4 = 0 THEN 'Santos'
+         WHEN n % 4 = 1 THEN 'São Vicente'
+         WHEN n % 4 = 2 THEN 'Guarujá'
+         ELSE 'Praia Grande' END AS nm_Cidade,
     'SP' AS sg_Estado,
     11000000 + n AS cd_CEP,
     n AS cd_NumeroEndereco,
     'Apto 10' AS ds_ComplementoEndereco,
-    CONCAT('1399', LPAD(n, 7, '0')) AS cd_Telefone,
-    CONCAT('cliente', n, '@teste.com') AS ds_Email
+    13990000000 + n AS cd_Telefone,
+    CONCAT('cliente.teste', n, '@teste.com') AS ds_Email
 FROM (
-    SELECT @rownum := @rownum + 1 AS n FROM 
+    SELECT @rownum2 := @rownum2 + 1 AS n FROM 
     (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
      UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL 
      SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a,
     (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 
      UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL 
      SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b,
-    (SELECT @rownum := 0) r
+    (SELECT 0 UNION ALL SELECT 1) c, -- 10*10*2 = 200
+    (SELECT @rownum2 := 0) r
 ) t
-LIMIT 100;
+LIMIT 200;
 
--- Cada cliente recebe 3 processos
+-- 2) Cada novo cliente recebe 5 processos em 2025/2026
 INSERT INTO Processo (cd_NumeroProcesso, nm_Autor, nm_Reu, ds_Juizo, ds_Acao, nm_Cidade, sg_Tribunal, vl_Causa, cd_FaseProcesso)
 SELECT 
-    CONCAT(LPAD(c.cd_Cliente, 6, '0'), '-', LPAD(p, 2, '0'), '.2025.8.26.0001'),
-    c.nm_Cliente,
-    CONCAT('Réu Empresa ', p),
-    'Vara Cível',
-    'Ação de Teste',
-    c.nm_Cidade,
-    'TJSP',
-    1000 * p,
-    FLOOR(1 + RAND() * 4)
+    CONCAT(LPAD(c.cd_Cliente, 6, '0'), '-', LPAD(p, 2, '0'), '.2025.8.26.0001') AS cd_NumeroProcesso,
+    c.nm_Cliente AS nm_Autor,
+    CONCAT('Empresa Ré ', p) AS nm_Reu,
+    'Vara Cível' AS ds_Juizo,
+    'Ação de Cobrança de Teste' AS ds_Acao,
+    c.nm_Cidade AS nm_Cidade,
+    'TJSP' AS sg_Tribunal,
+    5000 * p AS vl_Causa,
+    FLOOR(1 + RAND() * 4) AS cd_FaseProcesso
 FROM Cliente c
-JOIN (SELECT 1 AS p UNION ALL SELECT 2 UNION ALL SELECT 3) x;
+JOIN (SELECT 1 AS p UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5) x
+WHERE c.nm_Cliente LIKE 'Cliente %';
 
--- Vincula cada cliente aos seus 3 processos
+-- 3) Vincula cada cliente de stress aos seus processos como Autor
 INSERT INTO Cliente_Processo (cd_Cliente, cd_Processo, cd_PosicaoAcao)
 SELECT 
     c.cd_Cliente,
     p.cd_Processo,
-    1
+    1 AS cd_PosicaoAcao
 FROM Cliente c
-JOIN Processo p ON LEFT(p.cd_NumeroProcesso, 6) = LPAD(c.cd_Cliente, 6, '0');
+JOIN Processo p ON p.nm_Autor = c.nm_Cliente
+WHERE c.nm_Cliente LIKE 'Cliente %';
 
--- Gera 2 intimações por processo
+-- 4) Gera 3 intimações por processo, com datas espalhadas em 2025/2026
+-- - Uma em data passada (~2025-09)
+-- - Uma perto de hoje (~2025-11/12)
+-- - Uma mais futura (~2026)
 INSERT INTO Intimacao (dt_Recebimento, cd_Processo, ds_Intimacao)
 SELECT 
-    DATE_ADD('2025-01-01', INTERVAL FLOOR(RAND() * 200) DAY),
+    DATE_ADD('2025-09-01', INTERVAL FLOOR(RAND() * 30) DAY) AS dt_Recebimento,
     p.cd_Processo,
-    CONCAT('Intimação automática para o processo ', p.cd_NumeroProcesso)
+    CONCAT('Intimação passada para processo ', p.cd_NumeroProcesso) AS ds_Intimacao
 FROM Processo p
-JOIN (SELECT 1 AS n UNION ALL SELECT 2) x;
+WHERE p.nm_Autor LIKE 'Cliente %';
 
--- Cria 4 tarefas para cada intimação (aleatórias)
+INSERT INTO Intimacao (dt_Recebimento, cd_Processo, ds_Intimacao)
+SELECT 
+    DATE_ADD('2025-11-20', INTERVAL FLOOR(RAND() * 20) DAY) AS dt_Recebimento,
+    p.cd_Processo,
+    CONCAT('Intimação atual para processo ', p.cd_NumeroProcesso) AS ds_Intimacao
+FROM Processo p
+WHERE p.nm_Autor LIKE 'Cliente %';
+
+INSERT INTO Intimacao (dt_Recebimento, cd_Processo, ds_Intimacao)
+SELECT 
+    DATE_ADD('2026-02-01', INTERVAL FLOOR(RAND() * 120) DAY) AS dt_Recebimento,
+    p.cd_Processo,
+    CONCAT('Intimação futura para processo ', p.cd_NumeroProcesso) AS ds_Intimacao
+FROM Processo p
+WHERE p.nm_Autor LIKE 'Cliente %';
+
+-- 5) Cria 4 tarefas para cada intimação
+--   - 2 com prazo já vencido (prazo 10-20 dias após dt_Recebimento em 2025-09 ou 2025-11)
+--   - 1 com prazo "a vencer" (entre 2025-12-03 e 2025-12-06)
+--   - 1 com prazo bem futuro (ao longo de 2026)
 INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa)
 SELECT 
     i.cd_Intimacao,
-    DATE_ADD(i.dt_Recebimento, INTERVAL FLOOR(RAND() * 10) DAY),
-    DATE_ADD(i.dt_Recebimento, INTERVAL 15 DAY),
-    FLOOR(1 + RAND() * 8),       -- Colaborador entre 1 e 8
-    FLOOR(1 + RAND() * 3),       -- Status entre 1 e 3
-    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),  -- 🔥 seleciona um tipo válido aleatoriamente
-    CONCAT('Tarefa automática para intimação ', i.cd_Intimacao)
+    i.dt_Recebimento,
+    DATE_ADD(i.dt_Recebimento, INTERVAL 10 DAY) AS dt_Prazo,
+    FLOOR(1 + RAND() * 8) AS cd_Colaborador,
+    3 AS cd_StatusTarefa,
+    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),
+    CONCAT('Tarefa vencida automática (1) para intimação ', i.cd_Intimacao)
 FROM Intimacao i
-JOIN (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) x;
+JOIN Processo p ON p.cd_Processo = i.cd_Processo
+WHERE p.nm_Autor LIKE 'Cliente %';
 
+INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa)
+SELECT 
+    i.cd_Intimacao,
+    DATE_ADD(i.dt_Recebimento, INTERVAL 1 DAY) AS dt_Registro,
+    DATE_ADD(i.dt_Recebimento, INTERVAL 20 DAY) AS dt_Prazo,
+    FLOOR(1 + RAND() * 8) AS cd_Colaborador,
+    2 AS cd_StatusTarefa,
+    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),
+    CONCAT('Tarefa vencida automática (2) para intimação ', i.cd_Intimacao)
+FROM Intimacao i
+JOIN Processo p ON p.cd_Processo = i.cd_Processo
+WHERE p.nm_Autor LIKE 'Cliente %';
 
--- RESULTADO ESPERADO
-SELECT COUNT(*) FROM Cliente;        -- ~110 (10 originais + 100 novos)
-SELECT COUNT(*) FROM Processo;       -- ~310 (10 originais + 300 novos)
-SELECT COUNT(*) FROM Intimacao;      -- ~620 (2 por processo)
-SELECT COUNT(*) FROM Tarefa;         -- ~2480 (4 por intimação)
+-- Tarefas a vencer: prazo fixo entre 2025-12-03 e 2025-12-06
+INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa)
+SELECT 
+    i.cd_Intimacao,
+    '2025-12-01 09:00:00' AS dt_Registro,
+    DATE_ADD('2025-12-03', INTERVAL (i.cd_Intimacao % 4) DAY) AS dt_Prazo,
+    FLOOR(1 + RAND() * 8) AS cd_Colaborador,
+    1 AS cd_StatusTarefa,
+    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),
+    CONCAT('Tarefa a vencer automática para intimação ', i.cd_Intimacao)
+FROM Intimacao i
+JOIN Processo p ON p.cd_Processo = i.cd_Processo
+WHERE p.nm_Autor LIKE 'Cliente %';
+
+-- Tarefas futuras: prazo em 2026
+INSERT INTO Tarefa (cd_Intimacao, dt_Registro, dt_Prazo, cd_Colaborador, cd_StatusTarefa, cd_TipoTarefa, ds_Tarefa)
+SELECT 
+    i.cd_Intimacao,
+    DATE_ADD(i.dt_Recebimento, INTERVAL 5 DAY) AS dt_Registro,
+    -- Garantir prazos longos em 2026: base 2026-01-01 + até ~300 dias
+    DATE_ADD('2026-01-01', INTERVAL (i.cd_Intimacao % 300) DAY) AS dt_Prazo,
+    FLOOR(1 + RAND() * 8) AS cd_Colaborador,
+    1 AS cd_StatusTarefa,
+    (SELECT cd_TipoTarefa FROM TipoTarefa ORDER BY RAND() LIMIT 1),
+    CONCAT('Tarefa futura automática (2026) para intimação ', i.cd_Intimacao)
+FROM Intimacao i
+JOIN Processo p ON p.cd_Processo = i.cd_Processo
+WHERE p.nm_Autor LIKE 'Cliente %';
+
+-- RESULTADO ESPERADO (valores aproximados, dependem dos dados já existentes)
+SELECT COUNT(*) FROM Cliente;   
+SELECT COUNT(*) FROM Processo;  
+SELECT COUNT(*) FROM Intimacao;
+SELECT COUNT(*) FROM Tarefa;    
