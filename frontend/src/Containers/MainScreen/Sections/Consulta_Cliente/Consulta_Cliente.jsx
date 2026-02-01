@@ -220,30 +220,32 @@ export default function Consulta_Cliente({ TipoColaborador, active }){
                                                     set_cardVeryDetailed(veryDetailed ? null : cliente.cd_Cliente)
                                                     }}>{veryDetailed ? "voltar" : "ver mais detalhes"}
                                                 </h6>
-                                                <h6 onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    set_clienteInfo({
-                                                        cdCliente: cliente.cd_Cliente,
-                                                        nmCliente: cliente.nm_Cliente,
-                                                        cdCPF: cliente.cd_CPF,
-                                                        cdCNPJ: cliente.cd_CNPJ,
-                                                        cdTelefone: cliente.cd_Telefone,
-                                                        cdCEP: cliente.cd_CEP,
-                                                        nmLogradouro: cliente.nm_Logradouro,
-                                                        nmBairro: cliente.nm_Bairro,
-                                                        nmCidade: cliente.nm_Cidade,
-                                                        sgEstado: cliente.sg_Estado,
-                                                        cdNumeroEndereco: cliente.cd_NumeroEndereco,
-                                                        nmComplemento: cliente.ds_ComplementoEndereco,
-                                                        dsEmail: cliente.ds_Email
-                                                    })
-                                                    // console.log(ClienteInfo)
-                                                    window.scrollTo({
-                                                        top: 1,
-                                                        behavior: "smooth"
-                                                    })
-                                                    set_editCliente(prev => !prev)
-                                                }}>Editar</h6>
+                                                {TipoColaborador != "Estagiário" && (
+                                                    <h6 onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        set_clienteInfo({
+                                                            cdCliente: cliente.cd_Cliente,
+                                                            nmCliente: cliente.nm_Cliente,
+                                                            cdCPF: cliente.cd_CPF,
+                                                            cdCNPJ: cliente.cd_CNPJ,
+                                                            cdTelefone: cliente.cd_Telefone,
+                                                            cdCEP: cliente.cd_CEP,
+                                                            nmLogradouro: cliente.nm_Logradouro,
+                                                            nmBairro: cliente.nm_Bairro,
+                                                            nmCidade: cliente.nm_Cidade,
+                                                            sgEstado: cliente.sg_Estado,
+                                                            cdNumeroEndereco: cliente.cd_NumeroEndereco,
+                                                            nmComplemento: cliente.ds_ComplementoEndereco,
+                                                            dsEmail: cliente.ds_Email
+                                                        })
+                                                        // console.log(ClienteInfo)
+                                                        window.scrollTo({
+                                                            top: 1,
+                                                            behavior: "smooth"
+                                                        })
+                                                        set_editCliente(prev => !prev)
+                                                    }}>Editar</h6>
+                                                )}
                                                 {TipoColaborador != "Estagiário" && (
                                                     <h6 className="Delete" onClick={(e) => {
                                                         e.stopPropagation()

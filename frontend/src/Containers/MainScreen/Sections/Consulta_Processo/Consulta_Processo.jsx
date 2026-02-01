@@ -15,7 +15,7 @@ export default function Consulta_Processo({ CodigoColaborador, TipoColaborador, 
     // Dados dos Processos
     const [cd_NumeroProcesso, set_cdNumeroEndereco] = useState("")
     const [cd_ListNumeroProcesso, set_cdListNumeroProcesso] = useState([]) // Datalist com os numero dos processos do banco
-    const [nm_Cliente, set_nmCliente] = useState("Carlos Silva")
+    const [nm_Cliente, set_nmCliente] = useState("")
     const [processos, set_Processos] = useState([]) // Guardar os processos
     const [Intimacoes, set_Intimacoes] = useState([]) // Guardar as intimações de cada processo
     const [Tarefas, set_Tarefas] = useState([]) // Guardar as tarefas de cada processo

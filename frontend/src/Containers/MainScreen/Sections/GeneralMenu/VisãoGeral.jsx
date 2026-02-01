@@ -672,7 +672,7 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                 <CountProcesses>
                     <Doughnut
                         data={{ 
-                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado", "Cancelado"],
+                            labels: ["Conhecimento", "Recursal", "Execução", "Finalizado"],
                             datasets: [
                                 {
                                     label: "Fases",
@@ -681,8 +681,8 @@ export default function VisaoGeral({ NomeColaborador, CodigoColaborador, CodigoT
                                         "rgba(141, 54, 250, 0.8)",
                                         "rgba(141, 197, 250, 0.8)",
                                         "rgba(255, 100, 39, 0.8)",
-                                        "rgba(5, 197, 39, 0.8)",
-                                        "rgba(255, 16, 16, 0.8)"
+                                        "rgba(5, 197, 39, 0.8)"
+                                        
                                     ],
                                     borderRadius: 5,
                                 },

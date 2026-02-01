@@ -659,7 +659,7 @@ INSERT INTO Colaborador (
     cd_Telefone, ds_Email, nm_Usuario, ds_Senha, cd_TipoColaborador)
 VALUES
 ('Ana Paula', 45678901234, 'Rua XV de Novembro', 'Gonzaga', 'Santos', 'SP', 11055000, 191, 'Apto 32', '11977773333', 'ana@email.com', 'ana_paula', SHA2('123', 256), 2),
-('João Mendes', 56789012345, 'Avenida Ana Costa', 'Boqueirão', 'Santos', 'SP', 11060001, 71, 'Sala 5', '13966664444', 'joao@email.com', 'joao_mendes', SHA2('123', 256), 4),
+('João Mendes', 56789012345, 'Avenida Ana Costa', 'Boqueirão', 'Santos', 'SP', 11060001, 71, 'Sala 5', '13966664444', 'joao@email.com', 'joao_mendes', SHA2('123', 256), 1),
 ('Laura Ferreira', 67890123456, 'Rua São Francisco', 'Centro', 'São Vicente', 'SP', 11310000, 86, 'Casa 2', '13955552222', 'laura@email.com', 'laura_ferreira', SHA2('123', 256), 3),
 ('Carlos Magalhães', 78901234567, 'Praça dos Expedicionários', 'Embaré', 'Santos', 'SP', 11015000, 84, 'Bloco B', '13944441111', 'carlos@email.com', 'carlos_m', SHA2('123', 256), 2),
 ('Paula Amaral', 89012345678, 'Avenida Conselheiro Nébias', 'Campo Grande', 'Santos', 'SP', 11045001, 94, 'Apto 101', '13933336666', 'paula@email.com', 'paula_amaral', SHA2('123', 256), 2),

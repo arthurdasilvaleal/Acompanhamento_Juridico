@@ -12,7 +12,7 @@ import Background from "../../components/Background/Background"
 export default function Login(){
 
     const navigate = useNavigate();
-    const [Login, set_Login] = useState("ana_paula")
+    const [Login, set_Login] = useState("")
     const [Pass, set_Pass] = useState("")
 
     // Variáveis de estado

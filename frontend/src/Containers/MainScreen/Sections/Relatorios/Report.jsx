@@ -491,9 +491,11 @@ export default function Report({ TipoColaborador }){
                         <div style={{ fontSize: "14px", opacity: 0.8 }}>
                             <strong>👥 Clientes:</strong> Informações de contato e processos vinculados
                         </div>
-                        <div style={{ fontSize: "14px", opacity: 0.8 }}>
-                            <strong>👨‍💼 Colaboradores:</strong> Dados gerais de colaboradores da equipe
-                        </div>
+                        {TipoColaborador === "Administrador do Sistema" && (
+                            <div style={{ fontSize: "14px", opacity: 0.8 }}>
+                                <strong>👨‍💼 Colaboradores:</strong> Dados gerais de colaboradores da equipe
+                            </div>
+                        )}
                     </div>
                 </motion.div>
                 </motion.div>
